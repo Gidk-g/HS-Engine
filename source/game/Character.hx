@@ -539,7 +539,15 @@ class Character extends FlxSprite
 		var rawJson = Assets.getText(path);
 		var json:CharJson = cast Json.parse(rawJson);
 
-		frames = Paths.getSparrowAtlas(json.spritePath);
+		if (Assets.exists(Paths.getSparrowAtlas(json.spritePath)))
+		{
+			frames = Paths.getSparrowAtlas(json.spritePath);
+		}
+
+		if (Assets.exists(Paths.getPackerAtlas(json.spritePath)))
+		{
+			frames = Paths.getPackerAtlas(json.spritePath);
+		}
 
 		antialiasing = json.antialiasing;
 		flipX = json.flipX;
