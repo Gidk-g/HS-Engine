@@ -539,6 +539,8 @@ class Character extends FlxSprite
 		var rawJson = Assets.getText(path);
 		var json:CharJson = cast Json.parse(rawJson);
 
+		frames = Paths.getSparrowAtlas(json.spritePath);
+
 		antialiasing = json.antialiasing;
 		flipX = json.flipX;
 
@@ -553,6 +555,12 @@ class Character extends FlxSprite
 
 			if (anim.offsets != null && anim.offsets.length > 1)
 				addOffset(anim.anim, anim.offsets[0], anim.offsets[1]);
+		}
+
+		if (json.scale != 1)
+		{
+			setGraphicSize(Std.int(width * json.scale));
+			updateHitbox();
 		}
 	}
 
