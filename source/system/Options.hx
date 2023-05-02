@@ -90,24 +90,24 @@ class Option
 	}
 }
 
-class FPSOption extends Option
+class TestOption extends Option
 {
 	public function new()
 	{
 		super();
-		daValue = FlxG.save.data.fps;
+		daValue = FlxG.save.data.test;
 	}
 
 	public override function press():Bool
 	{
-		FlxG.save.data.fps = !FlxG.save.data.fps;
-		daValue = FlxG.save.data.fps;
+		FlxG.save.data.test = !FlxG.save.data.test;
+		daValue = FlxG.save.data.test;
 		display = updateDisplay();
 		return true;
 	}
 
 	private override function updateDisplay():String
 	{
-		return "FPS Counter";
+		return "Test Option";
 	}
 }

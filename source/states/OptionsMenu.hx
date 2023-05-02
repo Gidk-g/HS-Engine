@@ -33,7 +33,7 @@ class OptionsMenu extends MusicBeatState
 	var options:Array<OptionCategory> = [
 		new OptionCategory("Preferences",
 		[
-			new FPSOption(),
+			new TestOption(),
 		]),
 	];
 

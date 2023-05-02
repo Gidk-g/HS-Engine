@@ -8,7 +8,6 @@ class Prefs
 {
 	public static function init()
 	{
-		if (FlxG.save.data.fps == null)
-			FlxG.save.data.fps = true;
+        // aaa
 	}
 }
