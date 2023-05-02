@@ -538,6 +538,16 @@ class Character extends FlxSprite
 
 		var rawJson = Assets.getText(path);
 		var json:CharJson = cast Json.parse(rawJson);
+
+		antialiasing = json.antialiasing;
+
+		flipX = !!json.flipX;
+
+		for (anim in json.animations)
+		{
+			if (anim.offsets != null)
+				addOffset(anim.anim, anim.offsets[0], anim.offsets[1]);
+		}
 	}
 
 	override function update(elapsed:Float)
