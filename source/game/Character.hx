@@ -539,7 +539,7 @@ class Character extends FlxSprite
 		var rawJson = Assets.getText(path);
 		var json:CharJson = cast Json.parse(rawJson);
 
-		if (Assets.exists(Paths.file("images/characters/" + json.spritePath + ".txt", TEXT)))
+		if (Assets.exists(Paths.file("images/" + json.spritePath + ".txt", TEXT)))
 			frames = Paths.getPackerAtlas(json.spritePath);
         else
 			frames = Paths.getSparrowAtlas(json.spritePath);
