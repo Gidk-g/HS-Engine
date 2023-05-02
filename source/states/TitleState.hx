@@ -61,6 +61,8 @@ class TitleState extends MusicBeatState
 
 		Highscore.load();
 
+        Prefs.init();
+
 		if (FlxG.save.data.weekUnlocked != null)
 		{
 			// FIX LATER!!!

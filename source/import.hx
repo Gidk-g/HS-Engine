@@ -11,7 +11,6 @@ import states.StoryMenuState;
 // substates
 import substates.GameOverSubstate;
 import substates.MusicBeatSubstate;
-import substates.OptionsSubState;
 import substates.PauseSubState;
 
 // editors
@@ -26,6 +25,7 @@ import game.Character;
 import game.Boyfriend;
 import game.BackgroundDancer;
 import game.BackgroundGirls;
+import game.CheckboxThingie;
 import game.DialogueBox;
 import game.MenuCharacter;
 import game.MenuItem;
@@ -43,6 +43,8 @@ import system.Highscore;
 import system.PlayerSettings;
 import system.Section;
 import system.Song;
+import system.Options;
+import system.Prefs;
 
 // paths lmao
 import Paths;
