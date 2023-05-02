@@ -271,7 +271,7 @@ class TitleState extends MusicBeatState
 			transitioning = true;
 			// FlxG.sound.music.stop();
 
-			new FlxTimer().start(2, function(tmr:FlxTimer)
+			new FlxTimer().start(1.4, function(tmr:FlxTimer)
 			{
 				FlxG.switchState(new MainMenuState());
 			});
@@ -390,7 +390,7 @@ class TitleState extends MusicBeatState
 		{
 			remove(ngSpr);
 
-			FlxG.camera.flash(FlxColor.WHITE, 4);
+			FlxG.camera.flash(FlxColor.WHITE, 2.5);
 			remove(credGroup);
 			skippedIntro = true;
 		}
