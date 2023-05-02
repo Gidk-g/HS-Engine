@@ -529,11 +529,11 @@ class Character extends FlxSprite
 
     public function loadCharacterJson()
 	{
-		var path:String = Paths.file("characters/" + curCharacter + ".json");
+		var path:String = Paths.json("characters/" + curCharacter);
 
 		if (Assets.exists(path))
 		{
-			path = Paths.file("characters/" + curCharacter + ".json");
+			path = Paths.json("characters/" + curCharacter);
 		}
 
 		var rawJson = Assets.getText(path);
