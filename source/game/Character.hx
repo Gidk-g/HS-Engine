@@ -18,6 +18,7 @@ class Character extends FlxSprite
 	public var curCharacter:String = 'bf';
 
 	public var holdTimer:Float = 0;
+	public var singDuration:Float = 4;
 
 	public function new(x:Float, y:Float, ?character:String = "bf", ?isPlayer:Bool = false)
 	{
@@ -528,6 +529,7 @@ class Character extends FlxSprite
 			frames = Paths.getSparrowAtlas(json.spritePath);
 
 		antialiasing = json.antialiasing;
+		singDuration = json.singDuration;
 		flipX = json.flipX;
 
 		for (anim in json.animations)
@@ -559,11 +561,7 @@ class Character extends FlxSprite
 				holdTimer += elapsed;
 			}
 
-			var dadVar:Float = 4;
-
-			if (curCharacter == 'dad')
-				dadVar = 6.1;
-			if (holdTimer >= Conductor.stepCrochet * dadVar * 0.001)
+			if (holdTimer >= Conductor.stepCrochet * singDuration * 0.001)
 			{
 				dance();
 				holdTimer = 0;
@@ -689,6 +687,7 @@ typedef CharJson = {
 	var scale:Float;
 	var flipX:Bool;
 	var antialiasing:Bool;
+	var singDuration:Float;
 }
 
 typedef AnimStuff = {
