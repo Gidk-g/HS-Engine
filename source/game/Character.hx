@@ -1,7 +1,9 @@
 package game;
 
+import haxe.Json;
 import flixel.FlxG;
 import flixel.FlxSprite;
+import openfl.utils.Assets;
 import flixel.animation.FlxBaseAnimation;
 import flixel.graphics.frames.FlxAtlasFrames;
 
@@ -495,6 +497,9 @@ class Character extends FlxSprite
 				addOffset("singDOWN-alt", -30, -27);
 
 				playAnim('idle');
+
+			default:
+				loadCharacterJson();
 		}
 
 		dance();
@@ -520,6 +525,19 @@ class Character extends FlxSprite
 				}
 			}
 		}
+	}
+
+    public function loadCharacterJson()
+	{
+		var path:String = Paths.file("characters/" + curCharacter + ".json");
+
+		if (Assets.exists(path))
+		{
+			path = Paths.file("characters/" + curCharacter + ".json");
+		}
+
+		var rawJson = Assets.getText(path);
+		var json:CharJson = cast Json.parse(rawJson);
 	}
 
 	override function update(elapsed:Float)
@@ -653,4 +671,21 @@ class Character extends FlxSprite
 	{
 		animOffsets[name] = [x, y];
 	}
+}
+
+typedef CharJson = {
+	var animations:Array<AnimStuff>;
+	var spritePath:String;
+	var scale:Float;
+	var flipX:Bool;
+	var antialiasing:Bool;
+}
+
+typedef AnimStuff = {
+	var anim:String;
+	var name:String;
+	var fps:Int;
+	var loop:Bool;
+	var indices:Array<Int>;
+	var offsets:Array<Int>;
 }
