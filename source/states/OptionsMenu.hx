@@ -145,7 +145,7 @@ class OptionsMenu extends MusicBeatState
 			{
 				FlxG.sound.play(Paths.sound('confirmMenu'));
 				confirming = true;
-				FlxFlicker.flicker(grpControls.members[curSelected], 1, 0.06, true, false, function(flick:FlxFlicker)
+				FlxFlicker.flicker(grpControls.members[curSelected], 0.5, 0.06, true, false, function(flick:FlxFlicker)
 				{
 					if (isCat && currentSelectedCat.getOptions()[curSelected].press())
 					{
