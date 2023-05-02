@@ -2,7 +2,11 @@
 <project>
 	<!-- _________________________ Application Settings _________________________ -->
 
+<<<<<<< HEAD
 	<app title="Friday Night Funkin HS-Engine'" file="Funkin" packageName="com.ninjamuffin99.funkin" package="com.ninjamuffin99.funkin" main="Main" version="0.1" company="ninjamuffin99" />
+=======
+	<app title="Friday Night Funkin': HS Engine" file="HS-Engine" packageName="com.ninjamuffin99.funkin" package="com.ninjamuffin99.funkin" main="Main" version="0.2.7.1" company="ninjamuffin99" />
+>>>>>>> d8d16833d02925a7a132bb50c3e0161c35d77ab0
 
 	<!--Switch Export with Unique ApplicationID and Icon-->
 	<set name="APP_ID" value="0x0100f6c013bbc000" />
@@ -113,7 +117,6 @@
 
 	<!--In case you want to use the ui package-->
 	<haxelib name="flixel-ui" />
-	<haxelib name="newgrounds"/>
 	<haxelib name="faxe" if='switch'/>
 	<haxelib name="polymod"/>
 	<haxelib name="discord_rpc" if="desktop"/>
