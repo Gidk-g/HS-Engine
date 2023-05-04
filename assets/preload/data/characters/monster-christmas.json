@@ -1,0 +1,64 @@
+{
+	"animations": [
+		{
+			"offsets": [
+				1,
+				0
+			],
+			"loop": false,
+			"fps": 24,
+			"anim": "idle",
+			"indices": [],
+			"name": "monster idle"
+		},
+		{
+			"offsets": [
+				-20,
+				50
+			],
+			"loop": false,
+			"fps": 24,
+			"anim": "singUP",
+			"indices": [],
+			"name": "monster up note"
+		},
+		{
+			"offsets": [
+				-30,
+				0
+			],
+			"loop": false,
+			"fps": 24,
+			"anim": "singLEFT",
+			"indices": [],
+			"name": "Monster left note"
+		},
+		{
+			"offsets": [
+				-51,
+				0
+			],
+			"loop": false,
+			"fps": 24,
+			"anim": "singRIGHT",
+			"indices": [],
+			"name": "Monster Right note"
+		},
+		{
+			"offsets": [
+				-40,
+				-94
+			],
+			"loop": false,
+			"fps": 24,
+			"anim": "singDOWN",
+			"indices": [],
+			"name": "monster down"
+		}
+	],
+	"antialiasing": true,
+	"spritePath": "christmas/monsterChristmas",
+    "singDuration": 4,
+	"flipX": false,
+	"scale": 1
+}

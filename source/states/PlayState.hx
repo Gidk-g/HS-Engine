@@ -179,11 +179,11 @@ class PlayState extends MusicBeatState
 					"Only then I will even CONSIDER letting you\ndate my daughter!"
 				];
 			case 'senpai':
-				dialogue = CoolUtil.coolTextFile(Paths.txt('senpai/senpaiDialogue'));
+				dialogue = CoolUtil.coolTextFile(Paths.txt('charts/senpai/senpaiDialogue'));
 			case 'roses':
-				dialogue = CoolUtil.coolTextFile(Paths.txt('roses/rosesDialogue'));
+				dialogue = CoolUtil.coolTextFile(Paths.txt('charts/roses/rosesDialogue'));
 			case 'thorns':
-				dialogue = CoolUtil.coolTextFile(Paths.txt('thorns/thornsDialogue'));
+				dialogue = CoolUtil.coolTextFile(Paths.txt('charts/thorns/thornsDialogue'));
 		}
 
 		#if desktop
@@ -1498,11 +1498,11 @@ class PlayState extends MusicBeatState
 					case 'mall':
 						camFollow.y = boyfriend.getMidpoint().y - 200;
 					case 'school':
-						camFollow.x = boyfriend.getMidpoint().x - 200;
-						camFollow.y = boyfriend.getMidpoint().y - 200;
+						camFollow.x = boyfriend.getMidpoint().x - 300;
+						camFollow.y = boyfriend.getMidpoint().y - 250;
 					case 'schoolEvil':
-						camFollow.x = boyfriend.getMidpoint().x - 200;
-						camFollow.y = boyfriend.getMidpoint().y - 200;
+						camFollow.x = boyfriend.getMidpoint().x - 300;
+						camFollow.y = boyfriend.getMidpoint().y - 250;
 				}
 
 				if (SONG.song.toLowerCase() == 'tutorial')

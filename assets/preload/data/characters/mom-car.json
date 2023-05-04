@@ -1,0 +1,64 @@
+{
+	"animations": [
+		{
+			"offsets": [
+				0,
+				0
+			],
+			"loop": false,
+			"anim": "idle",
+			"fps": 24,
+			"name": "Mom Idle",
+			"indices": []
+		},
+		{
+			"offsets": [
+				250,
+				-23
+			],
+			"loop": false,
+			"anim": "singLEFT",
+			"fps": 24,
+			"name": "Mom Left Pose",
+			"indices": []
+		},
+		{
+			"offsets": [
+				10,
+				-60
+			],
+			"loop": false,
+			"anim": "singRIGHT",
+			"fps": 24,
+			"name": "Mom Pose Left",
+			"indices": []
+		},
+		{
+			"offsets": [
+				20,
+				-160
+			],
+			"loop": false,
+			"anim": "singDOWN",
+			"fps": 24,
+			"name": "MOM DOWN POSE",
+			"indices": []
+		},
+		{
+			"offsets": [
+				14,
+				71
+			],
+			"loop": false,
+			"anim": "singUP",
+			"fps": 24,
+			"name": "Mom Up Pose",
+			"indices": []
+		}
+	],
+	"antialiasing": true,
+	"spritePath": "momCar",
+    "singDuration": 4,
+	"flipX": false,
+	"scale": 1
+}
