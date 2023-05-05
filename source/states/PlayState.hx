@@ -231,7 +231,7 @@ class PlayState extends MusicBeatState
 		DiscordClient.changePresence(detailsText, SONG.song + " (" + storyDifficultyText + ")", iconRPC);
 		#end
 
-		var stageData:StageJSON = system.StageJson.getStageFile(curStage);
+		var stageData:StageJSON = system.StageJson.getStageFile();
 
 		if(stageData == null) {
 			stageData = {
