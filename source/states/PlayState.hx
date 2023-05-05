@@ -3,6 +3,7 @@ package states;
 #if desktop
 import system.Discord.DiscordClient;
 #end
+import system.StageJson.StageJSON;
 import system.Section.SwagSection;
 import system.Song.SwagSong;
 import shaders.WiggleEffect.WiggleEffectType;
