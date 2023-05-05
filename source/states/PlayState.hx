@@ -92,6 +92,8 @@ class PlayState extends MusicBeatState
 	private var camHUD:FlxCamera;
 	private var camGame:FlxCamera;
 
+	public var stageBuild:system.StageJson;
+
 	var dialogue:Array<String> = ['blah blah blah', 'coolswag'];
 
 	var halloweenBG:FlxSprite;
@@ -570,6 +572,11 @@ class PlayState extends MusicBeatState
 		          }
               }
 
+		stageBuild = new system.StageJson();
+		add(stageBuild);
+
+		add(stageBuild.layers);
+
 		var gfVersion:String = 'gf';
 
 		switch (curStage)
@@ -678,6 +685,8 @@ class PlayState extends MusicBeatState
 
 		add(dad);
 		add(boyfriend);
+
+		add(stageBuild.foreground);
 
 		var doof:DialogueBox = new DialogueBox(false, dialogue);
 		// doof.x += 70;
