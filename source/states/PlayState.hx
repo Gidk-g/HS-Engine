@@ -231,6 +231,21 @@ class PlayState extends MusicBeatState
 		DiscordClient.changePresence(detailsText, SONG.song + " (" + storyDifficultyText + ")", iconRPC);
 		#end
 
+		var stageData:StageJSON = system.StageJson.getStageFile(curStage);
+
+		if(stageData == null) {
+			stageData = {
+				defaultZoom: 0.9,
+				spawnGirlfriend: false,
+
+				boyfriend: [770, 100],
+				girlfriend: [400, 130],
+				dad: [100, 100],
+
+				objects: []
+			};
+		}
+
 		switch (SONG.song.toLowerCase())
 		{
                         case 'spookeez' | 'monster' | 'south': 
