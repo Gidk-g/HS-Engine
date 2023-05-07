@@ -3,7 +3,6 @@ package states;
 #if desktop
 import system.Discord.DiscordClient;
 #end
-import system.StageJson.StageJSON;
 import system.Section.SwagSection;
 import system.Song.SwagSong;
 import shaders.WiggleEffect.WiggleEffectType;
@@ -92,8 +91,6 @@ class PlayState extends MusicBeatState
 	private var iconP2:HealthIcon;
 	private var camHUD:FlxCamera;
 	private var camGame:FlxCamera;
-
-	public var stageBuild:system.StageJson;
 
 	var dialogue:Array<String> = ['blah blah blah', 'coolswag'];
 
@@ -230,21 +227,6 @@ class PlayState extends MusicBeatState
 		// Updating Discord Rich Presence.
 		DiscordClient.changePresence(detailsText, SONG.song + " (" + storyDifficultyText + ")", iconRPC);
 		#end
-
-		var stageData:StageJSON = system.StageJson.getStageFile();
-
-		if(stageData == null) {
-			stageData = {
-				defaultZoom: 0.9,
-				spawnGirlfriend: false,
-
-				boyfriend: [770, 100],
-				girlfriend: [400, 130],
-				dad: [100, 100],
-
-				objects: []
-			};
-		}
 
 		switch (SONG.song.toLowerCase())
 		{
@@ -588,11 +570,6 @@ class PlayState extends MusicBeatState
 		          }
               }
 
-		stageBuild = new system.StageJson();
-		add(stageBuild);
-
-		add(stageBuild.layers);
-
 		var gfVersion:String = 'gf';
 
 		switch (curStage)
@@ -701,8 +678,6 @@ class PlayState extends MusicBeatState
 
 		add(dad);
 		add(boyfriend);
-
-		add(stageBuild.foreground);
 
 		var doof:DialogueBox = new DialogueBox(false, dialogue);
 		// doof.x += 70;
