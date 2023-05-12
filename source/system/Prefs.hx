@@ -8,10 +8,6 @@ class Prefs
 {
 	public static function init()
 	{
-		if (FlxG.save.data.mods == null)
-			FlxG.save.data.mods = true;
-
-		PlayerSettings.init();
-		Highscore.load();
+        // aaaaaaaaaa
 	}
 }
