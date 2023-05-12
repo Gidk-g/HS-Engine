@@ -55,42 +55,42 @@ class PlayState extends MusicBeatState
 
 	var halloweenLevel:Bool = false;
 
-	private var vocals:FlxSound;
+	public var vocals:FlxSound;
 
-	private var dad:Character;
-	private var gf:Character;
-	private var boyfriend:Boyfriend;
+	public var dad:Character;
+	public var gf:Character;
+	public var boyfriend:Boyfriend;
 
 	private var notes:FlxTypedGroup<Note>;
 	private var unspawnNotes:Array<Note> = [];
 
-	private var strumLine:FlxSprite;
-	private var curSection:Int = 0;
+	public var strumLine:FlxSprite;
+	public var curSection:Int = 0;
 
-	private var camFollow:FlxObject;
+	public var camFollow:FlxObject;
 
 	private static var prevCamFollow:FlxObject;
 
-	private var strumLineNotes:FlxTypedGroup<FlxSprite>;
-	private var playerStrums:FlxTypedGroup<FlxSprite>;
+	public var strumLineNotes:FlxTypedGroup<FlxSprite>;
+	public var playerStrums:FlxTypedGroup<FlxSprite>;
 
-	private var camZooming:Bool = false;
-	private var curSong:String = "";
+	public var camZooming:Bool = false;
+	public var curSong:String = "";
 
-	private var gfSpeed:Int = 1;
-	private var health:Float = 1;
-	private var combo:Int = 0;
+	public var gfSpeed:Int = 1;
+	public var health:Float = 1;
+	public var combo:Int = 0;
 
-	private var healthBarBG:FlxSprite;
-	private var healthBar:FlxBar;
+	public var healthBarBG:FlxSprite;
+	public var healthBar:FlxBar;
 
-	private var generatedMusic:Bool = false;
-	private var startingSong:Bool = false;
+	public var generatedMusic:Bool = false;
+	public var startingSong:Bool = false;
 
-	private var iconP1:HealthIcon;
-	private var iconP2:HealthIcon;
-	private var camHUD:FlxCamera;
-	private var camGame:FlxCamera;
+	public var iconP1:HealthIcon;
+	public var iconP2:HealthIcon;
+	public var camHUD:FlxCamera;
+	public var camGame:FlxCamera;
 
 	var dialogue:Array<String> = ['blah blah blah', 'coolswag'];
 
@@ -113,18 +113,19 @@ class PlayState extends MusicBeatState
 	var wiggleShit:WiggleEffect = new WiggleEffect();
 
 	var talking:Bool = true;
-	var songScore:Int = 0;
-	var songMisses:Int = 0;
-	var scoreTxt:FlxText;
+
+	public var songScore:Int = 0;
+	public var songMisses:Int = 0;
+	public var scoreTxt:FlxText;
 
 	public static var campaignScore:Int = 0;
 
-	var defaultCamZoom:Float = 1.05;
+	public var defaultCamZoom:Float = 1.05;
 
 	// how big to stretch the pixel art assets
 	public static var daPixelZoom:Float = 6;
 
-	var inCutscene:Bool = false;
+	public var inCutscene:Bool = false;
 
 	#if desktop
 	// Discord RPC variables
@@ -134,6 +135,8 @@ class PlayState extends MusicBeatState
 	var detailsText:String = "";
 	var detailsPausedText:String = "";
 	#end
+
+	public var script = new Hscript();
 
 	override public function create()
 	{
@@ -570,6 +573,59 @@ class PlayState extends MusicBeatState
 		          }
               }
 
+		if (Assets.exists(Paths.hx("data/charts/" + SONG.song.toLowerCase() + "/script")))
+		{
+			script.loadScript("data/charts/" + SONG.song.toLowerCase() + "/script");
+		}
+
+		script.interp.variables.set("add", function(value:Dynamic)
+		{
+			add(value);
+		});
+
+		script.interp.variables.set("remove", function(value:Dynamic)
+		{
+			remove(value);
+		});
+
+		script.interp.variables.set("setDefaultZoom", function(value:Dynamic)
+		{
+			defaultCamZoom = value;
+		});
+
+		script.interp.variables.set("createTrail", function(char:Dynamic, graphic:Dynamic, length:Dynamic, delay:Dynamic, alpha:Dynamic, diff:Dynamic, ?addInGroup:Dynamic, ?group:Dynamic)
+		{
+			var trail = new FlxTrail(char, graphic, length, delay, alpha, diff);
+
+			if (addInGroup == true && group != null)
+				group.add(trail);
+			else
+				add(trail);
+		});
+
+		script.interp.variables.set("this", this);
+
+		script.interp.variables.set("boyfriend", boyfriend);
+		script.interp.variables.set("dad", dad);
+		script.interp.variables.set("gf", gf);
+
+		script.interp.variables.set("camHUD", camHUD);
+		script.interp.variables.set("camGame", camGame);
+
+		script.interp.variables.set("defaultCamZoom", defaultCamZoom);
+		script.interp.variables.set("curSong", SONG.song);
+		script.interp.variables.set("SONG", SONG);
+		script.interp.variables.set("curStage", curStage);
+
+		script.interp.variables.set("inCutscene", inCutscene);
+		script.interp.variables.set("curBeat", curBeat);
+		script.interp.variables.set("curStep", curStep);
+
+		script.interp.variables.set("playerStrums", playerStrums);
+		script.interp.variables.set("strumLines", strumLineNotes);
+
+		script.call('create');
+
 		var gfVersion:String = 'gf';
 
 		switch (curStage)
@@ -816,6 +872,8 @@ class PlayState extends MusicBeatState
 		}
 
 		super.create();
+
+		script.call("createPost");
 	}
 
 	function schoolIntro(?dialogueBox:DialogueBox):Void
@@ -914,8 +972,11 @@ class PlayState extends MusicBeatState
 
 		talking = false;
 		startedCountdown = true;
+
 		Conductor.songPosition = 0;
 		Conductor.songPosition -= Conductor.crochet * 5;
+
+		script.call("startCountdown");
 
 		var swagCounter:Int = 0;
 
@@ -1024,6 +1085,8 @@ class PlayState extends MusicBeatState
 			FlxG.sound.playMusic(Paths.inst(PlayState.SONG.song), 1, false);
 		FlxG.sound.music.onComplete = endSong;
 		vocals.play();
+
+		script.call("startSong");
 
 		#if desktop
 		// Song duration in a float, useful for the time left feature
@@ -1233,6 +1296,8 @@ class PlayState extends MusicBeatState
 			babyArrow.x += ((FlxG.width / 2) * player);
 
 			strumLineNotes.add(babyArrow);
+
+			script.call("generateStaticArrows", [player]);
 		}
 	}
 
@@ -1360,6 +1425,8 @@ class PlayState extends MusicBeatState
 				}
 				// phillyCityLights.members[curLight].alpha -= (Conductor.crochet / 1000) * FlxG.elapsed;
 		}
+
+		script.call("update", [elapsed]);
 
 		super.update(elapsed);
 
@@ -1653,6 +1720,8 @@ class PlayState extends MusicBeatState
 							dad.playAnim('singRIGHT' + altAnim, true);
 					}
 
+					script.call("opponentNoteHit");
+
 					dad.holdTimer = 0;
 
 					if (SONG.needsVoices)
@@ -1690,6 +1759,8 @@ class PlayState extends MusicBeatState
 		if (FlxG.keys.justPressed.ONE)
 			endSong();
 		#end
+
+		script.call("updatePost", [elapsed]);
 	}
 
 	function endSong():Void
@@ -1703,6 +1774,8 @@ class PlayState extends MusicBeatState
 			Highscore.saveScore(SONG.song, songScore, storyDifficulty);
 			#end
 		}
+
+		script.call("endSong");
 
 		if (isStoryMode)
 		{
@@ -1790,6 +1863,8 @@ class PlayState extends MusicBeatState
 		var score:Int = 350;
 
 		var daRating:String = "sick";
+
+		script.call("popUpScore", [strumtime]);
 
 		if (noteDiff > Conductor.safeZoneOffset * 0.9)
 		{
@@ -2159,6 +2234,8 @@ class PlayState extends MusicBeatState
 				case 3:
 					boyfriend.playAnim('singRIGHTmiss', true);
 			}
+
+			script.call("noteMiss", [direction]);
 		}
 	}
 
@@ -2235,6 +2312,8 @@ class PlayState extends MusicBeatState
 				notes.remove(note, true);
 				note.destroy();
 			}
+
+			script.call("goodNoteHit", [note]);
 		}
 	}
 
@@ -2329,10 +2408,13 @@ class PlayState extends MusicBeatState
 	override function stepHit()
 	{
 		super.stepHit();
+
 		if (FlxG.sound.music.time > Conductor.songPosition + 20 || FlxG.sound.music.time < Conductor.songPosition - 20)
 		{
 			resyncVocals();
 		}
+
+		script.call("stepHit", [curStep]);
 
 		if (dad.curCharacter == 'spooky' && curStep % 4 == 2)
 		{
@@ -2346,6 +2428,8 @@ class PlayState extends MusicBeatState
 	override function beatHit()
 	{
 		super.beatHit();
+
+		script.call("beatHit", [curBeat]);
 
 		if (generatedMusic)
 		{

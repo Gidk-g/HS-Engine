@@ -46,6 +46,7 @@ import system.Song;
 import system.Options;
 import system.Prefs;
 import system.Windows;
+import system.Hscript;
 
 // paths lmao
 import Paths;
