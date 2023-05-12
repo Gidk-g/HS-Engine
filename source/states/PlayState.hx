@@ -127,6 +127,8 @@ class PlayState extends MusicBeatState
 
 	public var inCutscene:Bool = false;
 
+	public var gfVersion:String = 'gf';
+
 	#if desktop
 	// Discord RPC variables
 	var storyDifficultyText:String = "";
@@ -606,8 +608,6 @@ class PlayState extends MusicBeatState
 		script.interp.variables.set("curStep", curStep);
 
 		script.call('create');
-
-		var gfVersion:String = 'gf';
 
 		switch (curStage)
 		{
