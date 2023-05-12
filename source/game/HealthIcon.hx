@@ -24,6 +24,7 @@ class HealthIcon extends FlxSprite
 		}
 
 		animation.play(char);
+		antialiasing = true;
 		scrollFactor.set();
 	}
 
