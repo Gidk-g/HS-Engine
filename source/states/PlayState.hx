@@ -588,9 +588,9 @@ class PlayState extends MusicBeatState
 			remove(value);
 		});
 
-		script.interp.variables.set("addHxScript", function(script:String)
+		script.interp.variables.set("addHxScript", function(key:String)
 		{
-			script.loadScript(script);
+			script.loadScript(key);
 		});
 
 		script.interp.variables.set("this", this);
