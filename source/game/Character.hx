@@ -221,6 +221,7 @@ typedef CharJson =
 {
 	var animations:Array<AnimStuff>;
 	var spritePath:String;
+	var healthIcon:String;
 	var scale:Float;
 	var flipX:Bool;
 	var antialiasing:Bool;
