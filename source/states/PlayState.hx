@@ -588,16 +588,6 @@ class PlayState extends MusicBeatState
 			remove(value);
 		});
 
-		script.interp.variables.set("createTrail", function(char:Dynamic, graphic:Dynamic, length:Dynamic, delay:Dynamic, alpha:Dynamic, diff:Dynamic, ?addInGroup:Dynamic, ?group:Dynamic)
-		{
-			var trail = new FlxTrail(char, graphic, length, delay, alpha, diff);
-
-			if (addInGroup == true && group != null)
-				group.add(trail);
-			else
-				add(trail);
-		});
-
 		script.interp.variables.set("this", this);
 
 		script.interp.variables.set("boyfriend", boyfriend);
