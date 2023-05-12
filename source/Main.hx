@@ -8,6 +8,7 @@ import openfl.Lib;
 import openfl.display.FPS;
 import openfl.display.Sprite;
 import openfl.events.Event;
+import lime.app.Application;
 
 class Main extends Sprite
 {
@@ -74,6 +75,10 @@ class Main extends Sprite
 
 		#if !mobile
 		addChild(new FPS(10, 3, 0xFFFFFF));
+		#end
+
+        #if windows
+		Windows.darkMode(true);
 		#end
 	}
 }
