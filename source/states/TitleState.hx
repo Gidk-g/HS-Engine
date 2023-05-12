@@ -45,6 +45,9 @@ class TitleState extends MusicBeatState
 
 	override public function create():Void
 	{
+		if (FlxG.save.data.mods == null)
+			FlxG.save.data.mods = true;
+
 		PlayerSettings.init();
 		Highscore.load();
 

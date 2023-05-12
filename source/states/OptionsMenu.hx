@@ -33,7 +33,9 @@ class OptionsMenu extends MusicBeatState
 	var options:Array<OptionCategory> = [
 		new OptionCategory("Preferences",
 		[
+			#if polymod
 			new ModOption(),
+			#end
 		]),
 	];
 

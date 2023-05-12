@@ -19,9 +19,6 @@ class ModLoader
 		if(!FlxG.save.data.mods)
 		    mod_dirs = [];
 
-		if (FlxG.save.data.mods == null)
-			FlxG.save.data.mods = true;
-
         polymod.Polymod.init({
 			modRoot: "mods",
 			dirs: mod_dirs,
