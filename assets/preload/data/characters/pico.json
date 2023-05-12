@@ -103,6 +103,6 @@
 	"antialiasing": true,
 	"spritePath": "Pico_FNF_assetss",
     "singDuration": 4,
-	"flipX": false,
+	"flipX": true,
 	"scale": 1
 }
