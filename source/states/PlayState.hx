@@ -588,11 +588,6 @@ class PlayState extends MusicBeatState
 			remove(value);
 		});
 
-		script.interp.variables.set("setDefaultZoom", function(value:Dynamic)
-		{
-			defaultCamZoom = value;
-		});
-
 		script.interp.variables.set("createTrail", function(char:Dynamic, graphic:Dynamic, length:Dynamic, delay:Dynamic, alpha:Dynamic, diff:Dynamic, ?addInGroup:Dynamic, ?group:Dynamic)
 		{
 			var trail = new FlxTrail(char, graphic, length, delay, alpha, diff);
@@ -617,12 +612,8 @@ class PlayState extends MusicBeatState
 		script.interp.variables.set("SONG", SONG);
 		script.interp.variables.set("curStage", curStage);
 
-		script.interp.variables.set("inCutscene", inCutscene);
 		script.interp.variables.set("curBeat", curBeat);
 		script.interp.variables.set("curStep", curStep);
-
-		script.interp.variables.set("playerStrums", playerStrums);
-		script.interp.variables.set("strumLines", strumLineNotes);
 
 		script.call('create');
 
