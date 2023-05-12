@@ -45,23 +45,11 @@ class TitleState extends MusicBeatState
 
 	override public function create():Void
 	{
-		#if polymod
-		polymod.Polymod.init({modRoot: "mods", dirs: ['introMod']});
-		#end
-
-		PlayerSettings.init();
+        Prefs.init();
 
 		curWacky = FlxG.random.getObject(getIntroTextShit());
 
-		// DEBUG BULLSHIT
-
 		super.create();
-
-		FlxG.save.bind('funkin', 'ninjamuffin99');
-
-		Highscore.load();
-
-        Prefs.init();
 
 		if (FlxG.save.data.weekUnlocked != null)
 		{

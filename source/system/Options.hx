@@ -90,24 +90,24 @@ class Option
 	}
 }
 
-class TestOption extends Option
+class ModOption extends Option
 {
 	public function new()
 	{
 		super();
-		daValue = FlxG.save.data.test;
+		daValue = FlxG.save.data.mods;
 	}
 
 	public override function press():Bool
 	{
-		FlxG.save.data.test = !FlxG.save.data.test;
-		daValue = FlxG.save.data.test;
+		FlxG.save.data.mods = !FlxG.save.data.mods;
+		daValue = FlxG.save.data.mods;
 		display = updateDisplay();
 		return true;
 	}
 
 	private override function updateDisplay():String
 	{
-		return "Test Option";
+		return "Mod Support";
 	}
 }
