@@ -36,6 +36,7 @@
 	],
 	"antialiasing": false,
 	"spritePath": "weeb/bfPixelsDEAD",
+	"healthIcon": "bf-pixel",
     "singDuration": 4,
 	"flipX": true,
 	"scale": 6

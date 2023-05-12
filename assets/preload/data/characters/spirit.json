@@ -58,6 +58,7 @@
 	],
 	"antialiasing": false,
 	"spritePath": "weeb/spirit",
+	"healthIcon": "spirit-pixel",
     "singDuration": 4,
 	"flipX": false,
 	"scale": 6

@@ -58,6 +58,7 @@
 	],
 	"antialiasing": true,
 	"spritePath": "christmas/monsterChristmas",
+	"healthIcon": "monster",
     "singDuration": 4,
 	"flipX": false,
 	"scale": 1

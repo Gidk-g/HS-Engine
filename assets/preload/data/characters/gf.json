@@ -189,6 +189,7 @@
 	],
 	"antialiasing": true,
 	"spritePath": "GF_assets",
+	"healthIcon": "gf",
     "singDuration": 4,
 	"flipX": false,
 	"scale": 1

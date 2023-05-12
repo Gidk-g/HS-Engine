@@ -102,6 +102,7 @@
 	],
 	"antialiasing": true,
 	"spritePath": "Pico_FNF_assetss",
+	"healthIcon": "pico",
     "singDuration": 4,
 	"flipX": true,
 	"scale": 1

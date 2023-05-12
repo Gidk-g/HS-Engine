@@ -173,6 +173,7 @@
 	],
 	"antialiasing": true,
 	"spritePath": "christmas/gfChristmas",
+	"healthIcon": "gf",
     "singDuration": 4,
 	"flipX": false,
 	"scale": 1

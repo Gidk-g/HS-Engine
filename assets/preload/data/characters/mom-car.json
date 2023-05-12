@@ -58,6 +58,7 @@
 	],
 	"antialiasing": true,
 	"spritePath": "momCar",
+	"healthIcon": "mom",
     "singDuration": 4,
 	"flipX": false,
 	"scale": 1

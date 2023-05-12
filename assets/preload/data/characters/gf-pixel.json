@@ -69,6 +69,7 @@
 	],
 	"antialiasing": false,
 	"spritePath": "weeb/gfPixel",
+	"healthIcon": "gf",
     "singDuration": 4,
 	"flipX": false,
 	"scale": 5.99999999999999

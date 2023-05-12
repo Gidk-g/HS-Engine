@@ -201,6 +201,7 @@
 	],
 	"antialiasing": true,
 	"spritePath": "BOYFRIEND",
+	"healthIcon": "bf",
     "singDuration": 4,
 	"flipX": true,
 	"scale": 1

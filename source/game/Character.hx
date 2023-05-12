@@ -21,6 +21,7 @@ class Character extends FlxSprite
 	public var singDuration:Float = 4;
 
 	public var danceIdle:Bool = false;
+	public var healthIcon:String = 'face';
 
 	public function new(x:Float, y:Float, ?character:String = "bf", ?isPlayer:Bool = false)
 	{
@@ -76,6 +77,8 @@ class Character extends FlxSprite
 
 		antialiasing = json.antialiasing;
 		singDuration = json.singDuration;
+
+		healthIcon = json.healthIcon;
 		flipX = json.flipX;
 
 		for (anim in json.animations)

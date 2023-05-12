@@ -69,6 +69,7 @@
 	],
 	"antialiasing": true,
 	"spritePath": "gfCar",
+	"healthIcon": "gf",
     "singDuration": 4,
 	"flipX": false,
 	"scale": 1

@@ -113,6 +113,7 @@
 	],
 	"antialiasing": true,
 	"spritePath": "christmas/bfChristmas",
+	"healthIcon": "bf",
     "singDuration": 4,
 	"flipX": true,
 	"scale": 1

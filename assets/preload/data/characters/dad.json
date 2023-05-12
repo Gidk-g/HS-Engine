@@ -58,6 +58,7 @@
 	],
 	"antialiasing": true,
 	"spritePath": "DADDY_DEAREST",
+	"healthIcon": "dad",
     "singDuration": 6.1,
 	"flipX": false,
 	"scale": 1

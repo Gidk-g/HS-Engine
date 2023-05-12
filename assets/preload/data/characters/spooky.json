@@ -78,6 +78,7 @@
 	],
 	"antialiasing": true,
 	"spritePath": "spooky_kids_assets",
+	"healthIcon": "spooky",
     "singDuration": 4,
 	"flipX": false,
 	"scale": 1

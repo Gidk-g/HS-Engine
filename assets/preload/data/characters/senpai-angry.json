@@ -58,6 +58,7 @@
 	],
 	"antialiasing": false,
 	"spritePath": "weeb/senpai",
+	"healthIcon": "senpai-pixel",
     "singDuration": 4,
 	"flipX": false,
 	"scale": 6
