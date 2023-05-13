@@ -125,7 +125,7 @@ class Paths
 		#if sys
         for (dir in sys.FileSystem.readDirectory('mods'))
 		{
-            return 'mods/$dir/$key';
+            // aaaaaaaa
 		}
 		#end
 	}
