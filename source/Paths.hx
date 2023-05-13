@@ -123,7 +123,7 @@ class Paths
 	inline static public function modFolder(key:String)
 	{
 		#if sys
-        for (dir in sys.FileSystem.readDirectory('mods'))
+        for (dir in sys.FileSystem.readDirectory(Sys.getCwd() + 'mods'))
 		{
             // aaaaaaaa
 		}
