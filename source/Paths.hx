@@ -125,7 +125,10 @@ class Paths
 		#if sys
         for (dir in sys.FileSystem.readDirectory(Sys.getCwd() + 'mods'))
 		{
-			return sys.io.File.getContent(Sys.getCwd() + 'mods/' + dir + '/$key');
+            if (sys.FileSystem.exists(Sys.getCwd() + 'mods/' + dir + '/$key'))
+			{
+				return sys.io.File.getContent(Sys.getCwd() + 'mods/' + dir + '/$key');
+			}
 		}
 		#end
 	}
