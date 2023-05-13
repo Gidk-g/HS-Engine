@@ -127,7 +127,7 @@ class Paths
 		{
             if (sys.FileSystem.exists(Sys.getCwd() + 'mods/' + dir + '/$key'))
 			{
-				return sys.io.File.getContent(Sys.getCwd() + 'mods/' + dir + '/$key');
+				return 'mods/' + dir + '/$key';
 			}
 		}
 		#end
