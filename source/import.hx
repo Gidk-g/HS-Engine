@@ -5,7 +5,6 @@ import states.MainMenuState;
 import states.FreeplayState;
 import states.TitleState;
 import states.MusicBeatState;
-import states.OptionsMenu;
 import states.StoryMenuState;
 
 // substates
@@ -25,7 +24,6 @@ import game.Character;
 import game.Boyfriend;
 import game.BackgroundDancer;
 import game.BackgroundGirls;
-import game.CheckboxThingie;
 import game.DialogueBox;
 import game.MenuCharacter;
 import game.MenuItem;
@@ -43,8 +41,6 @@ import system.Highscore;
 import system.PlayerSettings;
 import system.Section;
 import system.Song;
-import system.Options;
-import system.Prefs;
 import system.Windows;
 import system.Hscript;
 
