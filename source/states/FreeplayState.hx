@@ -38,11 +38,10 @@ class FreeplayState extends MusicBeatState
 		var initSonglist = CoolUtil.coolTextFile(Paths.txt('freeplaySonglist'));
 		var customSongList:Array<String> = [];
 
-		#if polymod
+        #if sys
 		var songListTxt:Array<String> = [];
 		var list:Array<String> = [];
 
-        #if sys
         for (dir in sys.FileSystem.readDirectory(Sys.getCwd() + 'mods'))
         {
             if (sys.FileSystem.exists(Sys.getCwd() + 'mods/' + dir + '/songList.txt'))
@@ -50,7 +49,6 @@ class FreeplayState extends MusicBeatState
 				list = sys.io.File.getContent(Sys.getCwd() + 'mods/' + dir + '/songList.txt').trim().split('\n');
             }
         }
-        #end
 
 		for (i in 0...list.length) 
 			list[i] = list[i].trim();
@@ -70,7 +68,7 @@ class FreeplayState extends MusicBeatState
 			songs.push(new SongMetadata(data[0], Std.parseInt(data[2]), data[1]));
 		}
 
-		#if polymod
+        #if sys
 		for (i in 0...customSongList.length)
 		{
 			var bruh:Array<String> = customSongList[i].split(':');

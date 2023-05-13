@@ -45,15 +45,15 @@ class TitleState extends MusicBeatState
 
 	override public function create():Void
 	{
-		if (FlxG.save.data.mods == null)
-			FlxG.save.data.mods = true;
-
 		PlayerSettings.init();
-		Highscore.load();
 
 		curWacky = FlxG.random.getObject(getIntroTextShit());
 
 		super.create();
+
+		FlxG.save.bind('funkin', 'ninjamuffin99');
+
+		Highscore.load();
 
 		if (FlxG.save.data.weekUnlocked != null)
 		{

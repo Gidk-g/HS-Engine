@@ -89,23 +89,3 @@ class Option
 		return false;
 	}
 }
-
-class ModOption extends Option
-{
-	public function new()
-	{
-		super();
-	}
-
-	public override function press():Bool
-	{
-		FlxG.save.data.mods = !FlxG.save.data.mods;
-		display = updateDisplay();
-		return true;
-	}
-
-	private override function updateDisplay():String
-	{
-		return "Mod Support";
-	}
-}

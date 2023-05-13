@@ -10,7 +10,6 @@ import flixel.graphics.atlas.FlxAtlas;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.graphics.FlxGraphic;
-import polymod.backends.PolymodAssets;
 import flixel.tweens.FlxTween;
 import flixel.FlxSprite;
 import flixel.FlxCamera;
@@ -65,7 +64,6 @@ class Hscript
 		interp.variables.set("Paths", Paths);
 		interp.variables.set("Path", Path);
 		interp.variables.set("Json", Json);
-        interp.variables.set("PolymodAssets", PolymodAssets);
 
 		interp.variables.set("FlxAngle", FlxAngle);
 
