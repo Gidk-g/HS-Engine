@@ -123,11 +123,16 @@ class Paths
 	inline static public function modFolder(key:String)
 	{
 		#if sys
+		var list:Array<String> = [];
+
         for (dir in sys.FileSystem.readDirectory(Sys.getCwd() + 'mods'))
 		{
 			if (sys.FileSystem.exists(Sys.getCwd() + 'mods/' + dir + '/$key'))
 			{
-                // aaaaaaaa
+                if (!list.contains(dir))
+				{
+					list.push(dir);
+				}
 			}
 		}
 		#end
