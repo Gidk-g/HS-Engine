@@ -123,12 +123,9 @@ class Paths
 	inline static public function modFolder(key:String)
 	{
 		#if sys
-        for (dir in sys.FileSystem.readDirectory(Sys.getCwd() + 'mods'))
+        for (dir in sys.FileSystem.readDirectory('mods'))
 		{
-            if (sys.FileSystem.exists(Sys.getCwd() + 'mods/' + dir + '/$key'))
-			{
-				return 'mods/' + dir + '/$key';
-			}
+            return 'mods/$dir/$key';
 		}
 		#end
 	}
