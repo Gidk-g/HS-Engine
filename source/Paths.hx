@@ -120,13 +120,13 @@ class Paths
 		return FlxAtlasFrames.fromSpriteSheetPacker(image(key, library), file('images/$key.txt', library));
 	}
 
-	#if sys
 	inline static public function modFolder(key:String)
 	{
+		#if sys
         for (dir in sys.FileSystem.readDirectory(Sys.getCwd() + 'mods'))
 		{
 			return sys.io.File.getContent(Sys.getCwd() + 'mods/' + dir + '/$key');
 		}
+		#end
 	}
-	#end
 }
