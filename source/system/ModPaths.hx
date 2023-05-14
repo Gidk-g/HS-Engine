@@ -18,7 +18,7 @@ class ModPaths
         {
             if (FileSystem.exists(Sys.getCwd() + 'mods/' + dir + '/$key'))
             {
-                BitmapData.fromFile(Sys.getCwd() + 'mods/' + dir + '/$key');
+                return BitmapData.fromFile(Sys.getCwd() + 'mods/' + dir + '/$key');
             }
         }
         return null;
@@ -32,7 +32,7 @@ class ModPaths
         {
             if (FileSystem.exists(Sys.getCwd() + 'mods/' + dir + '/$key'))
             {
-                Sound.fromFile(Sys.getCwd() + 'mods/' + dir + '/$key');
+                return Sound.fromFile(Sys.getCwd() + 'mods/' + dir + '/$key');
             }
         }
         return null;
@@ -46,7 +46,7 @@ class ModPaths
         {
             if (FileSystem.exists(Sys.getCwd() + 'mods/' + dir + '/$key'))
             {
-			    File.getContent(Sys.getCwd() + 'mods/' + dir + '/$key');
+			    return File.getContent(Sys.getCwd() + 'mods/' + dir + '/$key');
 			}
         }
         return null;
