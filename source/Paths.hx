@@ -92,11 +92,21 @@ class Paths
 
 	inline static public function voices(song:String)
 	{
+		var file = ModPaths.modSound('songs/${song.toLowerCase()}/Voices.$SOUND_EXT');
+		if (file != null)
+		{
+			return file;
+		}
 		return 'songs:assets/songs/${song.toLowerCase()}/Voices.$SOUND_EXT';
 	}
 
 	inline static public function inst(song:String)
 	{
+		var file = ModPaths.modSound('songs/${song.toLowerCase()}/Inst.$SOUND_EXT');
+		if (file != null)
+		{
+			return file;
+		}
 		return 'songs:assets/songs/${song.toLowerCase()}/Inst.$SOUND_EXT';
 	}
 
