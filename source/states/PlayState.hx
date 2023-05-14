@@ -580,6 +580,13 @@ class PlayState extends MusicBeatState
 			script.loadScript("data/charts/" + SONG.song.toLowerCase() + "/script");
 		}
 
+		#if sys
+		if (sys.FileSystem.exists(ModPaths.modTxt("data/charts/" + SONG.song.toLowerCase() + "/script")))
+		{
+			script.loadScript("data/charts/" + SONG.song.toLowerCase() + "/script");
+		}
+		#end
+
 		script.interp.variables.set("add", function(value:Dynamic)
 		{
 			add(value);

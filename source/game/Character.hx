@@ -72,6 +72,10 @@ class Character extends FlxSprite
 
 		if (Assets.exists(Paths.file("images/" + json.spritePath + ".txt", TEXT)))
 			frames = Paths.getPackerAtlas(json.spritePath);
+		#if sys
+		if (sys.FileSystem.exists(ModPaths.modTxt("images/" + json.spritePath + ".txt")))
+			frames = Paths.getPackerAtlas(json.spritePath);
+		#end
         else
 			frames = Paths.getSparrowAtlas(json.spritePath);
 

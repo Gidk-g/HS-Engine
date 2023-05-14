@@ -54,9 +54,13 @@ class Hscript
 		interp.variables.set("FlxGraphic", FlxGraphic);
 		interp.variables.set("FlxTween", FlxTween);
 		interp.variables.set("FlxCamera", FlxCamera);
-		interp.variables.set("File", File);
 		interp.variables.set("Assets", Assets);
+
+		#if sys
+		interp.variables.set("File", File);
 		interp.variables.set("FileSystem", FileSystem);
+		#end
+
 		interp.variables.set("PlayState", PlayState);
 		interp.variables.set("FlxGroup", FlxGroup);
 		interp.variables.set("FlxTypedGroup", FlxTypedGroup);
@@ -100,6 +104,9 @@ class Hscript
 	public function loadScript(key:String)
 	{
 		script = parser.parseString(Assets.getText(Paths.hx(key)));
+        #if sys
+		script = parser.parseString(ModPaths.modTxt(key + '.hx'));
+		#end
 		interp.execute(script);
 	}
 }
