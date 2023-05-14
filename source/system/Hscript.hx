@@ -65,6 +65,7 @@ class Hscript
 		interp.variables.set("FlxGroup", FlxGroup);
 		interp.variables.set("FlxTypedGroup", FlxTypedGroup);
 		interp.variables.set("CoolUtil", CoolUtil);
+		interp.variables.set("ModPaths", ModPaths);
 		interp.variables.set("Paths", Paths);
 		interp.variables.set("Path", Path);
 		interp.variables.set("Json", Json);
