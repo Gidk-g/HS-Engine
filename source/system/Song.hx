@@ -40,7 +40,7 @@ class Song
 
 	public static function loadFromJson(jsonInput:String, ?folder:String):SwagSong
 	{
-		var rawJson;
+		var rawJson:String;
 
 		rawJson = Assets.getText(Paths.json("charts/" + folder.toLowerCase() + '/' + jsonInput.toLowerCase())).trim();
 
