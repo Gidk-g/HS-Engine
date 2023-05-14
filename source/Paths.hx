@@ -142,20 +142,22 @@ class Paths
 
 	inline static public function getSparrowAtlas(key:String, ?library:String)
 	{
-		var file = FlxAtlasFrames.fromSparrow(image(key), ModPaths.modTxt('images/$key.xml'));
-		if (file != null)
+		var filePng = ModPaths.modImage('images/$key.png');
+		var fileXml = ModPaths.modTxt('images/$key.xml');
+		if (filePng != null && fileXml != null)
 		{
-			return file;
+			return FlxAtlasFrames.fromSparrow(filePng, fileXml);
 		}
 		return FlxAtlasFrames.fromSparrow(image(key, library), file('images/$key.xml', library));
 	}
 
 	inline static public function getPackerAtlas(key:String, ?library:String)
 	{
-		var file = FlxAtlasFrames.fromSparrow(image(key), ModPaths.modTxt('images/$key.txt'));
-		if (file != null)
+		var filePng = ModPaths.modImage('images/$key.png');
+		var fileTxt = ModPaths.modTxt('images/$key.txt');
+		if (filePng != null && fileTxt != null)
 		{
-			return file;
+			return FlxAtlasFrames.fromSparrow(filePng, fileTxt);
 		}
 		return FlxAtlasFrames.fromSpriteSheetPacker(image(key, library), file('images/$key.txt', library));
 	}
