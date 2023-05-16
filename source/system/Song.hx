@@ -44,10 +44,6 @@ class Song
 
 		rawJson = Assets.getText(Paths.json("charts/" + folder.toLowerCase() + '/' + jsonInput.toLowerCase())).trim();
 
-        #if sys
-		rawJson = ModPaths.modTxt("data/charts/" + folder.toLowerCase() + '/' + jsonInput.toLowerCase() + '.json').trim();
-		#end
-
 		while (!rawJson.endsWith("}"))
 		{
 			rawJson = rawJson.substr(0, rawJson.length - 1);

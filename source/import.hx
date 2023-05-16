@@ -43,7 +43,6 @@ import system.Section;
 import system.Song;
 import system.Windows;
 import system.Hscript;
-import system.ModPaths;
 
 // paths lmao
 import Paths;

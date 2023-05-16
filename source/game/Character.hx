@@ -60,42 +60,18 @@ class Character extends FlxSprite
 
     public function loadCharacterJson()
 	{
-		var path:String;
-
-		path = Paths.json("characters/" + curCharacter);
-
-        #if sys
-		path = ModPaths.modTxt("characters/" + curCharacter);
-		#end
+		var path:String = Paths.json("characters/" + curCharacter);
 
 		if (Assets.exists(path))
 		{
 			path = Paths.json("characters/" + curCharacter);
 		}
 
-		#if sys
-		if (sys.FileSystem.exists(path))
-		{
-			path = ModPaths.modTxt("characters/" + curCharacter);
-		}
-		#end
-
-		var rawJson;
-
-        rawJson = Assets.getText(path);
-
-        #if sys
-        rawJson = sys.io.File.getContent(path);
-		#end
-
+		var rawJson = Assets.getText(path);
 		var json:CharJson = cast Json.parse(rawJson);
 
 		if (Assets.exists(Paths.file("images/" + json.spritePath + ".txt", TEXT)))
 			frames = Paths.getPackerAtlas(json.spritePath);
-		#if sys
-		if (sys.FileSystem.exists(ModPaths.modTxt("images/" + json.spritePath + ".txt")))
-			frames = Paths.getPackerAtlas(json.spritePath);
-		#end
         else
 			frames = Paths.getSparrowAtlas(json.spritePath);
 

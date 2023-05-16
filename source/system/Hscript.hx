@@ -65,7 +65,6 @@ class Hscript
 		interp.variables.set("FlxGroup", FlxGroup);
 		interp.variables.set("FlxTypedGroup", FlxTypedGroup);
 		interp.variables.set("CoolUtil", CoolUtil);
-		interp.variables.set("ModPaths", ModPaths);
 		interp.variables.set("Paths", Paths);
 		interp.variables.set("Path", Path);
 		interp.variables.set("Json", Json);
@@ -105,9 +104,6 @@ class Hscript
 	public function loadScript(key:String)
 	{
 		script = parser.parseString(Assets.getText(Paths.hx(key)));
-        #if sys
-		script = parser.parseString(ModPaths.modTxt(key + '.hx'));
-		#end
 		interp.execute(script);
 	}
 }

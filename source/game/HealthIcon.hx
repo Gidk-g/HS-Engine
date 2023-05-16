@@ -18,10 +18,6 @@ class HealthIcon extends FlxSprite
 		{
 			if (Assets.exists(Paths.image('icons/icon-$char')))
 				loadGraphic(Paths.image('icons/icon-$char'), true, 150, 150);
-			#if sys
-			else if (sys.FileSystem.exists(ModPaths.modImage('images/icons/icon-$char')))
-				loadGraphic(ModPaths.modImage('images/icons/icon-$char'), true, 150, 150);
-			#end
 			else
 				loadGraphic(Paths.image("icons/icon-face"), true, 150, 150);
 			animation.add(char, [0, 1], 0, false, isPlayer);

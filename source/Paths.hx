@@ -77,11 +77,6 @@ class Paths
 
 	static public function sound(key:String, ?library:String)
 	{
-		var file = ModPaths.modSound('sounds/$key.$SOUND_EXT');
-		if (file != null)
-		{
-			return file;
-		}
 		return getPath('sounds/$key.$SOUND_EXT', SOUND, library);
 	}
 
@@ -92,73 +87,36 @@ class Paths
 
 	inline static public function music(key:String, ?library:String)
 	{
-		var file = ModPaths.modSound('music/$key.$SOUND_EXT');
-		if (file != null)
-		{
-			return file;
-		}
 		return getPath('music/$key.$SOUND_EXT', MUSIC, library);
 	}
 
 	inline static public function voices(song:String)
 	{
-		var file = ModPaths.modSound('songs/${song.toLowerCase()}/Voices.$SOUND_EXT');
-		if (file != null)
-		{
-			return file;
-		}
 		return 'songs:assets/songs/${song.toLowerCase()}/Voices.$SOUND_EXT';
 	}
 
 	inline static public function inst(song:String)
 	{
-		var file = ModPaths.modSound('songs/${song.toLowerCase()}/Inst.$SOUND_EXT');
-		if (file != null)
-		{
-			return file;
-		}
 		return 'songs:assets/songs/${song.toLowerCase()}/Inst.$SOUND_EXT';
 	}
 
 	inline static public function image(key:String, ?library:String)
 	{
-		var file = ModPaths.modImage('images/$key.png');
-		if (file != null)
-		{
-			return file;
-		}
 		return getPath('images/$key.png', IMAGE, library);
 	}
 
 	inline static public function font(key:String)
 	{
-		var file = ModPaths.modTxt('fonts/$key');
-		if (file != null)
-		{
-			return file;
-		}
 		return 'assets/fonts/$key';
 	}
 
 	inline static public function getSparrowAtlas(key:String, ?library:String)
 	{
-		var filePng = ModPaths.modImage('images/$key.png');
-		var fileXml = ModPaths.modTxt('images/$key.xml');
-		if (filePng != null && fileXml != null)
-		{
-			return FlxAtlasFrames.fromSparrow(filePng, fileXml);
-		}
 		return FlxAtlasFrames.fromSparrow(image(key, library), file('images/$key.xml', library));
 	}
 
 	inline static public function getPackerAtlas(key:String, ?library:String)
 	{
-		var filePng = ModPaths.modImage('images/$key.png');
-		var fileTxt = ModPaths.modTxt('images/$key.txt');
-		if (filePng != null && fileTxt != null)
-		{
-			return FlxAtlasFrames.fromSparrow(filePng, fileTxt);
-		}
 		return FlxAtlasFrames.fromSpriteSheetPacker(image(key, library), file('images/$key.txt', library));
 	}
 }
