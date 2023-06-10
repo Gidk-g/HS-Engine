@@ -129,6 +129,8 @@ class PlayState extends MusicBeatState
 
 	public var gfVersion:String = 'gf';
 
+	public var songHits:Int = 0;
+
 	#if desktop
 	// Discord RPC variables
 	var storyDifficultyText:String = "";
@@ -1373,6 +1375,20 @@ class PlayState extends MusicBeatState
 		vocals.play();
 	}
 
+    function calculateAccuracy():Float {
+		var ratingPercent = songScore / ((songHits + songMisses) * 350);
+
+		if(!Math.isNaN(ratingPercent) && ratingPercent < 0)
+			ratingPercent = 0;
+
+		var rPercent:Float = FlxMath.roundDecimal(ratingPercent * 100, 2);
+
+		if (Math.isNaN(rPercent))
+			return 0;
+		else
+			return rPercent;
+    }
+
 	private var paused:Bool = false;
 	var startedCountdown:Bool = false;
 	var canPause:Bool = true;
@@ -1411,7 +1427,7 @@ class PlayState extends MusicBeatState
 
 		super.update(elapsed);
 
-		scoreTxt.text = "Score:" + songScore + " / Misses:" + songMisses;
+		scoreTxt.text = "Score:" + songScore + " / Misses:" + songMisses + " / Accuracy:" + calculateAccuracy() + "%";
 
 		if (FlxG.keys.justPressed.ENTER && startedCountdown && canPause)
 		{
@@ -2256,6 +2272,7 @@ class PlayState extends MusicBeatState
 			if (!note.isSustainNote)
 			{
 				popUpScore(note.strumTime);
+				++songHits;
 				combo += 1;
 			}
 
