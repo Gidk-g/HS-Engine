@@ -140,8 +140,6 @@ class PlayState extends MusicBeatState
 	var detailsPausedText:String = "";
 	#end
 
-	public var script = new Hscript();
-
 	override public function create()
 	{
 		if (FlxG.sound.music != null)
@@ -577,40 +575,6 @@ class PlayState extends MusicBeatState
 		          }
               }
 
-		if (Assets.exists(Paths.hx("data/charts/" + SONG.song.toLowerCase() + "/script")))
-		{
-			script.loadScript("data/charts/" + SONG.song.toLowerCase() + "/script");
-		}
-
-		script.interp.variables.set("add", function(value:Dynamic)
-		{
-			add(value);
-		});
-
-		script.interp.variables.set("remove", function(value:Dynamic)
-		{
-			remove(value);
-		});
-
-		script.interp.variables.set("this", this);
-
-		script.interp.variables.set("boyfriend", boyfriend);
-		script.interp.variables.set("dad", dad);
-		script.interp.variables.set("gf", gf);
-
-		script.interp.variables.set("camHUD", camHUD);
-		script.interp.variables.set("camGame", camGame);
-
-		script.interp.variables.set("defaultCamZoom", defaultCamZoom);
-		script.interp.variables.set("curSong", SONG.song);
-		script.interp.variables.set("SONG", SONG);
-		script.interp.variables.set("curStage", curStage);
-
-		script.interp.variables.set("curBeat", curBeat);
-		script.interp.variables.set("curStep", curStep);
-
-		script.call('create');
-
 		switch (curStage)
 		{
 			case 'limo':
@@ -855,8 +819,6 @@ class PlayState extends MusicBeatState
 		}
 
 		super.create();
-
-		script.call("createPost");
 	}
 
 	function schoolIntro(?dialogueBox:DialogueBox):Void
@@ -958,8 +920,6 @@ class PlayState extends MusicBeatState
 
 		Conductor.songPosition = 0;
 		Conductor.songPosition -= Conductor.crochet * 5;
-
-		script.call("startCountdown");
 
 		var swagCounter:Int = 0;
 
@@ -1068,8 +1028,6 @@ class PlayState extends MusicBeatState
 			FlxG.sound.playMusic(Paths.inst(PlayState.SONG.song), 1, false);
 		FlxG.sound.music.onComplete = endSong;
 		vocals.play();
-
-		script.call("startSong");
 
 		#if desktop
 		// Song duration in a float, useful for the time left feature
@@ -1279,8 +1237,6 @@ class PlayState extends MusicBeatState
 			babyArrow.x += ((FlxG.width / 2) * player);
 
 			strumLineNotes.add(babyArrow);
-
-			script.call("generateStaticArrows", [player]);
 		}
 	}
 
@@ -1422,8 +1378,6 @@ class PlayState extends MusicBeatState
 				}
 				// phillyCityLights.members[curLight].alpha -= (Conductor.crochet / 1000) * FlxG.elapsed;
 		}
-
-		script.call("update", [elapsed]);
 
 		super.update(elapsed);
 
@@ -1717,8 +1671,6 @@ class PlayState extends MusicBeatState
 							dad.playAnim('singRIGHT' + altAnim, true);
 					}
 
-					script.call("opponentNoteHit");
-
 					dad.holdTimer = 0;
 
 					if (SONG.needsVoices)
@@ -1756,8 +1708,6 @@ class PlayState extends MusicBeatState
 		if (FlxG.keys.justPressed.ONE)
 			endSong();
 		#end
-
-		script.call("updatePost", [elapsed]);
 	}
 
 	function endSong():Void
@@ -1771,8 +1721,6 @@ class PlayState extends MusicBeatState
 			Highscore.saveScore(SONG.song, songScore, storyDifficulty);
 			#end
 		}
-
-		script.call("endSong");
 
 		if (isStoryMode)
 		{
@@ -1860,8 +1808,6 @@ class PlayState extends MusicBeatState
 		var score:Int = 350;
 
 		var daRating:String = "sick";
-
-		script.call("popUpScore", [strumtime]);
 
 		if (noteDiff > Conductor.safeZoneOffset * 0.9)
 		{
@@ -2231,8 +2177,6 @@ class PlayState extends MusicBeatState
 				case 3:
 					boyfriend.playAnim('singRIGHTmiss', true);
 			}
-
-			script.call("noteMiss", [direction]);
 		}
 	}
 
@@ -2310,8 +2254,6 @@ class PlayState extends MusicBeatState
 				notes.remove(note, true);
 				note.destroy();
 			}
-
-			script.call("goodNoteHit", [note]);
 		}
 	}
 
@@ -2412,8 +2354,6 @@ class PlayState extends MusicBeatState
 			resyncVocals();
 		}
 
-		script.call("stepHit", [curStep]);
-
 		if (dad.curCharacter == 'spooky' && curStep % 4 == 2)
 		{
 			// dad.dance();
@@ -2426,8 +2366,6 @@ class PlayState extends MusicBeatState
 	override function beatHit()
 	{
 		super.beatHit();
-
-		script.call("beatHit", [curBeat]);
 
 		if (generatedMusic)
 		{

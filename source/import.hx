@@ -42,7 +42,10 @@ import system.PlayerSettings;
 import system.Section;
 import system.Song;
 import system.Windows;
-import system.Hscript;
+import system.ModSupport;
+import system.ModSupport.ModPaths;
+import system.ModSupport.ModConfig;
+import system.ModSupport.ModScripts;
 
 // paths lmao
 import Paths;
