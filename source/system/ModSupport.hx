@@ -13,7 +13,7 @@ class ModSupport {
     inline static public function loadMods():Void {
         modConfigs = [];
 
-        for (modFolder in FileSystem.readDirectory(modDirectory)) {
+        for (modFolder in FileSystem.readDirectory('mods')) {
             var modDataPath:String = modDirectory + modFolder + "/mod.json";
             if (FileSystem.exists(modDataPath)) {
                 try {
@@ -130,7 +130,7 @@ class ModPaths {
     }
 
     inline static public function getModFolder():String {
-        var modFolders = FileSystem.readDirectory(modDirectory);
+        var modFolders = FileSystem.readDirectory('mods');
         if (modFolders.length > 0) {
             return modFolders[0];
         }
