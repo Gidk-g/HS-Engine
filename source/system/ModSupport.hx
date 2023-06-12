@@ -298,25 +298,27 @@ class EventHandler {
         return false;
     }
 
-    inline static public function fireEvent(eventName:String, eventType:String, args:Array<Dynamic>):Void {
+    static public function fireEvent(eventName:String, eventType:String, args:Array<Dynamic>):Void {
+        var shouldReturn:Bool = false;
         if (eventHandlers.exists(eventType)) {
             var handlers:StringMap<Array<Dynamic->Void>> = eventHandlers.get(eventType);
             if (handlers.exists(eventName)) {
                 var eventHandlerList:Array<Dynamic->Void> = handlers.get(eventName);
                 var condition:Dynamic->Bool = eventConditions.get(eventType).get(eventName);
                 if (condition != null && !condition(args)) {
-                    return;
-                }
-                var priorities:StringMap<Int> = eventPriorities.get(eventType);
-                if (priorities != null) {
-                    eventHandlerList.sort(function(a, b) {
-                        var priorityA:Int = priorities.get(eventName);
-                        var priorityB:Int = priorities.get(eventName);
-                        return priorityB - priorityA;
-                    });
-                }
-                for (handler in eventHandlerList) {
-                    handler(args);
+                    shouldReturn = true;
+                } else {
+                    var priorities:StringMap<Int> = eventPriorities.get(eventType);
+                    if (priorities != null) {
+                        eventHandlerList.sort(function(a, b) {
+                            var priorityA:Int = priorities.get(eventName);
+                            var priorityB:Int = priorities.get(eventName);
+                            return priorityB - priorityA;
+                        });
+                    }
+                    for (handler in eventHandlerList) {
+                        handler(args);
+                    }
                 }
             } else {
                 trace("Event handler not found for event:", eventName);
@@ -324,6 +326,7 @@ class EventHandler {
         } else {
             trace("Event type not found:", eventType);
         }
+        if (shouldReturn) return;
         for (handler in globalEventHandlers) {
             handler(args);
         }
