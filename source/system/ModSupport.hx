@@ -298,7 +298,7 @@ class EventHandler {
         return false;
     }
 
-    static public function fireEvent(eventName:String, eventType:String, args:Array<Dynamic>):Void {
+    inline static public function fireEvent(eventName:String, eventType:String, args:Array<Dynamic>):Void {
         var shouldReturn:Bool = false;
         if (eventHandlers.exists(eventType)) {
             var handlers:StringMap<Array<Dynamic->Void>> = eventHandlers.get(eventType);
