@@ -381,5 +381,9 @@ class EventHandler {
         }
         return eventTypes;
     }
+
+    inline static public function triggerEvent(eventName:String, eventType:String, args:Array<Dynamic>):Void {
+        fireEvent(eventName, eventType, args);
+    }
 }
 #end
