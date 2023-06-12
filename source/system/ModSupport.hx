@@ -112,7 +112,7 @@ class ModPaths {
 
     inline static public function sound(path:String):String {
         var modFolder:String = getModFolder();
-        var fullPath:String = modDirectory + modFolder + "/sounds/" + path + ".ogg";
+        var fullPath:String = modDirectory + modFolder + "/" + path + ".ogg";
         if (FileSystem.exists(fullPath)) {
             return fullPath;
         }
@@ -128,6 +128,18 @@ class ModPaths {
         }
         trace("Data file not found:", fullPath);
         return "";
+    }
+
+    inline static public function getSparrowAtlas(path:String):FlxAtlasFrames {
+        var modFolder:String = getModFolder();
+        var pngPath:String = modDirectory + modFolder + "/images/" + path + ".png";
+        var xmlPath:String = modDirectory + modFolder + "/images/" + path + ".xml";
+        var atlasFrames:FlxAtlasFrames = FlxAtlasFrames.fromSparrow(pngPath, xmlPath);
+        if (atlasFrames != null) {
+            return atlasFrames;
+        }
+        trace("Sprite file not found:", atlasFrames);
+        return null;
     }
 
     inline static public function modFolder(path:String):String {
