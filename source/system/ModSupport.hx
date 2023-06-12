@@ -46,28 +46,17 @@ class ModConfig {
     var version:String;
     var author:String;
     var description:String;
-    var icon:String;
-    var colors:Array<{r:Int, g:Int, b:Int}>;
-
-    public function new() {
-        colors = [];
-    }
 
     public function printInfo():Void {
         trace("Mod Name:", name);
         trace("Version:", version);
         trace("Author:", author);
         trace("Description:", description);
-        trace("Icon:", icon);
-        for (color in colors) {
-            trace("Colors:", color.r, color.g, color.b);
-        }
     }
 
-    public static function fromDynamic(data:Dynamic):ModConfig {
+    public static function fromDynamic(data:Dynamic):ModJson {
         if (!Reflect.hasField(data, "name") || !Reflect.hasField(data, "version") ||
-            !Reflect.hasField(data, "author") || !Reflect.hasField(data, "description") ||
-            !Reflect.hasField(data, "icon") || !Reflect.hasField(data, "colors")) {
+            !Reflect.hasField(data, "author") || !Reflect.hasField(data, "description")) {
             trace("Invalid mod data format");
             return null;
         }
@@ -77,16 +66,6 @@ class ModConfig {
         modConfig.version = data.version;
         modConfig.author = data.author;
         modConfig.description = data.description;
-        modConfig.icon = data.icon;
-        modConfig.colors = [];
-        for (i in 0...data.colors.length) {
-            var colorData = data.colors[i];
-            if (Reflect.hasField(colorData, "r") && Reflect.hasField(colorData, "g") && Reflect.hasField(colorData, "b")) {
-                modConfig.colors.push({r: colorData.r, g: colorData.g, b: colorData.b});
-            } else {
-                trace("Invalid color data format");
-            }
-        }
         return modConfig;
     }
 
@@ -126,6 +105,16 @@ class ModPaths {
             return fullPath;
         }
         trace("Data file not found:", fullPath);
+        return "";
+    }
+
+    inline static public function modFolder(path:String):String {
+        var modFolder:String = getModFolder();
+        var fullPath:String = modDirectory + modFolder + "/" + path;
+        if (FileSystem.exists(fullPath)) {
+            return fullPath;
+        }
+        trace("Image not found:", fullPath);
         return "";
     }
 
@@ -182,4 +171,11 @@ class ModScripts {
         }
         return null;
     }
+}
+
+typedef ModJson = {
+    var name:String;
+    var version:String;
+    var author:String;
+    var description:String;
 }
