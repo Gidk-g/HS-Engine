@@ -90,9 +90,13 @@ class ModConfig {
         return modConfig;
     }
 
-    public static function parseJson(jsonData:String):ModConfig {
-        var data:Dynamic = Json.parse(jsonData);
-        return ModConfig.fromDynamic(data);
+    public static function parseJson(json:String):ModConfig {
+        var jsonData:Dynamic = Json.parse(json);
+        if (jsonData == null) {
+            trace("Invalid JSON format");
+            return null;
+        }
+        return ModConfig.fromDynamic(jsonData);
     }
 }
 
