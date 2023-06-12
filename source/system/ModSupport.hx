@@ -42,10 +42,14 @@ class ModSupport {
 }
 
 class ModConfig {
-    var name:String;
-    var version:String;
-    var author:String;
-    var description:String;
+    public var name:String;
+    public var version:String;
+    public var author:String;
+    public var description:String;
+
+    public function new() {
+        // ModConfig
+    }
 
     public function printInfo():Void {
         trace("Mod Name:", name);
@@ -54,7 +58,7 @@ class ModConfig {
         trace("Description:", description);
     }
 
-    public static function fromDynamic(data:Dynamic):ModJson {
+    public static function fromDynamic(data:Dynamic):ModConfig {
         if (!Reflect.hasField(data, "name") || !Reflect.hasField(data, "version") ||
             !Reflect.hasField(data, "author") || !Reflect.hasField(data, "description")) {
             trace("Invalid mod data format");
@@ -171,11 +175,4 @@ class ModScripts {
         }
         return null;
     }
-}
-
-typedef ModJson = {
-    var name:String;
-    var version:String;
-    var author:String;
-    var description:String;
 }
