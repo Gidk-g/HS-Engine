@@ -193,6 +193,7 @@ class ModScripts {
 		interp.variables.set("FlxCamera", FlxCamera);
 		interp.variables.set("Assets", Assets);
 		interp.variables.set("File", File);
+		interp.variables.set("Windows", Windows);
 		interp.variables.set("FileSystem", FileSystem);
 		interp.variables.set("PlayState", PlayState);
 		interp.variables.set("FlxGroup", FlxGroup);
