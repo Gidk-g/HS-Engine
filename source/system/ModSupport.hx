@@ -118,7 +118,7 @@ class ModPaths {
         if (FileSystem.exists(fullPath)) {
             return fullPath;
         }
-        trace("Image not found:", fullPath);
+        trace("Mod file not found:", fullPath);
         return "";
     }
 
