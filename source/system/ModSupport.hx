@@ -6,10 +6,11 @@ import sys.io.File;
 import sys.FileSystem;
 import hscript.Parser;
 import hscript.Interp;
+import haxe.ds.StringMap;
 
 class ModSupport {
-    static var modDirectory:String = "mods/";
-    static var modConfigs:Array<ModConfig>;
+    public static var modDirectory:String = "mods/";
+    public static var modConfigs:Array<ModConfig>;
 
     inline static public function loadMods():Void {
         modConfigs = [];
@@ -81,7 +82,7 @@ class ModConfig {
 }
 
 class ModPaths {
-    static var modDirectory:String = "mods/";
+    public static var modDirectory:String = "mods/";
 
     inline static public function image(path:String):String {
         var modFolder:String = getModFolder();
@@ -134,13 +135,13 @@ class ModPaths {
 }
 
 class ModScripts {
-    static var modDirectory:String = "mods/";
+    public static var modDirectory:String = "mods/";
 
-	static var script:hscript.Expr;
-	static var interp = new Interp();
-	static var parser = new Parser();
+	public static var script:hscript.Expr;
+	public static var interp = new Interp();
+	public static var parser = new Parser();
 
-    static function executeModScript(path:String):Void {
+    inline static public function executeModScript(path:String):Void {
         var modFolder:String = ModPaths.getModFolder();
         var scriptFullPath:String = modDirectory + modFolder + "/" + path + ".hx";
 
@@ -152,7 +153,7 @@ class ModScripts {
         }
     }
 
-    static function executeScript(path:String) {
+    inline static public function executeScript(path:String) {
         parser.allowTypes = true;
         parser.allowJSON = true;
         parser.allowMetadata = true;
@@ -160,21 +161,75 @@ class ModScripts {
         interp.variables.set("File", File);
         interp.variables.set("FileSystem", FileSystem);
 
+        interp.variables.set("ModPaths", ModPaths);
+        interp.variables.set("EventHandler", EventHandler);
+
         script = parser.parseString(path);
 		interp.execute(script);
     }
 
-    static function callFunction(funcName:String, args:Array<Dynamic>):Dynamic {
+    inline static public function callFunction(funcName:String, args:Array<Dynamic>):Dynamic {
         if (args == null)
             args = [];
         try {
             var func:Dynamic = interp.variables.get(funcName);
             if (func != null && Reflect.isFunction(func))
                 return Reflect.callMethod(null, func, args);
-        } catch (e:Dynamic) {
-            trace(e);
+        } catch (error:Dynamic) {
+            trace(error);
         }
         return null;
+    }
+}
+
+class EventHandler {
+    public static var eventHandlers:StringMap<StringMap<Array<Dynamic->Void>>>;
+
+    inline static public function init():Void {
+        eventHandlers = new StringMap<StringMap<Array<Dynamic->Void>>>();
+    }
+
+    inline static public function registerEventHandler(eventName:String, eventType:String, handler:Dynamic->Void):Void {
+        if (!eventHandlers.exists(eventType)) {
+            eventHandlers.set(eventType, new StringMap<Array<Dynamic->Void>>());
+        }
+        var handlers:StringMap<Array<Dynamic->Void>> = eventHandlers.get(eventType);
+        if (!handlers.exists(eventName)) {
+            handlers.set(eventName, new Array<Dynamic->Void>());
+        }
+        var eventHandlerList:Array<Dynamic->Void> = handlers.get(eventName);
+        eventHandlerList.push(handler);
+    }
+
+    inline static public function unregisterEventHandler(eventName:String, eventType:String, handler:Dynamic->Void):Bool {
+        if (eventHandlers.exists(eventType)) {
+            var handlers:StringMap<Array<Dynamic->Void>> = eventHandlers.get(eventType);
+            if (handlers.exists(eventName)) {
+                var eventHandlerList:Array<Dynamic->Void> = handlers.get(eventName);
+                var index:Int = eventHandlerList.indexOf(handler);
+                if (index != -1) {
+                    eventHandlerList.splice(index, 1);
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    inline static public function fireEvent(eventName:String, eventType:String, args:Array<Dynamic>):Void {
+        if (eventHandlers.exists(eventType)) {
+            var handlers:StringMap<Array<Dynamic->Void>> = eventHandlers.get(eventType);
+            if (handlers.exists(eventName)) {
+                var eventHandlerList:Array<Dynamic->Void> = handlers.get(eventName);
+                for (handler in eventHandlerList) {
+                    handler(args);
+                }
+            } else {
+                trace("Event handler not found for event:", eventName);
+            }
+        } else {
+            trace("Event type not found:", eventType);
+        }
     }
 }
 #end
