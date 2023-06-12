@@ -82,7 +82,6 @@ class ModConfig {
             trace("Invalid mod data format");
             return null;
         }
-
         var modConfig:ModConfig = new ModConfig();
         modConfig.name = data.name;
         modConfig.version = data.version;
