@@ -2,11 +2,27 @@ package system;
 
 #if sys
 import haxe.Json;
-import sys.io.File;
-import sys.FileSystem;
+import flixel.FlxG;
+import haxe.io.Path;
+import haxe.ds.StringMap;
+import sys.thread.Thread;
+import flixel.math.FlxAngle;
+import flixel.group.FlxGroup;
+import flixel.graphics.atlas.FlxAtlas;
+import flixel.graphics.frames.FlxAtlasFrames;
+import flixel.group.FlxGroup.FlxTypedGroup;
+import flixel.graphics.FlxGraphic;
+import flixel.tweens.FlxTween;
+import flixel.FlxSprite;
+import flixel.FlxCamera;
+import flixel.text.FlxText;
+import flixel.system.FlxSound;
+import flixel.math.FlxMath;
+import lime.utils.Assets;
 import hscript.Parser;
 import hscript.Interp;
-import haxe.ds.StringMap;
+import sys.FileSystem;
+import sys.io.File;
 
 class ModSupport {
     public static var modDirectory:String = "mods/";
@@ -158,9 +174,41 @@ class ModScripts {
         parser.allowJSON = true;
         parser.allowMetadata = true;
 
-        interp.variables.set("File", File);
-        interp.variables.set("FileSystem", FileSystem);
-
+		interp.variables.set("Int", Int);
+		interp.variables.set("String", String);
+		interp.variables.set("Float", Float);
+		interp.variables.set("Array", Array);
+		interp.variables.set("Bool", Bool);
+		interp.variables.set("Dynamic", Dynamic);
+		interp.variables.set("Math", Math);
+		interp.variables.set("FlxMath", FlxMath);
+		interp.variables.set("Std", Std);
+		interp.variables.set("StringTools", StringTools);
+		interp.variables.set("FlxG", FlxG);
+		interp.variables.set("FlxSound", FlxSound);
+		interp.variables.set("FlxSprite", FlxSprite);
+		interp.variables.set("FlxText", FlxText);
+		interp.variables.set("FlxGraphic", FlxGraphic);
+		interp.variables.set("FlxTween", FlxTween);
+		interp.variables.set("FlxCamera", FlxCamera);
+		interp.variables.set("Assets", Assets);
+		interp.variables.set("File", File);
+		interp.variables.set("FileSystem", FileSystem);
+		interp.variables.set("PlayState", PlayState);
+		interp.variables.set("FlxGroup", FlxGroup);
+		interp.variables.set("FlxTypedGroup", FlxTypedGroup);
+		interp.variables.set("CoolUtil", CoolUtil);
+		interp.variables.set("Paths", Paths);
+		interp.variables.set("Path", Path);
+		interp.variables.set("Json", Json);
+		interp.variables.set("FlxAngle", FlxAngle);
+		interp.variables.set("FlxAtlasFrames", FlxAtlasFrames);
+		interp.variables.set("FlxAtlas", FlxAtlas);
+		interp.variables.set("Character", Character);
+		interp.variables.set("Boyfriend", Boyfriend);
+		interp.variables.set("Song", Song);
+		interp.variables.set("Conductor", Conductor);
+		interp.variables.set("Note", Note);
         interp.variables.set("ModPaths", ModPaths);
         interp.variables.set("EventHandler", EventHandler);
 
