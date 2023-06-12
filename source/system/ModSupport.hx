@@ -1,5 +1,6 @@
 package system;
 
+#if sys
 import haxe.Json;
 import sys.io.File;
 import sys.FileSystem;
@@ -176,3 +177,4 @@ class ModScripts {
         return null;
     }
 }
+#end
