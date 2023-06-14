@@ -77,7 +77,10 @@ class Paths
 
 	static public function sound(key:String, ?library:String)
 	{
-		return getPath('sounds/$key.$SOUND_EXT', SOUND, library);
+		if (sys.FileSystem.exists(ModPaths.sound('sounds/' + key)))
+            return ModPaths.sound('sounds/' + key);
+		else
+		    return getPath('sounds/$key.$SOUND_EXT', SOUND, library);
 	}
 
 	inline static public function soundRandom(key:String, min:Int, max:Int, ?library:String)
@@ -87,22 +90,34 @@ class Paths
 
 	inline static public function music(key:String, ?library:String)
 	{
-		return getPath('music/$key.$SOUND_EXT', MUSIC, library);
+		if (sys.FileSystem.exists(ModPaths.sound('music/' + key)))
+            return ModPaths.sound('music/' + key);
+		else
+		    return getPath('music/$key.$SOUND_EXT', MUSIC, library);
 	}
 
 	inline static public function voices(song:String)
 	{
-		return 'songs:assets/songs/${song.toLowerCase()}/Voices.$SOUND_EXT';
+		if (sys.FileSystem.exists(ModPaths.sound('songs/${song.toLowerCase()}/Voices')))
+            return ModPaths.sound('songs/${song.toLowerCase()}/Voices');
+		else
+		    return 'songs:assets/songs/${song.toLowerCase()}/Voices.$SOUND_EXT';
 	}
 
 	inline static public function inst(song:String)
 	{
-		return 'songs:assets/songs/${song.toLowerCase()}/Inst.$SOUND_EXT';
+		if (sys.FileSystem.exists(ModPaths.sound('songs/${song.toLowerCase()}/Inst')))
+            return ModPaths.sound('songs/${song.toLowerCase()}/Inst');
+		else
+		    return 'songs:assets/songs/${song.toLowerCase()}/Inst.$SOUND_EXT';
 	}
 
 	inline static public function image(key:String, ?library:String)
 	{
-		return getPath('images/$key.png', IMAGE, library);
+		if (sys.FileSystem.exists(ModPaths.image(key)))
+            return ModPaths.image(key);
+		else
+		    return getPath('images/$key.png', IMAGE, library);
 	}
 
 	inline static public function font(key:String)

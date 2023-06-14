@@ -55,6 +55,8 @@ class TitleState extends MusicBeatState
 
 		Highscore.load();
 
+        // ModSupport.loadMods();
+
 		if (FlxG.save.data.weekUnlocked != null)
 		{
 			// FIX LATER!!!

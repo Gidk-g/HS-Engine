@@ -103,64 +103,35 @@ class ModPaths {
     public static var modDirectory:String = "mods/";
 
     inline static public function image(path:String):String {
-        var modFolder:String = getModFolder();
+        var modFolder = FileSystem.readDirectory('mods');
         var fullPath:String = modDirectory + modFolder + "/images/" + path + ".png";
-        if (FileSystem.exists(fullPath)) {
-            return fullPath;
-        }
-        trace("Image not found:", fullPath);
-        return "";
+        return fullPath;
     }
 
     inline static public function sound(path:String):String {
-        var modFolder:String = getModFolder();
+        var modFolder = FileSystem.readDirectory('mods');
         var fullPath:String = modDirectory + modFolder + "/" + path + ".ogg";
-        if (FileSystem.exists(fullPath)) {
-            return fullPath;
-        }
-        trace("Sound not found:", fullPath);
-        return "";
+        return fullPath;
     }
 
     inline static public function data(path:String):String {
-        var modFolder:String = getModFolder();
+        var modFolder = FileSystem.readDirectory('mods');
         var fullPath:String = modDirectory + modFolder + "/data/" + path + ".json";
-        if (FileSystem.exists(fullPath)) {
-            return fullPath;
-        }
-        trace("Data file not found:", fullPath);
-        return "";
+        return fullPath;
     }
 
     inline static public function getSparrowAtlas(path:String):FlxAtlasFrames {
-        var modFolder:String = getModFolder();
+        var modFolder = FileSystem.readDirectory('mods');
         var pngPath:String = modDirectory + modFolder + "/images/" + path + ".png";
         var xmlPath:String = modDirectory + modFolder + "/images/" + path + ".xml";
         var atlasFrames:FlxAtlasFrames = FlxAtlasFrames.fromSparrow(pngPath, xmlPath);
-        if (atlasFrames != null) {
-            return atlasFrames;
-        }
-        trace("Sprite file not found:", atlasFrames);
-        return null;
+        return atlasFrames;
     }
 
     inline static public function modFolder(path:String):String {
-        var modFolder:String = getModFolder();
+        var modFolder = FileSystem.readDirectory('mods');
         var fullPath:String = modDirectory + modFolder + "/" + path;
-        if (FileSystem.exists(fullPath)) {
-            return fullPath;
-        }
-        trace("Mod file not found:", fullPath);
-        return "";
-    }
-
-    inline static public function getModFolder():String {
-        var modFolders = FileSystem.readDirectory('mods');
-        if (modFolders.length > 0) {
-            return modFolders[0];
-        }
-        trace("No mod folders found in", modDirectory);
-        return "";
+        return fullPath;
     }
 }
 
@@ -172,7 +143,7 @@ class ModScripts {
 	public static var parser = new Parser();
 
     inline static public function executeModScript(path:String):Void {
-        var modFolder:String = ModPaths.getModFolder();
+        var modFolder = FileSystem.readDirectory('mods');
         var scriptFullPath:String = modDirectory + modFolder + "/" + path + ".hx";
 
         if (FileSystem.exists(scriptFullPath)) {
@@ -238,6 +209,7 @@ class ModScripts {
             if (func != null && Reflect.isFunction(func))
                 return Reflect.callMethod(null, func, args);
         } catch (error:Dynamic) {
+            FlxG.log.add(error.details());
             trace(error);
         }
         return null;
