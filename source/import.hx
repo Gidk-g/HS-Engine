@@ -48,7 +48,6 @@ import system.ModSupport;
 import system.ModSupport.ModPaths;
 import system.ModSupport.ModConfig;
 import system.ModSupport.ModScripts;
-import system.ModSupport.EventHandler;
 #end
 
 // paths lmao

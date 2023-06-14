@@ -44,9 +44,9 @@ class FreeplayState extends MusicBeatState
 
         for (dir in sys.FileSystem.readDirectory('mods'))
         {
-            if (sys.FileSystem.exists('mods/' + dir + '/songList.txt'))
+            if (sys.FileSystem.exists('mods/' + dir + '/data/songList.txt'))
             {
-				list = sys.io.File.getContent('mods/' + dir + '/songList.txt').trim().split('\n');
+				list = sys.io.File.getContent('mods/' + dir + '/data/songList.txt').trim().split('\n');
             }
         }
 

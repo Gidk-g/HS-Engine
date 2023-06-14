@@ -4,7 +4,6 @@ package system;
 import haxe.Json;
 import flixel.FlxG;
 import haxe.io.Path;
-import haxe.ds.StringMap;
 import sys.thread.Thread;
 import flixel.math.FlxAngle;
 import flixel.group.FlxGroup;
@@ -226,7 +225,6 @@ class ModScripts {
 		interp.variables.set("Conductor", Conductor);
 		interp.variables.set("Note", Note);
         interp.variables.set("ModPaths", ModPaths);
-        interp.variables.set("EventHandler", EventHandler);
 
         script = parser.parseString(path);
 		interp.execute(script);
@@ -243,154 +241,6 @@ class ModScripts {
             trace(error);
         }
         return null;
-    }
-}
-
-class EventHandler {
-    public static var eventHandlers:StringMap<StringMap<Array<Dynamic->Void>>>;
-    public static var eventLimits:StringMap<StringMap<Int>>;
-    public static var globalEventHandlers:Array<Dynamic->Void>;
-    public static var eventPriorities:StringMap<StringMap<Int>>;
-    public static var eventConditions:StringMap<StringMap<Dynamic->Bool>>;
-
-    inline static public function init():Void {
-        eventHandlers = new StringMap<StringMap<Array<Dynamic->Void>>>();
-        eventLimits = new StringMap<StringMap<Int>>();
-        globalEventHandlers = [];
-        eventPriorities = new StringMap<StringMap<Int>>();
-        eventConditions = new StringMap<StringMap<Dynamic->Bool>>();
-    }
-
-    inline static public function registerEventHandler(eventName:String, eventType:String, handler:Dynamic->Void, priority:Int = 0, condition:Dynamic->Bool = null):Void {
-        if (!eventHandlers.exists(eventType)) {
-            eventHandlers.set(eventType, new StringMap<Array<Dynamic->Void>>());
-        }
-        var handlers:StringMap<Array<Dynamic->Void>> = eventHandlers.get(eventType);
-        if (!handlers.exists(eventName)) {
-            handlers.set(eventName, new Array<Dynamic->Void>());
-        }
-        var eventHandlerList:Array<Dynamic->Void> = handlers.get(eventName);
-        eventHandlerList.push(handler);
-        if (priority != 0) {
-            if (!eventPriorities.exists(eventType)) {
-                eventPriorities.set(eventType, new StringMap<Int>());
-            }
-            var priorities:StringMap<Int> = eventPriorities.get(eventType);
-            priorities.set(eventName, priority);
-        }
-        if (condition != null) {
-            if (!eventConditions.exists(eventType)) {
-                eventConditions.set(eventType, new StringMap<Dynamic->Bool>());
-            }
-            var conditions:StringMap<Dynamic->Bool> = eventConditions.get(eventType);
-            conditions.set(eventName, condition);
-        }
-    }
-
-    inline static public function unregisterEventHandler(eventName:String, eventType:String, handler:Dynamic->Void):Bool {
-        if (eventHandlers.exists(eventType)) {
-            var handlers:StringMap<Array<Dynamic->Void>> = eventHandlers.get(eventType);
-            if (handlers.exists(eventName)) {
-                var eventHandlerList:Array<Dynamic->Void> = handlers.get(eventName);
-                var index:Int = eventHandlerList.indexOf(handler);
-                if (index != -1) {
-                    eventHandlerList.splice(index, 1);
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-    inline static public function fireEvent(eventName:String, eventType:String, args:Array<Dynamic>):Void {
-        var shouldReturn:Bool = false;
-        if (eventHandlers.exists(eventType)) {
-            var handlers:StringMap<Array<Dynamic->Void>> = eventHandlers.get(eventType);
-            if (handlers.exists(eventName)) {
-                var eventHandlerList:Array<Dynamic->Void> = handlers.get(eventName);
-                var condition:Dynamic->Bool = eventConditions.get(eventType).get(eventName);
-                if (condition != null && !condition(args)) {
-                    shouldReturn = true;
-                } else {
-                    var priorities:StringMap<Int> = eventPriorities.get(eventType);
-                    if (priorities != null) {
-                        eventHandlerList.sort(function(a, b) {
-                            var priorityA:Int = priorities.get(eventName);
-                            var priorityB:Int = priorities.get(eventName);
-                            return priorityB - priorityA;
-                        });
-                    }
-                    for (handler in eventHandlerList) {
-                        handler(args);
-                    }
-                }
-            } else {
-                trace("Event handler not found for event:", eventName);
-            }
-        } else {
-            trace("Event type not found:", eventType);
-        }
-        if (shouldReturn) return;
-        for (handler in globalEventHandlers) {
-            handler(args);
-        }
-    }
-
-    inline static public function hasEvent(eventName:String, eventType:String):Bool {
-        if (eventHandlers.exists(eventType)) {
-            var handlers:StringMap<Array<Dynamic->Void>> = eventHandlers.get(eventType);
-            return handlers.exists(eventName);
-        }
-        return false;
-    }
-
-    inline static public function setEventLimit(eventName:String, eventType:String, limit:Int):Void {
-        if (!eventLimits.exists(eventType)) {
-            eventLimits.set(eventType, new StringMap<Int>());
-        }
-        var limits:StringMap<Int> = eventLimits.get(eventType);
-        limits.set(eventName, limit);
-    }
-
-    inline static public function addGlobalEventHandler(handler:Dynamic->Void):Void {
-        globalEventHandlers.push(handler);
-    }
-
-    inline static public function removeGlobalEventHandler(handler:Dynamic->Void):Bool {
-        var index:Int = globalEventHandlers.indexOf(handler);
-        if (index != -1) {
-            globalEventHandlers.splice(index, 1);
-            return true;
-        }
-        return false;
-    }
-
-    inline static public function clearGlobalEventHandlers():Void {
-        globalEventHandlers = [];
-    }
-
-    inline static public function getEventNames(eventType:String):Array<String> {
-        if (eventHandlers.exists(eventType)) {
-            var handlers:StringMap<Array<Dynamic->Void>> = eventHandlers.get(eventType);
-            var eventNames:Array<String> = [];
-            for (name in handlers.keys()) {
-                eventNames.push(name);
-            }
-            return eventNames;
-        }
-        return [];
-    }
-
-    inline static public function getEventTypes():Array<String> {
-        var eventTypes:Array<String> = [];
-        for (type in eventHandlers.keys()) {
-            eventTypes.push(type);
-        }
-        return eventTypes;
-    }
-
-    inline static public function triggerEvent(eventName:String, eventType:String, args:Array<Dynamic>):Void {
-        fireEvent(eventName, eventType, args);
     }
 }
 #end
