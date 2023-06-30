@@ -24,79 +24,7 @@ import sys.FileSystem;
 import sys.io.File;
 
 class ModSupport {
-    public static var modDirectory:String = "mods/";
-    public static var modConfigs:Array<ModConfig>;
-
-    inline static public function loadMods():Void {
-        modConfigs = [];
-
-        for (modFolder in FileSystem.readDirectory('mods')) {
-            var modDataPath:String = modDirectory + modFolder + "/mod.json";
-            if (FileSystem.exists(modDataPath)) {
-                try {
-                    var modData:String = File.getContent(modDataPath);
-                    var modConfig:ModConfig = parseMod(modData);
-                    if (modConfig != null) {
-                        modConfigs.push(modConfig);
-                    }
-                } catch (error:Dynamic) {
-                    trace("Error loading mod:", modFolder);
-                    trace(error);
-                }
-            }
-        }
-    }
-
-    inline static public function parseMod(modData:String):ModConfig {
-        try {
-            return ModConfig.parseJson(modData);
-        } catch (error:Dynamic) {
-            trace("Error parsing mod data");
-            trace(error);
-            return null;
-        }
-    }
-}
-
-class ModConfig {
-    public var name:String;
-    public var version:String;
-    public var author:String;
-    public var description:String;
-
-    public function new() {
-        // ModConfig
-    }
-
-    public function printInfo():Void {
-        trace("Mod Name:", name);
-        trace("Version:", version);
-        trace("Author:", author);
-        trace("Description:", description);
-    }
-
-    public static function fromDynamic(data:Dynamic):ModConfig {
-        if (!Reflect.hasField(data, "name") || !Reflect.hasField(data, "version") ||
-            !Reflect.hasField(data, "author") || !Reflect.hasField(data, "description")) {
-            trace("Invalid mod data format");
-            return null;
-        }
-        var modConfig:ModConfig = new ModConfig();
-        modConfig.name = data.name;
-        modConfig.version = data.version;
-        modConfig.author = data.author;
-        modConfig.description = data.description;
-        return modConfig;
-    }
-
-    public static function parseJson(json:String):ModConfig {
-        var jsonData:Dynamic = Json.parse(json);
-        if (jsonData == null) {
-            trace("Invalid JSON format");
-            return null;
-        }
-        return ModConfig.fromDynamic(jsonData);
-    }
+    // lol
 }
 
 class ModPaths {
@@ -136,15 +64,13 @@ class ModPaths {
 }
 
 class ModScripts {
-    public static var modDirectory:String = "mods/";
-
 	public static var script:hscript.Expr;
 	public static var interp = new Interp();
 	public static var parser = new Parser();
 
     inline static public function executeModScript(path:String):Void {
         var modFolder = FileSystem.readDirectory('mods');
-        var scriptFullPath:String = modDirectory + modFolder + "/" + path + ".hx";
+        var scriptFullPath:String = ModPaths.modDirectory + modFolder + "/" + path + ".hx";
 
         if (FileSystem.exists(scriptFullPath)) {
             var scriptContent:String = File.getContent(scriptFullPath);
