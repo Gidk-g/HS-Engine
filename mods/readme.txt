@@ -1,2 +1,13 @@
-THIS MOD FOLDER DOES NOT ENTIRELY WORK JUST YET!!!
-DONT EXPECT MUCH OUT OF IT RIGHT NOW!!!
+╔═══════════════════════════════════════╗
+║ MOD SUPPORT                           ║
+╚═══════════════════════════════════════╝
+Create a Mod Folder and make characters, songs and more!
+╔═══════════════════════════════════════╗
+║ MOD FOLDER EXAMPLE                    ║
+╚═══════════════════════════════════════╝
+📁mod
+    📁data
+    📁songs
+    📁images
+    📁...
+    songList.txt
