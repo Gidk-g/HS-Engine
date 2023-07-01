@@ -833,7 +833,7 @@ class PlayState extends MusicBeatState
 
     function setScriptFunction() {
 		#if sys
-		script.loadScript('script');
+	    script.loadScript(SONG.song + '/script');
 		#end
 
 		script.interp.variables.set("add", function(value:FlxObject){

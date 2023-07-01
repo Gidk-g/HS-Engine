@@ -104,6 +104,7 @@ class ModScripts {
 		interp.variables.set("FlxText", FlxText);
 		interp.variables.set("FlxGraphic", FlxGraphic);
 		interp.variables.set("FlxTween", FlxTween);
+		interp.variables.set("FlxColor", system.FlxColor_Util);
 		interp.variables.set("FlxCamera", FlxCamera);
 		interp.variables.set("Assets", Assets);
 		interp.variables.set("File", File);
