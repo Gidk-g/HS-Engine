@@ -1,6 +1,9 @@
 package;
 
 import flixel.FlxG;
+import flash.media.Sound;
+import openfl.display.BitmapData;
+import flixel.graphics.FlxGraphic;
 import flixel.graphics.frames.FlxAtlasFrames;
 import openfl.utils.AssetType;
 import openfl.utils.Assets as OpenFlAssets;
@@ -8,6 +11,14 @@ import openfl.utils.Assets as OpenFlAssets;
 class Paths
 {
 	inline public static var SOUND_EXT = #if web "mp3" #else "ogg" #end;
+
+	#if (haxe >= "4.0.0")
+	public static var customImagesLoaded:Map<String, FlxGraphic> = new Map();
+	public static var customSoundsLoaded:Map<String, Sound> = new Map();
+	#else
+	public static var customImagesLoaded:Map<String, FlxGraphic> = new Map<String, FlxGraphic>();
+	public static var customSoundsLoaded:Map<String, Sound> = new Map<String, Sound>();
+	#end
 
 	static var currentLevel:String;
 
@@ -77,10 +88,7 @@ class Paths
 
 	static public function sound(key:String, ?library:String)
 	{
-		if (sys.FileSystem.exists(ModPaths.sound('sounds/' + key)))
-            return ModPaths.sound('sounds/' + key);
-		else
-		    return getPath('sounds/$key.$SOUND_EXT', SOUND, library);
+		return getPath('sounds/$key.$SOUND_EXT', SOUND, library);
 	}
 
 	inline static public function soundRandom(key:String, min:Int, max:Int, ?library:String)
@@ -90,34 +98,34 @@ class Paths
 
 	inline static public function music(key:String, ?library:String)
 	{
-		if (sys.FileSystem.exists(ModPaths.sound('music/' + key)))
-            return ModPaths.sound('music/' + key);
-		else
-		    return getPath('music/$key.$SOUND_EXT', MUSIC, library);
+		return getPath('music/$key.$SOUND_EXT', MUSIC, library);
 	}
 
-	inline static public function voices(song:String)
+	inline static public function voices(song:String):Any
 	{
-		if (sys.FileSystem.exists(ModPaths.sound('songs/${song.toLowerCase()}/Voices')))
-            return ModPaths.sound('songs/${song.toLowerCase()}/Voices');
-		else
-		    return 'songs:assets/songs/${song.toLowerCase()}/Voices.$SOUND_EXT';
+		#if sys
+		var file:Sound = returnSongFile(ModPaths.sound('songs/' + song.toLowerCase() + '/Voices'));
+		if(file != null) {
+			return file;
+		}
+		#end
+		return 'songs:assets/songs/${song.toLowerCase()}/Voices.$SOUND_EXT';
 	}
 
-	inline static public function inst(song:String)
+	inline static public function inst(song:String):Any
 	{
-		if (sys.FileSystem.exists(ModPaths.sound('songs/${song.toLowerCase()}/Inst')))
-            return ModPaths.sound('songs/${song.toLowerCase()}/Inst');
-		else
-		    return 'songs:assets/songs/${song.toLowerCase()}/Inst.$SOUND_EXT';
+		#if sys
+		var file:Sound = returnSongFile(ModPaths.sound('songs/' + song.toLowerCase() + '/Inst'));
+		if(file != null) {
+			return file;
+		}
+		#end
+		return 'songs:assets/songs/${song.toLowerCase()}/Inst.$SOUND_EXT';
 	}
 
 	inline static public function image(key:String, ?library:String)
 	{
-		if (sys.FileSystem.exists(ModPaths.image(key)))
-            return ModPaths.image(key);
-		else
-		    return getPath('images/$key.png', IMAGE, library);
+		return getPath('images/$key.png', IMAGE, library);
 	}
 
 	inline static public function font(key:String)
@@ -134,4 +142,28 @@ class Paths
 	{
 		return FlxAtlasFrames.fromSpriteSheetPacker(image(key, library), file('images/$key.txt', library));
 	}
+
+    #if sys
+	static private function addCustomGraphic(key:String):FlxGraphic {
+		if(sys.FileSystem.exists(image(key))) {
+			if(!customImagesLoaded.exists(key)) {
+				var newGraphic:FlxGraphic = FlxGraphic.fromBitmapData(BitmapData.fromFile(image(key)));
+				newGraphic.persist = true;
+				customImagesLoaded.set(key, newGraphic);
+			}
+			return customImagesLoaded.get(key);
+		}
+		return null;
+	}
+
+	inline static private function returnSongFile(file:String):Sound {
+        if(sys.FileSystem.exists(file)) {
+            if(!customSoundsLoaded.exists(file)) {
+                customSoundsLoaded.set(file, Sound.fromFile(file));
+            }
+            return customSoundsLoaded.get(file);
+        }
+        return null;
+    }
+	#end
 }

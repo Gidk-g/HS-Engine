@@ -4,6 +4,7 @@ package system;
 import haxe.Json;
 import flixel.FlxG;
 import haxe.io.Path;
+import flash.media.Sound;
 import sys.thread.Thread;
 import flixel.math.FlxAngle;
 import flixel.group.FlxGroup;
@@ -31,34 +32,61 @@ class ModPaths {
     public static var modDirectory:String = "mods/";
 
     inline static public function image(path:String):String {
-        var modFolder = FileSystem.readDirectory('mods');
-        var fullPath:String = modDirectory + modFolder + "/images/" + path + ".png";
+        var fullPath:String = null;
+        for (modFolder in FileSystem.readDirectory("mods")) {
+            fullPath = modDirectory + modFolder + "/images/" + path + ".png";
+            if (FileSystem.exists(fullPath)) {
+                break;
+            }
+        }
         return fullPath;
     }
 
     inline static public function sound(path:String):String {
-        var modFolder = FileSystem.readDirectory('mods');
-        var fullPath:String = modDirectory + modFolder + "/" + path + ".ogg";
+        var fullPath:String = null;
+        for (modFolder in FileSystem.readDirectory("mods")) {
+            fullPath = modDirectory + modFolder + "/" + path + ".ogg";
+            if (FileSystem.exists(fullPath)) {
+                break;
+            }
+        }
         return fullPath;
     }
 
     inline static public function data(path:String):String {
-        var modFolder = FileSystem.readDirectory('mods');
-        var fullPath:String = modDirectory + modFolder + "/data/" + path + ".json";
+        var fullPath:String = null;
+        for (modFolder in FileSystem.readDirectory("mods")) {
+            fullPath = modDirectory + modFolder + "/data/" + path + ".json";
+            if (FileSystem.exists(fullPath)) {
+                break;
+            }
+        }
         return fullPath;
     }
 
     inline static public function getSparrowAtlas(path:String):FlxAtlasFrames {
-        var modFolder = FileSystem.readDirectory('mods');
-        var pngPath:String = modDirectory + modFolder + "/images/" + path + ".png";
-        var xmlPath:String = modDirectory + modFolder + "/images/" + path + ".xml";
-        var atlasFrames:FlxAtlasFrames = FlxAtlasFrames.fromSparrow(pngPath, xmlPath);
+        var pngPath:String = null;
+        var xmlPath:String = null;
+        var atlasFrames:FlxAtlasFrames = null;
+        for (modFolder in FileSystem.readDirectory("mods")) {
+            pngPath = modDirectory + modFolder + "/images/" + path + ".png";
+            xmlPath = modDirectory + modFolder + "/images/" + path + ".xml";
+            if (FileSystem.exists(pngPath) && FileSystem.exists(xmlPath)) {
+                atlasFrames = FlxAtlasFrames.fromSparrow(pngPath, xmlPath);
+                break;
+            }
+        }
         return atlasFrames;
     }
 
     inline static public function modFolder(path:String):String {
-        var modFolder = FileSystem.readDirectory('mods');
-        var fullPath:String = modDirectory + modFolder + "/" + path;
+        var fullPath:String = null;
+        for (modFolder in FileSystem.readDirectory("mods")) {
+            fullPath = modDirectory + modFolder + "/" + path;
+            if (FileSystem.exists(fullPath)) {
+                break;
+            }
+        }
         return fullPath;
     }
 }
@@ -69,14 +97,14 @@ class ModScripts {
 	public static var parser = new Parser();
 
     inline static public function executeModScript(path:String):Void {
-        var modFolder = FileSystem.readDirectory('mods');
-        var scriptFullPath:String = ModPaths.modDirectory + modFolder + "/" + path + ".hx";
-
-        if (FileSystem.exists(scriptFullPath)) {
-            var scriptContent:String = File.getContent(scriptFullPath);
-            executeScript(scriptContent);
-        } else {
-            trace("Script not found:", scriptFullPath);
+        for (modFolder in FileSystem.readDirectory('mods')) {
+            var scriptFullPath:String = ModPaths.modDirectory + modFolder + "/" + path + ".hx";
+            if (FileSystem.exists(scriptFullPath)) {
+                var scriptContent:String = File.getContent(scriptFullPath);
+                executeScript(scriptContent);
+            } else {
+                trace("Script not found:", scriptFullPath);
+            }
         }
     }
 
