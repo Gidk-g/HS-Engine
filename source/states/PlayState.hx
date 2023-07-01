@@ -827,10 +827,11 @@ class PlayState extends MusicBeatState
 		}
 
 		super.create();
+
+		script.callFunction("createPost");
 	}
 
-    function setScriptFunction()
-	{
+    function setScriptFunction() {
 		#if sys
 		script.loadScript('script');
 		#end
@@ -1425,6 +1426,8 @@ class PlayState extends MusicBeatState
 				// phillyCityLights.members[curLight].alpha -= (Conductor.crochet / 1000) * FlxG.elapsed;
 		}
 
+		script.callFunction("update", [elapsed]);
+
 		super.update(elapsed);
 
 		scoreTxt.text = "Score:" + songScore + " / Misses:" + songMisses + " / Accuracy:" + calculateAccuracy() + "%";
@@ -1717,6 +1720,8 @@ class PlayState extends MusicBeatState
 							dad.playAnim('singRIGHT' + altAnim, true);
 					}
 
+					script.callFunction("dadNoteHit");
+
 					dad.holdTimer = 0;
 
 					if (SONG.needsVoices)
@@ -1735,6 +1740,7 @@ class PlayState extends MusicBeatState
 					if (daNote.tooLate || !daNote.wasGoodHit)
 					{
                         noteMiss(Math.abs(daNote.noteData));
+						script.callFunction("noteMiss", [daNote]);
 					}
 
 					daNote.active = false;
@@ -1754,6 +1760,8 @@ class PlayState extends MusicBeatState
 		if (FlxG.keys.justPressed.ONE)
 			endSong();
 		#end
+
+		script.callFunction("updatePost", [elapsed]);
 	}
 
 	function endSong():Void
@@ -2259,6 +2267,8 @@ class PlayState extends MusicBeatState
 	{
 		if (!note.wasGoodHit)
 		{
+			script.callFunction("goodNoteHit", [note]);
+
 			if (!note.isSustainNote)
 			{
 				popUpScore(note.strumTime);
@@ -2395,6 +2405,8 @@ class PlayState extends MusicBeatState
 	{
 		super.stepHit();
 
+		script.callFunction("stepHit", [curStep]);
+
 		if (FlxG.sound.music.time > Conductor.songPosition + 20 || FlxG.sound.music.time < Conductor.songPosition - 20)
 		{
 			resyncVocals();
@@ -2412,6 +2424,8 @@ class PlayState extends MusicBeatState
 	override function beatHit()
 	{
 		super.beatHit();
+
+		script.callFunction("beatHit", [curBeat]);
 
 		if (generatedMusic)
 		{
