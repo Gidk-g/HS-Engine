@@ -10,4 +10,4 @@ Create a Mod Folder and make characters, songs and more!
     📁songs
     📁images
     📁...
-    songList.txt
+    📄songList.txt
