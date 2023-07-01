@@ -57,6 +57,8 @@
 		}
 	],
 	"antialiasing": false,
+	"cameraOffset": [0, 0],
+	"characterOffset": [0, 0],
 	"spritePath": "weeb/spirit",
 	"healthIcon": "spirit-pixel",
     "singDuration": 4,

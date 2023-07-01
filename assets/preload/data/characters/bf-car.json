@@ -101,6 +101,8 @@
 		}
 	],
 	"antialiasing": true,
+	"cameraOffset": [0, 0],
+	"characterOffset": [0, 0],
 	"spritePath": "bfCar",
 	"healthIcon": "bf",
     "singDuration": 4,

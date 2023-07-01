@@ -68,6 +68,8 @@
 		}
 	],
 	"antialiasing": true,
+	"cameraOffset": [0, 0],
+	"characterOffset": [0, 0],
 	"spritePath": "gfCar",
 	"healthIcon": "gf",
     "singDuration": 4,

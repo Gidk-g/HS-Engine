@@ -23,6 +23,9 @@ class Character extends FlxSprite
 	public var danceIdle:Bool = false;
 	public var healthIcon:String = 'face';
 
+	public var cameraOffset:Array<Int> = [0,0];
+	public var characterOffset:Array<Int> = [0,0];
+
 	public function new(x:Float, y:Float, ?character:String = "bf", ?isPlayer:Bool = false)
 	{
 		super(x, y);
@@ -75,6 +78,9 @@ class Character extends FlxSprite
         else
 			frames = Paths.getSparrowAtlas(json.spritePath);
 
+		cameraOffset = json.cameraOffset;
+		characterOffset = json.characterOffset;
+
 		antialiasing = json.antialiasing;
 		singDuration = json.singDuration;
 
@@ -84,12 +90,10 @@ class Character extends FlxSprite
 		for (anim in json.animations)
 		{
 			var animIndices:Array<Int> = anim.indices;
-
 			if (animIndices != null && animIndices.length > 0)
 				animation.addByIndices(anim.anim, anim.name, animIndices, "", anim.fps, anim.loop);
 			else
 				animation.addByPrefix(anim.anim, anim.name, anim.fps, anim.loop);
-
 			if (anim.offsets != null && anim.offsets.length > 1)
 				addOffset(anim.anim, anim.offsets[0], anim.offsets[1]);
 		}
@@ -229,6 +233,8 @@ typedef CharJson =
 	var flipX:Bool;
 	var antialiasing:Bool;
 	var singDuration:Float;
+	var cameraOffset:Array<Int>;
+	var characterOffset:Array<Int>;
 }
 
 typedef AnimStuff =

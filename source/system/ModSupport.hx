@@ -95,7 +95,7 @@ class ModScripts {
 	public static var parser = new Parser();
 
     inline static public function executeModScript(path:String):Void {
-        for (modFolder in FileSystem.readDirectory('mods')) {
+        for (modFolder in FileSystem.readDirectory("mods")) {
             var scriptFullPath:String = ModPaths.modDirectory + modFolder + "/" + path + ".hx";
             if (FileSystem.exists(scriptFullPath)) {
                 var scriptContent:String = File.getContent(scriptFullPath);

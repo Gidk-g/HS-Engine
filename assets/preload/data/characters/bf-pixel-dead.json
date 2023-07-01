@@ -35,6 +35,8 @@
 		}
 	],
 	"antialiasing": false,
+	"cameraOffset": [0, 0],
+	"characterOffset": [0, 0],
 	"spritePath": "weeb/bfPixelsDEAD",
 	"healthIcon": "bf-pixel",
     "singDuration": 4,

@@ -57,6 +57,8 @@
 		}
 	],
 	"antialiasing": true,
+	"cameraOffset": [0, 0],
+	"characterOffset": [0, 0],
 	"spritePath": "christmas/monsterChristmas",
 	"healthIcon": "monster",
     "singDuration": 4,

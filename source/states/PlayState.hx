@@ -594,6 +594,8 @@ class PlayState extends MusicBeatState
 		gf.scrollFactor.set(0.95, 0.95);
 
 		dad = new Character(100, 100, SONG.player2);
+        dad.x += dad.characterOffset[0];
+		dad.y += dad.characterOffset[1];
 
 		var camPos:FlxPoint = new FlxPoint(dad.getGraphicMidpoint().x, dad.getGraphicMidpoint().y);
 
@@ -636,6 +638,8 @@ class PlayState extends MusicBeatState
 		}
 
 		boyfriend = new Boyfriend(770, 450, SONG.player1);
+		boyfriend.x += boyfriend.characterOffset[0];
+		boyfriend.y += boyfriend.characterOffset[1];
 
 		// REPOSITIONING PER STAGE
 		switch (curStage)
@@ -1479,9 +1483,9 @@ class PlayState extends MusicBeatState
 				// trace(PlayState.SONG.notes[Std.int(curStep / 16)].mustHitSection);
 			}
 
-			if (camFollow.x != dad.getMidpoint().x + 150 && !PlayState.SONG.notes[Std.int(curStep / 16)].mustHitSection)
+			if (camFollow.x != dad.getMidpoint().x + 150 + dad.cameraOffset[0] && !PlayState.SONG.notes[Std.int(curStep / 16)].mustHitSection)
 			{
-				camFollow.setPosition(dad.getMidpoint().x + 150, dad.getMidpoint().y - 100);
+				camFollow.setPosition(dad.getMidpoint().x + 150 + dad.cameraOffset[0], dad.getMidpoint().y - 100 + dad.cameraOffset[1]);
 				// camFollow.setPosition(lucky.getMidpoint().x - 120, lucky.getMidpoint().y + 210);
 
 				switch (dad.curCharacter)
@@ -1505,9 +1509,9 @@ class PlayState extends MusicBeatState
 				}
 			}
 
-			if (PlayState.SONG.notes[Std.int(curStep / 16)].mustHitSection && camFollow.x != boyfriend.getMidpoint().x - 100)
+			if (PlayState.SONG.notes[Std.int(curStep / 16)].mustHitSection && camFollow.x != boyfriend.getMidpoint().x - 100 + boyfriend.cameraOffset[0])
 			{
-				camFollow.setPosition(boyfriend.getMidpoint().x - 100, boyfriend.getMidpoint().y - 100);
+				camFollow.setPosition(boyfriend.getMidpoint().x - 100 + boyfriend.cameraOffset[0], boyfriend.getMidpoint().y - 100 + boyfriend.cameraOffset[1]);
 
 				switch (curStage)
 				{

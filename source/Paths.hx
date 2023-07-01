@@ -123,8 +123,12 @@ class Paths
 		return 'songs:assets/songs/${song.toLowerCase()}/Inst.$SOUND_EXT';
 	}
 
-	inline static public function image(key:String, ?library:String)
+	inline static public function image(key:String, ?library:String):Dynamic
 	{
+		#if sys
+		var imageToReturn:FlxGraphic = addCustomGraphic(key);
+		if(imageToReturn != null) return imageToReturn;
+		#end
 		return getPath('images/$key.png', IMAGE, library);
 	}
 
@@ -135,6 +139,12 @@ class Paths
 
 	inline static public function getSparrowAtlas(key:String, ?library:String)
 	{
+		#if sys
+		var sparrow = ModPaths.getSparrowAtlas(key);
+		if(sparrow != null) {
+			return sparrow;
+		}
+		#end
 		return FlxAtlasFrames.fromSparrow(image(key, library), file('images/$key.xml', library));
 	}
 
@@ -145,9 +155,9 @@ class Paths
 
     #if sys
 	static private function addCustomGraphic(key:String):FlxGraphic {
-		if(sys.FileSystem.exists(image(key))) {
+		if(sys.FileSystem.exists(ModPaths.image(key))) {
 			if(!customImagesLoaded.exists(key)) {
-				var newGraphic:FlxGraphic = FlxGraphic.fromBitmapData(BitmapData.fromFile(image(key)));
+				var newGraphic:FlxGraphic = FlxGraphic.fromBitmapData(BitmapData.fromFile(ModPaths.image(key)));
 				newGraphic.persist = true;
 				customImagesLoaded.set(key, newGraphic);
 			}

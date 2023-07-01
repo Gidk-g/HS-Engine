@@ -77,6 +77,8 @@
 		}
 	],
 	"antialiasing": true,
+	"cameraOffset": [0, 0],
+	"characterOffset": [0, 0],
 	"spritePath": "spooky_kids_assets",
 	"healthIcon": "spooky",
     "singDuration": 4,
