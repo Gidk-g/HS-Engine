@@ -4,8 +4,6 @@ package system;
 import haxe.Json;
 import flixel.FlxG;
 import haxe.io.Path;
-import flash.media.Sound;
-import sys.thread.Thread;
 import flixel.math.FlxAngle;
 import flixel.group.FlxGroup;
 import flixel.graphics.atlas.FlxAtlas;
