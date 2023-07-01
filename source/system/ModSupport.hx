@@ -90,23 +90,15 @@ class ModPaths {
 }
 
 class ModScripts {
-	public static var script:hscript.Expr;
-	public static var interp = new Interp();
-	public static var parser = new Parser();
+	public var script:hscript.Expr;
+	public var interp = new Interp();
+	public var parser = new Parser();
 
-    inline static public function executeModScript(path:String):Void {
-        for (modFolder in FileSystem.readDirectory("mods")) {
-            var scriptFullPath:String = ModPaths.modDirectory + modFolder + "/" + path + ".hx";
-            if (FileSystem.exists(scriptFullPath)) {
-                var scriptContent:String = File.getContent(scriptFullPath);
-                executeScript(scriptContent);
-            } else {
-                trace("Script not found: " + scriptFullPath);
-            }
-        }
+	public function new() {
+        executeScript();
     }
 
-    inline static public function executeScript(path:String) {
+    public function executeScript() {
         parser.allowTypes = true;
         parser.allowJSON = true;
         parser.allowMetadata = true;
@@ -148,23 +140,31 @@ class ModScripts {
 		interp.variables.set("Conductor", Conductor);
 		interp.variables.set("Note", Note);
         interp.variables.set("ModPaths", ModPaths);
-
-        script = parser.parseString(path);
-		interp.execute(script);
     }
 
-    inline static public function callFunction(funcName:String, args:Array<Dynamic>):Dynamic {
-        if (args == null)
-            args = [];
-        try {
-            var func:Dynamic = interp.variables.get(funcName);
-            if (func != null && Reflect.isFunction(func))
-                return Reflect.callMethod(null, func, args);
-        } catch (error:Dynamic) {
-            FlxG.log.add(error.details());
-            trace(error);
+    public function loadScript(path:String):Void {
+        for (modFolder in FileSystem.readDirectory("mods")) {
+            var scriptFullPath:String = ModPaths.modDirectory + modFolder + "/" + path + ".hx";
+            if (FileSystem.exists(scriptFullPath)) {
+                var scriptContent:String = File.getContent(scriptFullPath);
+                script = parser.parseString(scriptContent);
+                interp.execute(script);
+            }
         }
-        return null;
     }
+
+	public function callFunction(funcName:String, ?args:Array<Dynamic>):Dynamic {
+		if (args == null)
+			args = [];
+		try {
+			var func:Dynamic = interp.variables.get(funcName);
+			if (func != null && Reflect.isFunction(func))
+				return Reflect.callMethod(null, func, args);
+		} catch (error:Dynamic) {
+			FlxG.log.add(error.details());
+            trace(error);
+		}
+		return true;
+	}
 }
 #end

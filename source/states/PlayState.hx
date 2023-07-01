@@ -131,6 +131,8 @@ class PlayState extends MusicBeatState
 
 	public var songHits:Int = 0;
 
+	public var script:ModScripts = new ModScripts();
+
 	#if desktop
 	// Discord RPC variables
 	var storyDifficultyText:String = "";
@@ -575,6 +577,8 @@ class PlayState extends MusicBeatState
 		          }
               }
 
+		setScriptFunction();
+
 		switch (curStage)
 		{
 			case 'limo':
@@ -823,6 +827,44 @@ class PlayState extends MusicBeatState
 		}
 
 		super.create();
+	}
+
+    function setScriptFunction()
+	{
+		#if sys
+		script.loadScript('script');
+		#end
+
+		script.interp.variables.set("add", function(value:FlxObject){
+			add(value);
+		});
+
+		script.interp.variables.set("camFollow", camFollow);
+
+		script.interp.variables.set("boyfriend", boyfriend);
+		script.interp.variables.set("dad", dad);
+		script.interp.variables.set("gf", gf);
+
+		script.interp.variables.set("camHUD", camHUD);
+		script.interp.variables.set("camGame", camGame);
+
+		script.interp.variables.set("defaultCamZoom", defaultCamZoom);
+		script.interp.variables.set("curSong", SONG.song);
+		script.interp.variables.set("SONG", SONG);
+		script.interp.variables.set("curStage", curStage);
+
+		script.interp.variables.set("this", this);
+
+		script.interp.variables.set("inCutscene", inCutscene);
+		script.interp.variables.set("curBeat", curBeat);
+		script.interp.variables.set("curStep", curStep);
+
+		if (SONG.notes[Math.floor(curStep / 16)] != null){
+			script.interp.variables.set('mustHitSection', SONG.notes[Math.floor(curStep / 16)].mustHitSection);
+			script.interp.variables.set('altAnim', SONG.notes[Math.floor(curStep / 16)].altAnim);
+		}
+
+        script.callFunction('create');
 	}
 
 	function schoolIntro(?dialogueBox:DialogueBox):Void
