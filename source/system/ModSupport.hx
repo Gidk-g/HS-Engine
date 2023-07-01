@@ -62,21 +62,6 @@ class ModPaths {
         return fullPath;
     }
 
-    inline static public function getSparrowAtlas(path:String):FlxAtlasFrames {
-        var pngPath:String = null;
-        var xmlPath:String = null;
-        var atlasFrames:FlxAtlasFrames = null;
-        for (modFolder in FileSystem.readDirectory("mods")) {
-            pngPath = modDirectory + modFolder + "/images/" + path + ".png";
-            xmlPath = modDirectory + modFolder + "/images/" + path + ".xml";
-            if (FileSystem.exists(pngPath) && FileSystem.exists(xmlPath)) {
-                atlasFrames = FlxAtlasFrames.fromSparrow(pngPath, xmlPath);
-                break;
-            }
-        }
-        return atlasFrames;
-    }
-
     inline static public function modFolder(path:String):String {
         var fullPath:String = null;
         for (modFolder in FileSystem.readDirectory("mods")) {

@@ -81,11 +81,6 @@ class Paths
 		return getPath('data/$key.json', TEXT, library);
 	}
 
-	inline static public function hx(key:String, ?library:String)
-	{
-		return getPath('$key.hx', TEXT, library);
-	}
-
 	static public function sound(key:String, ?library:String)
 	{
 		return getPath('sounds/$key.$SOUND_EXT', SOUND, library);
@@ -139,18 +134,32 @@ class Paths
 
 	inline static public function getSparrowAtlas(key:String, ?library:String)
 	{
-		#if sys
-		var sparrow = ModPaths.getSparrowAtlas(key);
-		if(sparrow != null) {
-			return sparrow;
+		var imageLoaded:FlxGraphic = addCustomGraphic(key);
+		var xmlExists:Bool = false;
+		if (sys.FileSystem.exists(ModPaths.modFolder('images/$key.xml')))
+		{
+			xmlExists = true;
 		}
-		#end
-		return FlxAtlasFrames.fromSparrow(image(key, library), file('images/$key.xml', library));
+		return FlxAtlasFrames.fromSparrow((imageLoaded != null ? imageLoaded : image(key, library)),
+			(xmlExists ? sys.io.File.getContent(ModPaths.modFolder('images/$key.xml')) : file('images/$key.xml', TEXT, library)));
 	}
 
 	inline static public function getPackerAtlas(key:String, ?library:String)
 	{
 		return FlxAtlasFrames.fromSpriteSheetPacker(image(key, library), file('images/$key.txt', library));
+	}
+
+	inline static public function fileExists(key:String, ?type:AssetType, ?library:String)
+	{
+		if(OpenFlAssets.exists(getPath(key, type, library))) {
+			return true;
+		}
+		#if sys
+		if(sys.FileSystem.exists(ModPaths.modFolder(key))) {
+			return true;
+		}
+		#end
+		return false;
 	}
 
     #if sys
