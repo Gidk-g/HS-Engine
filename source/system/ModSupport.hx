@@ -129,14 +129,9 @@ class ModScripts {
     }
 
     public function loadScript(path:String):Void {
-        for (modFolder in FileSystem.readDirectory("mods")) {
-            var scriptFullPath:String = ModPaths.modDirectory + modFolder + "/" + path + ".hx";
-            if (FileSystem.exists(scriptFullPath)) {
-                var scriptContent:String = File.getContent(scriptFullPath);
-                script = parser.parseString(scriptContent);
-                interp.execute(script);
-            }
-        }
+        var scriptContent:String = File.getContent(ModPaths.modFolder(path + ".hx"));
+        script = parser.parseString(scriptContent);
+        interp.execute(script);
     }
 
 	public function callFunction(funcName:String, ?args:Array<Dynamic>):Dynamic {
