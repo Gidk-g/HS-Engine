@@ -101,7 +101,7 @@ class ModScripts {
                 var scriptContent:String = File.getContent(scriptFullPath);
                 executeScript(scriptContent);
             } else {
-                trace("Script not found:", scriptFullPath);
+                trace("Script not found: " + scriptFullPath);
             }
         }
     }
