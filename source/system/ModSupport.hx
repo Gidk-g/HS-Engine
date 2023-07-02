@@ -131,6 +131,8 @@ class ModScripts {
 		interp.variables.set("Conductor", Conductor);
 		interp.variables.set("Note", Note);
         interp.variables.set("ModPaths", ModPaths);
+        interp.variables.set("MusicBeatState", MusicBeatState);
+        interp.variables.set("MusicBeatSubstate", MusicBeatSubstate);
 
         interp.variables.set("switchState", function(state:String):Void {
             var modStatePath = ModPaths.modFolder("data/states/" + state + ".hx");
@@ -260,6 +262,8 @@ class ModScriptState extends MusicBeatState {
 		interp.variables.set("Conductor", Conductor);
 		interp.variables.set("Note", Note);
         interp.variables.set("ModPaths", ModPaths);
+        interp.variables.set("MusicBeatState", MusicBeatState);
+        interp.variables.set("MusicBeatSubstate", MusicBeatSubstate);
 
 	    interp.variables.set("curBeat", curBeat);
 		interp.variables.set("curStep", curStep);
@@ -397,6 +401,8 @@ class ModScriptSubstate extends MusicBeatSubstate {
 		interp.variables.set("Conductor", Conductor);
 		interp.variables.set("Note", Note);
         interp.variables.set("ModPaths", ModPaths);
+        interp.variables.set("MusicBeatState", MusicBeatState);
+        interp.variables.set("MusicBeatSubstate", MusicBeatSubstate);
 
 	    interp.variables.set("curBeat", curBeat);
 		interp.variables.set("curStep", curStep);
