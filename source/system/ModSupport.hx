@@ -126,12 +126,141 @@ class ModScripts {
 		interp.variables.set("Conductor", Conductor);
 		interp.variables.set("Note", Note);
         interp.variables.set("ModPaths", ModPaths);
+
+        interp.variables.set("switchState", function(state:String):Void {
+            var modStatePath = ModPaths.modFolder("data/states/" + state + ".hx");
+            if (modStatePath != null) {
+                if (FileSystem.exists(modStatePath)) {
+                    FlxG.switchState(Type.createInstance(ModScriptState, [modStatePath]));
+                } else {
+                    FlxG.log.add("Cannot find state class file: " + modStatePath);
+                }
+            } else {
+                FlxG.log.add("Cannot find state: " + state);
+            }
+        });
     }
 
     public function loadScript(path:String):Void {
         var scriptContent:String = File.getContent(ModPaths.modFolder(path + ".hx"));
         script = parser.parseString(scriptContent);
         interp.execute(script);
+    }
+
+	public function callFunction(funcName:String, ?args:Array<Dynamic>):Dynamic {
+		if (args == null)
+			args = [];
+		try {
+			var func:Dynamic = interp.variables.get(funcName);
+			if (func != null && Reflect.isFunction(func))
+				return Reflect.callMethod(null, func, args);
+		} catch (error:Dynamic) {
+			FlxG.log.add(error.details());
+            trace(error);
+		}
+		return true;
+	}
+}
+
+class ModScriptState extends MusicBeatState {
+    public var scriptPath:String;
+	public var interp = new Interp();
+	public var parser = new Parser();
+
+    override public function new(scriptPath:String) {
+        this.scriptPath = scriptPath;
+        executeScript();
+        loadScript();
+        super();
+    }
+
+    override function create():Void {
+        callFunction("create");
+        super.create();
+        callFunction("createPost");
+    }
+
+	override function update(elapsed:Float) {
+        callFunction("update", [elapsed]);
+        super.update(elapsed);
+        callFunction("updatePost", [elapsed]);
+    }
+
+	override function stepHit():Void {
+        callFunction("stepHit", [curStep]);
+        super.stepHit();
+    }
+
+    override function beatHit():Void {
+        callFunction("beatHit", [curBeat]);
+        super.beatHit();
+    }
+
+    public function executeScript() {
+        parser.allowTypes = true;
+        parser.allowJSON = true;
+        parser.allowMetadata = true;
+
+		interp.variables.set("Int", Int);
+		interp.variables.set("String", String);
+		interp.variables.set("Float", Float);
+		interp.variables.set("Array", Array);
+		interp.variables.set("Bool", Bool);
+		interp.variables.set("Dynamic", Dynamic);
+		interp.variables.set("Math", Math);
+		interp.variables.set("FlxMath", FlxMath);
+		interp.variables.set("Std", Std);
+		interp.variables.set("StringTools", StringTools);
+		interp.variables.set("FlxG", FlxG);
+		interp.variables.set("FlxSound", FlxSound);
+		interp.variables.set("FlxSprite", FlxSprite);
+		interp.variables.set("FlxText", FlxText);
+		interp.variables.set("FlxGraphic", FlxGraphic);
+		interp.variables.set("FlxTween", FlxTween);
+		interp.variables.set("FlxColor", system.FlxColor_Util);
+		interp.variables.set("FlxCamera", FlxCamera);
+		interp.variables.set("Assets", Assets);
+		interp.variables.set("File", File);
+		interp.variables.set("Windows", Windows);
+		interp.variables.set("FileSystem", FileSystem);
+		interp.variables.set("PlayState", PlayState);
+		interp.variables.set("FlxGroup", FlxGroup);
+		interp.variables.set("FlxTypedGroup", FlxTypedGroup);
+		interp.variables.set("CoolUtil", CoolUtil);
+		interp.variables.set("Paths", Paths);
+		interp.variables.set("Path", Path);
+		interp.variables.set("Json", Json);
+		interp.variables.set("FlxAngle", FlxAngle);
+		interp.variables.set("FlxAtlasFrames", FlxAtlasFrames);
+		interp.variables.set("FlxAtlas", FlxAtlas);
+		interp.variables.set("Character", Character);
+		interp.variables.set("Boyfriend", Boyfriend);
+		interp.variables.set("Song", Song);
+		interp.variables.set("Conductor", Conductor);
+		interp.variables.set("Note", Note);
+        interp.variables.set("ModPaths", ModPaths);
+
+	    interp.variables.set("curBeat", curBeat);
+		interp.variables.set("curStep", curStep);
+
+        interp.variables.set("switchState", function(state:String):Void {
+            var modStatePath = ModPaths.modFolder("data/states/" + state + ".hx");
+            if (modStatePath != null) {
+                if (FileSystem.exists(modStatePath)) {
+                    FlxG.switchState(Type.createInstance(ModScriptState, [modStatePath]));
+                } else {
+                    FlxG.log.add("Cannot find state class file: " + modStatePath);
+                }
+            } else {
+                FlxG.log.add("Cannot find state: " + state);
+            }
+        });
+    }
+
+    public function loadScript():Void {
+        var scriptContent:String = File.getContent(scriptPath);
+        var classDef = parser.parseString(scriptContent);
+        interp.execute(classDef);
     }
 
 	public function callFunction(funcName:String, ?args:Array<Dynamic>):Dynamic {

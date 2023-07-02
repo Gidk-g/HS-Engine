@@ -838,7 +838,7 @@ class PlayState extends MusicBeatState
 		}
 		#end
 
-		script.interp.variables.set("add", function(value:FlxObject){
+		script.interp.variables.set("add", function(value:FlxObject) {
 			add(value);
 		});
 
