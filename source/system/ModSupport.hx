@@ -128,6 +128,7 @@ class ModScripts {
 		interp.variables.set("Character", Character);
 		interp.variables.set("Boyfriend", Boyfriend);
 		interp.variables.set("Song", Song);
+        interp.variables.set("Controls", Controls);
 		interp.variables.set("Conductor", Conductor);
 		interp.variables.set("Note", Note);
         interp.variables.set("ModPaths", ModPaths);
@@ -259,6 +260,7 @@ class ModScriptState extends MusicBeatState {
 		interp.variables.set("Character", Character);
 		interp.variables.set("Boyfriend", Boyfriend);
 		interp.variables.set("Song", Song);
+        interp.variables.set("Controls", Controls);
 		interp.variables.set("Conductor", Conductor);
 		interp.variables.set("Note", Note);
         interp.variables.set("ModPaths", ModPaths);
@@ -398,6 +400,7 @@ class ModScriptSubstate extends MusicBeatSubstate {
 		interp.variables.set("Character", Character);
 		interp.variables.set("Boyfriend", Boyfriend);
 		interp.variables.set("Song", Song);
+        interp.variables.set("Controls", Controls);
 		interp.variables.set("Conductor", Conductor);
 		interp.variables.set("Note", Note);
         interp.variables.set("ModPaths", ModPaths);
