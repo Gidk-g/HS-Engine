@@ -4,7 +4,6 @@ package system;
 import haxe.Json;
 import flixel.FlxG;
 import haxe.io.Path;
-import flixel.FlxState;
 import flixel.FlxObject;
 import flixel.math.FlxAngle;
 import flixel.group.FlxGroup;
