@@ -38,12 +38,23 @@ class OptionsState extends MusicBeatState {
 			changeSelection(-1);
 		if (controls.DOWN_P)
 			changeSelection(1);
-
-		if (controls.BACK) {
+		if (controls.ACCEPT)
+			openSelectedOption(options[curSelected]);
+		if (controls.BACK)
             FlxG.switchState(new MainMenuState());
-        }
 		super.update(elapsed);
     }
+
+	function openSelectedOption(label:String) {
+		switch(label) {
+			case 'Preferences':
+                FlxG.switchState(new FreeplayState());
+			case 'Controls':
+                FlxG.switchState(new FreeplayState());
+			case 'Exit':
+                FlxG.switchState(new MainMenuState());
+		}
+	}
 
 	function changeSelection(change:Int = 0) {
 		curSelected += change;
