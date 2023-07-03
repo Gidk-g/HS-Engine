@@ -4,6 +4,7 @@ import states.LoadingState;
 import states.MainMenuState;
 import states.FreeplayState;
 import states.TitleState;
+import states.OptionsState;
 import states.MusicBeatState;
 import states.StoryMenuState;
 
