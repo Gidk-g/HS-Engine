@@ -35,6 +35,7 @@ import shaders.OverlayShader;
 import shaders.WiggleEffect;
 
 // system
+import system.Config;
 import system.Conductor;
 import system.Controls;
 import system.Discord;
