@@ -14,6 +14,7 @@ class MissingFileSubstate extends MusicBeatSubstate
 	public function new(file:String = "")
 	{
 		super();
+
 		var songName:String = "";
 
 		if (file.contains("-easy"))
@@ -53,6 +54,7 @@ class MissingFileSubstate extends MusicBeatSubstate
 			+ ".json' file are there!";
 
 	}
+
 	override function update(elapsed:Float)
 	{
 		if (FlxG.keys.justPressed.ANY)
