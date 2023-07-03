@@ -236,7 +236,7 @@ class FreeplayState extends MusicBeatState
 			var poop:String = Highscore.formatSong(songs[curSelected].songName.toLowerCase(), curDifficulty);
 
 			#if sys
-			if (!sys.FileSystem.exists(ModPaths.data('charts/' + songs[curSelected].songName.toLowerCase() + '/' + poop)))
+			if (!Assets.exists(Paths.json('charts/' + songs[curSelected].songName.toLowerCase() + '/' + poop)) && !sys.FileSystem.exists(ModPaths.data('charts/' + songs[curSelected].songName.toLowerCase() + '/' + poop)))
 			#else
 			if (!Assets.exists(Paths.json('charts/' + songs[curSelected].songName.toLowerCase() + '/' + poop)))
 		    #end
