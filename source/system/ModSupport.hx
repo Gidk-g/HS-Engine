@@ -416,6 +416,10 @@ class ModScriptSubstate extends MusicBeatSubstate {
             }
         });
 
+		interp.variables.set("close", function() {
+			close();
+		});
+
 		interp.variables.set("add", function(value:FlxObject) {
 			add(value);
 		});
