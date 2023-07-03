@@ -139,11 +139,7 @@ class ModScripts {
             if (modStatePath != null) {
                 if (FileSystem.exists(modStatePath)) {
                     FlxG.switchState(Type.createInstance(ModScriptState, [modStatePath]));
-                } else {
-                    FlxG.log.add("Cannot find state class file: " + modStatePath);
                 }
-            } else {
-                FlxG.log.add("Cannot find state: " + state);
             }
         });
     }
@@ -262,16 +258,16 @@ class ModScriptState extends MusicBeatState {
             if (modStatePath != null) {
                 if (FileSystem.exists(modStatePath)) {
                     FlxG.switchState(Type.createInstance(ModScriptState, [modStatePath]));
-                } else {
-                    FlxG.log.add("Cannot find state class file: " + modStatePath);
                 }
-            } else {
-                FlxG.log.add("Cannot find state: " + state);
             }
         });
 
 		interp.variables.set("add", function(value:FlxObject) {
 			add(value);
+		});
+
+		interp.variables.set("remove", function(value:FlxObject) {
+			remove(value);
 		});
     }
 

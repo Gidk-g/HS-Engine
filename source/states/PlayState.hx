@@ -133,7 +133,9 @@ class PlayState extends MusicBeatState
 
 	public var songHits:Int = 0;
 
+	#if sys
 	public var script:ModScripts = new ModScripts();
+	#end
 
 	#if desktop
 	// Discord RPC variables
@@ -581,7 +583,9 @@ class PlayState extends MusicBeatState
 		          }
               }
 
+		#if sys
 		setScriptFunction();
+		#end
 
 		switch (curStage)
 		{
@@ -832,9 +836,12 @@ class PlayState extends MusicBeatState
 
 		super.create();
 
+		#if sys
 		script.callFunction("createPost");
+		#end
 	}
 
+	#if sys
     function setScriptFunction() {
 		#if sys
 		if (sys.FileSystem.exists(ModPaths.modFolder("data/charts/" + SONG.song + "/script.hx"))) {
@@ -844,6 +851,10 @@ class PlayState extends MusicBeatState
 
 		script.interp.variables.set("add", function(value:FlxObject) {
 			add(value);
+		});
+
+		script.interp.variables.set("remove", function(value:FlxObject) {
+			remove(value);
 		});
 
 		script.interp.variables.set("camFollow", camFollow);
@@ -873,6 +884,7 @@ class PlayState extends MusicBeatState
 
         script.callFunction('create');
 	}
+	#end
 
 	function schoolIntro(?dialogueBox:DialogueBox):Void
 	{
@@ -1432,7 +1444,9 @@ class PlayState extends MusicBeatState
 				// phillyCityLights.members[curLight].alpha -= (Conductor.crochet / 1000) * FlxG.elapsed;
 		}
 
+		#if sys
 		script.callFunction("update", [elapsed]);
+		#end
 
 		super.update(elapsed);
 
@@ -1726,7 +1740,9 @@ class PlayState extends MusicBeatState
 							dad.playAnim('singRIGHT' + altAnim, true);
 					}
 
+					#if sys
 					script.callFunction("dadNoteHit");
+					#end
 
 					dad.holdTimer = 0;
 
@@ -1746,7 +1762,9 @@ class PlayState extends MusicBeatState
 					if (daNote.tooLate || !daNote.wasGoodHit)
 					{
                         noteMiss(Math.abs(daNote.noteData));
+						#if sys
 						script.callFunction("noteMiss", [daNote]);
+						#end
 					}
 
 					daNote.active = false;
@@ -1767,7 +1785,9 @@ class PlayState extends MusicBeatState
 			endSong();
 		#end
 
+		#if sys
 		script.callFunction("updatePost", [elapsed]);
+		#end
 	}
 
 	function endSong():Void
@@ -2273,7 +2293,9 @@ class PlayState extends MusicBeatState
 	{
 		if (!note.wasGoodHit)
 		{
+			#if sys
 			script.callFunction("goodNoteHit", [note]);
+			#end
 
 			if (!note.isSustainNote)
 			{
@@ -2411,7 +2433,9 @@ class PlayState extends MusicBeatState
 	{
 		super.stepHit();
 
+		#if sys
 		script.callFunction("stepHit", [curStep]);
+		#end
 
 		if (FlxG.sound.music.time > Conductor.songPosition + 20 || FlxG.sound.music.time < Conductor.songPosition - 20)
 		{
@@ -2431,7 +2455,9 @@ class PlayState extends MusicBeatState
 	{
 		super.beatHit();
 
+		#if sys
 		script.callFunction("beatHit", [curBeat]);
+		#end
 
 		if (generatedMusic)
 		{

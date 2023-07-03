@@ -134,14 +134,16 @@ class Paths
 
 	inline static public function getSparrowAtlas(key:String, ?library:String)
 	{
+		#if sys
 		var imageLoaded:FlxGraphic = addCustomGraphic(key);
 		var xmlExists:Bool = false;
-		if (sys.FileSystem.exists(ModPaths.modFolder('images/$key.xml')))
-		{
+		if(sys.FileSystem.exists(ModPaths.modFolder('images/$key.xml'))) {
 			xmlExists = true;
 		}
-		return FlxAtlasFrames.fromSparrow((imageLoaded != null ? imageLoaded : image(key, library)),
-			(xmlExists ? sys.io.File.getContent(ModPaths.modFolder('images/$key.xml')) : file('images/$key.xml', TEXT, library)));
+		return FlxAtlasFrames.fromSparrow((imageLoaded != null ? imageLoaded : image(key, library)), (xmlExists ? sys.io.File.getContent(ModPaths.modFolder('images/$key.xml')) : file('images/$key.xml', library)));
+		#else
+		return FlxAtlasFrames.fromSparrow(image(key, library), file('images/$key.xml', library));
+		#end
 	}
 
 	inline static public function getPackerAtlas(key:String, ?library:String)
