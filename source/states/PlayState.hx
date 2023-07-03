@@ -843,11 +843,9 @@ class PlayState extends MusicBeatState
 
 	#if sys
     function setScriptFunction() {
-		#if sys
 		if (sys.FileSystem.exists(ModPaths.modFolder("data/charts/" + SONG.song + "/script.hx"))) {
 			script.loadScript("data/charts/" + SONG.song + "/script");
 		}
-		#end
 
 		script.interp.variables.set("add", function(value:FlxObject) {
 			add(value);
