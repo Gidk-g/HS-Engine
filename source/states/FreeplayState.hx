@@ -235,15 +235,26 @@ class FreeplayState extends MusicBeatState
 		{
 			var poop:String = Highscore.formatSong(songs[curSelected].songName.toLowerCase(), curDifficulty);
 
-			trace(poop);
+			#if sys
+			if (!sys.FileSystem.exists(ModPaths.data('charts/' + songs[curSelected].songName.toLowerCase() + '/' + poop)))
+			#else
+			if (!Assets.exists(Paths.json('charts/' + songs[curSelected].songName.toLowerCase() + '/' + poop)))
+		    #end
+			{
+				openSubState(new substates.MissingFileSubstate(poop));
+			}
+			else
+			{
+				trace(poop);
 
-			PlayState.SONG = Song.loadFromJson(poop, songs[curSelected].songName.toLowerCase());
-			PlayState.isStoryMode = false;
-			PlayState.storyDifficulty = curDifficulty;
-
-			PlayState.storyWeek = songs[curSelected].week;
-			trace('CUR WEEK' + PlayState.storyWeek);
-			LoadingState.loadAndSwitchState(new PlayState());
+				PlayState.SONG = Song.loadFromJson(poop, songs[curSelected].songName.toLowerCase());
+				PlayState.isStoryMode = false;
+				PlayState.storyDifficulty = curDifficulty;
+	
+				PlayState.storyWeek = songs[curSelected].week;
+				trace('CUR WEEK' + PlayState.storyWeek);
+				LoadingState.loadAndSwitchState(new PlayState());
+			}
 		}
 	}
 
