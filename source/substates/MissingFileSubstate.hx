@@ -47,8 +47,10 @@ class MissingFileSubstate extends MusicBeatSubstate
 			+ "\nPlease check the directory path below: "
 			+ "\n 'assets/data/charts/"
 			+ songName
+			#if sys
 			+ "'\n or \n'mods/yourMod/data/charts/"
 			+ songName
+			#end
 			+ "'\n and make sure if '"
 			+ file
 			+ ".json' file are there!";
