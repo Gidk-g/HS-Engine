@@ -822,12 +822,13 @@ class PlayState extends MusicBeatState
 				case 'thorns':
 					schoolIntro(doof);
 				default:
+					#if sys
 					if (sys.FileSystem.exists(ModPaths.modFolder("data/cutscenes/" + SONG.song + ".hx"))) {
 						script.loadScript("data/cutscenes/" + SONG.song);
 						script.callFunction('startCutscene');
-					} else {
+					} else
+					#end
 					    startCountdown();
-					}
 			}
 		}
 		else
@@ -1806,10 +1807,12 @@ class PlayState extends MusicBeatState
 		if (isStoryMode) {
 			switch (curSong.toLowerCase()) {
 				default:
+					#if sys
 					if (sys.FileSystem.exists(ModPaths.modFolder("data/cutscenes/" + SONG.song + "-end.hx"))) {
 						script.loadScript("data/cutscenes/" + SONG.song + "-end");
 						script.callFunction('startEndCutscene');
 					}
+					#end
 			}
 		}
 
