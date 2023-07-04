@@ -29,7 +29,7 @@ class NoteSplash extends FlxSprite
         frames = Paths.getSparrowAtlas("noteSplashes");
         antialiasing = true;
         animation.addByPrefix("splash", "note impact " + FlxG.random.int(1, 2) + " " + noteColor, 24 + FlxG.random.int(-3, 4), false);
-        animation.finishCallback = function(n){ kill(); }
+        animation.finishCallback = function(n) { kill(); }
         animation.play("splash");
         alpha = 0.6;
         updateHitbox();
