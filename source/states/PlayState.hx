@@ -3,6 +3,7 @@ package states;
 #if desktop
 import system.Discord.DiscordClient;
 #end
+import game.NoteSplash;
 import system.Section.SwagSection;
 import system.Song.SwagSong;
 import shaders.WiggleEffect.WiggleEffectType;
@@ -76,6 +77,8 @@ class PlayState extends MusicBeatState
 	public var strumLineNotes:FlxTypedGroup<FlxSprite>;
 	public var playerStrums:FlxTypedGroup<FlxSprite>;
 	public var dadStrums:FlxTypedGroup<FlxSprite>;
+
+    public var bigSplashy:NoteSplash;
 
 	public var camZooming:Bool = false;
 	public var curSong:String = "";
@@ -886,6 +889,8 @@ class PlayState extends MusicBeatState
 		script.interp.variables.set("playerStrums", playerStrums);
 		script.interp.variables.set("dadStrums", dadStrums);
 		script.interp.variables.set("strumLineNotes", strumLineNotes);
+
+		script.interp.variables.set("noteSplashes", bigSplashy);
 
 		if (SONG.notes[Math.floor(curStep / 16)] != null){
 			script.interp.variables.set('mustHitSection', SONG.notes[Math.floor(curStep / 16)].mustHitSection);
@@ -1917,7 +1922,7 @@ class PlayState extends MusicBeatState
 
 	var endingSong:Bool = false;
 
-	private function popUpScore(strumtime:Float):Void
+	private function popUpScore(strumtime:Float, note:Note):Void
 	{
 		var noteDiff:Float = Math.abs(strumtime - Conductor.songPosition);
 		// boyfriend.playAnim('hey');
@@ -1949,6 +1954,10 @@ class PlayState extends MusicBeatState
 		{
 			daRating = 'good';
 			score = 200;
+		}
+
+		if (daRating == 'sick' && Config.noteSplashes) {
+			createNoteSplash(note.noteData);
 		}
 
 		songScore += score;
@@ -2069,6 +2078,12 @@ class PlayState extends MusicBeatState
 		});
 
 		curSection += 1;
+	}
+
+	private function createNoteSplash(note:Int){
+		bigSplashy = new NoteSplash(playerStrums.members[note].x, playerStrums.members[note].y, note);
+		bigSplashy.cameras = [camHUD];
+		add(bigSplashy);
 	}
 
 	public function keyShit():Void {
@@ -2236,7 +2251,7 @@ class PlayState extends MusicBeatState
 
 			if (!note.isSustainNote)
 			{
-				popUpScore(note.strumTime);
+				popUpScore(note.strumTime, note);
 				++songHits;
 				combo += 1;
 			}
