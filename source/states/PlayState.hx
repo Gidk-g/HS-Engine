@@ -75,6 +75,7 @@ class PlayState extends MusicBeatState
 
 	public var strumLineNotes:FlxTypedGroup<FlxSprite>;
 	public var playerStrums:FlxTypedGroup<FlxSprite>;
+	public var dadStrums:FlxTypedGroup<FlxSprite>;
 
 	public var camZooming:Bool = false;
 	public var curSong:String = "";
@@ -713,6 +714,7 @@ class PlayState extends MusicBeatState
 		add(strumLineNotes);
 
 		playerStrums = new FlxTypedGroup<FlxSprite>();
+        dadStrums = new FlxTypedGroup<FlxSprite>();
 
 		// startCountdown();
 
@@ -881,6 +883,10 @@ class PlayState extends MusicBeatState
 		script.interp.variables.set("curBeat", curBeat);
 		script.interp.variables.set("curStep", curStep);
 
+		script.interp.variables.set("playerStrums", playerStrums);
+		script.interp.variables.set("dadStrums", dadStrums);
+		script.interp.variables.set("strumLineNotes", strumLineNotes);
+
 		if (SONG.notes[Math.floor(curStep / 16)] != null){
 			script.interp.variables.set('mustHitSection', SONG.notes[Math.floor(curStep / 16)].mustHitSection);
 			script.interp.variables.set('altAnim', SONG.notes[Math.floor(curStep / 16)].altAnim);
@@ -1016,7 +1022,6 @@ class PlayState extends MusicBeatState
 			}
 
 			switch (swagCounter)
-
 			{
 				case 0:
 					FlxG.sound.play(Paths.sound('intro3'), 0.6);
@@ -1296,14 +1301,20 @@ class PlayState extends MusicBeatState
 
 			babyArrow.ID = i;
 
-			if (player == 1)
-			{
+			if (player == 1) {
 				playerStrums.add(babyArrow);
+			} else {
+				dadStrums.add(babyArrow);
 			}
 
 			babyArrow.animation.play('static');
 			babyArrow.x += 50;
 			babyArrow.x += ((FlxG.width / 2) * player);
+
+			dadStrums.forEach(function(spr:FlxSprite)
+			{					
+				spr.centerOffsets();
+			});
 
 			strumLineNotes.add(babyArrow);
 		}
@@ -1744,6 +1755,22 @@ class PlayState extends MusicBeatState
 							dad.playAnim('singRIGHT' + altAnim, true);
 					}
 
+					dadStrums.forEach(function(spr:FlxSprite)
+					{
+						if (Math.abs(daNote.noteData) == spr.ID)
+						{
+							spr.animation.play('confirm', true);
+						}
+						if (spr.animation.curAnim.name == 'confirm' && !curStage.startsWith('school'))
+						{
+							spr.centerOffsets();
+							spr.offset.x -= 13;
+							spr.offset.y -= 13;
+						}
+						else
+							spr.centerOffsets();
+					});
+
 					#if sys
 					script.callFunction("dadNoteHit");
 					#end
@@ -1777,6 +1804,15 @@ class PlayState extends MusicBeatState
 				}
 			});
 		}
+
+		dadStrums.forEach(function(spr:FlxSprite)
+		{
+			if (spr.animation.finished)
+			{
+				spr.animation.play('static');
+				spr.centerOffsets();
+			}
+		});
 
 		if (!inCutscene)
 			keyShit();
@@ -2038,7 +2074,6 @@ class PlayState extends MusicBeatState
 
 		curSection += 1;
 	}
-
 
 	public function keyShit():Void {
 		var holdingArray:Array<Bool> = [controls.LEFT, controls.DOWN, controls.UP, controls.RIGHT];
