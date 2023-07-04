@@ -822,7 +822,12 @@ class PlayState extends MusicBeatState
 				case 'thorns':
 					schoolIntro(doof);
 				default:
-					startCountdown();
+					if (sys.FileSystem.exists(ModPaths.modFolder("data/cutscenes/" + SONG.song + ".hx"))) {
+						script.loadScript("data/cutscenes/" + SONG.song);
+						script.callFunction('startCutscene');
+					} else {
+					    startCountdown();
+					}
 			}
 		}
 		else
@@ -1790,11 +1795,22 @@ class PlayState extends MusicBeatState
 		canPause = false;
 		FlxG.sound.music.volume = 0;
 		vocals.volume = 0;
+
 		if (SONG.validScore)
 		{
 			#if !switch
 			Highscore.saveScore(SONG.song, songScore, storyDifficulty);
 			#end
+		}
+
+		if (isStoryMode) {
+			switch (curSong.toLowerCase()) {
+				default:
+					if (sys.FileSystem.exists(ModPaths.modFolder("data/cutscenes/" + SONG.song + "-end.hx"))) {
+						script.loadScript("data/cutscenes/" + SONG.song + "-end");
+						script.callFunction('startEndCutscene');
+					}
+			}
 		}
 
 		if (isStoryMode)
