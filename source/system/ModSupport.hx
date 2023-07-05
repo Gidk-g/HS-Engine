@@ -514,6 +514,8 @@ class ModScriptSubstate extends MusicBeatSubstate {
 }
 
 class ModScriptObject extends FlxSprite {
+    public var doesDefaultDraw = true;
+
 	public var script:hscript.Expr;
 	public var interp = new Interp();
 	public var parser = new Parser();
@@ -530,6 +532,8 @@ class ModScriptObject extends FlxSprite {
         parser.allowTypes = true;
         parser.allowJSON = true;
         parser.allowMetadata = true;
+
+        interp.scriptObject = this;
 
 		interp.allowStaticVariables = true;
         interp.allowPublicVariables = true;
@@ -630,7 +634,8 @@ class ModScriptObject extends FlxSprite {
 
 	override function draw() {
         callFunction("draw");
-        super.draw();
+        if (doesDefaultDraw)
+            super.draw();
     }
 
     public function loadScript(path:String):Void {
