@@ -132,7 +132,6 @@ class ModScripts {
 		interp.variables.set("Note", Note);
 		interp.variables.set("Config", Config);
         interp.variables.set("ModPaths", ModPaths);
-        interp.variables.set("ModScriptObject", ModScriptObject);
         interp.variables.set("MusicBeatState", MusicBeatState);
         interp.variables.set("MusicBeatSubstate", MusicBeatSubstate);
 
@@ -279,7 +278,6 @@ class ModScriptState extends MusicBeatState {
 		interp.variables.set("Note", Note);
 		interp.variables.set("Config", Config);
         interp.variables.set("ModPaths", ModPaths);
-        interp.variables.set("ModScriptObject", ModScriptObject);
         interp.variables.set("MusicBeatState", MusicBeatState);
         interp.variables.set("MusicBeatSubstate", MusicBeatSubstate);
 
@@ -440,7 +438,6 @@ class ModScriptSubstate extends MusicBeatSubstate {
 		interp.variables.set("Note", Note);
 		interp.variables.set("Config", Config);
         interp.variables.set("ModPaths", ModPaths);
-        interp.variables.set("ModScriptObject", ModScriptObject);
         interp.variables.set("MusicBeatState", MusicBeatState);
         interp.variables.set("MusicBeatSubstate", MusicBeatSubstate);
 
@@ -500,152 +497,6 @@ class ModScriptSubstate extends MusicBeatSubstate {
         var scriptContent:String = File.getContent(scriptPath);
         var classDef = parser.parseString(scriptContent);
         interp.execute(classDef);
-    }
-
-	public function callFunction(funcName:String, ?args:Array<Dynamic>):Dynamic {
-		if (args == null)
-			args = [];
-		try {
-			var func:Dynamic = interp.variables.get(funcName);
-			if (func != null && Reflect.isFunction(func))
-				return Reflect.callMethod(null, func, args);
-		} catch (error:Dynamic) {
-			FlxG.log.add(error.details());
-            trace(error);
-		}
-		return true;
-	}
-}
-
-class ModScriptObject extends FlxSprite {
-    public var doesDefaultDraw = true;
-
-	public var script:hscript.Expr;
-	public var interp = new Interp();
-	public var parser = new Parser();
-
-	public function new(scriptPath:String, x:Float, y:Float) {
-        executeScript();
-        loadScript(scriptPath);
-        callFunction("create");
-        super(x, y);
-        callFunction("createPost");
-    }
-
-    public function executeScript() {
-        parser.allowTypes = true;
-        parser.allowJSON = true;
-        parser.allowMetadata = true;
-
-        interp.scriptObject = this;
-
-		interp.allowStaticVariables = true;
-        interp.allowPublicVariables = true;
-
-		interp.variables.set("object", this);
-
-		interp.variables.set("Int", Int);
-		interp.variables.set("String", String);
-		interp.variables.set("Float", Float);
-		interp.variables.set("Array", Array);
-		interp.variables.set("Bool", Bool);
-		interp.variables.set("Dynamic", Dynamic);
-		interp.variables.set("Math", Math);
-		interp.variables.set("FlxMath", FlxMath);
-		interp.variables.set("Std", Std);
-		interp.variables.set("StringTools", StringTools);
-		interp.variables.set("FlxG", FlxG);
-		interp.variables.set("FlxSound", FlxSound);
-		interp.variables.set("FlxSprite", FlxSprite);
-		interp.variables.set("FlxText", FlxText);
-		interp.variables.set("FlxGraphic", FlxGraphic);
-		interp.variables.set("FlxTween", FlxTween);
-		interp.variables.set("FlxColor", system.FlxColor_Util);
-		interp.variables.set("FlxCamera", FlxCamera);
-		interp.variables.set("Assets", Assets);
-		interp.variables.set("File", File);
-		interp.variables.set("Windows", Windows);
-		interp.variables.set("FileSystem", FileSystem);
-		interp.variables.set("PlayState", PlayState);
-		interp.variables.set("FlxGroup", FlxGroup);
-		interp.variables.set("FlxTypedGroup", FlxTypedGroup);
-		interp.variables.set("CoolUtil", CoolUtil);
-		interp.variables.set("Paths", Paths);
-		interp.variables.set("Path", Path);
-		interp.variables.set("Json", Json);
-		interp.variables.set("FlxAngle", FlxAngle);
-		interp.variables.set("FlxAtlasFrames", FlxAtlasFrames);
-		interp.variables.set("FlxAtlas", FlxAtlas);
-		interp.variables.set("Character", Character);
-		interp.variables.set("Boyfriend", Boyfriend);
-		interp.variables.set("Song", Song);
-        interp.variables.set("Controls", Controls);
-		interp.variables.set("Conductor", Conductor);
-		interp.variables.set("Note", Note);
-		interp.variables.set("Config", Config);
-        interp.variables.set("ModPaths", ModPaths);
-        interp.variables.set("ModScriptObject", ModScriptObject);
-        interp.variables.set("MusicBeatState", MusicBeatState);
-        interp.variables.set("MusicBeatSubstate", MusicBeatSubstate);
-
-        interp.variables.set("switchState", function(state:String):Void {
-            var modStatePath = ModPaths.modFolder("data/states/" + state + ".hx");
-            if (modStatePath != null) {
-                if (FileSystem.exists(modStatePath)) {
-                    FlxG.switchState(Type.createInstance(ModScriptState, [modStatePath]));
-                }
-            }
-        });
-
-        interp.variables.set("openSubState", function(substate:String, pauseGame:Bool = false):Void {
-            var modSubStatePath = ModPaths.modFolder("data/substates/" + substate + ".hx");
-            if (modSubStatePath != null) {
-                if (FileSystem.exists(modSubStatePath)) {
-                    PlayState.instance.openSubState(Type.createInstance(ModScriptSubstate, [modSubStatePath]));
-                }
-            }
-            if(pauseGame) {
-                PlayState.instance.persistentUpdate = false;
-                PlayState.instance.persistentDraw = true;
-                PlayState.instance.paused = true;
-                if(FlxG.sound.music != null) {
-                    FlxG.sound.music.pause();
-                    PlayState.instance.vocals.pause();
-                }
-            }
-        });
-
-        interp.variables.set("closeSubState", function() {
-			if(ModScriptSubstate.instance != null) {
-                PlayState.instance.closeSubState();
-                ModScriptSubstate.instance = null;
-                return true;
-            }
-            return false;
-        });
-    }
-
-	override function update(elapsed:Float) {
-        callFunction("update", [elapsed]);
-        super.update(elapsed);
-        callFunction("updatePost", [elapsed]);
-    }
-
-	override function destroy() {
-        callFunction("destroy");
-        super.destroy();
-    }
-
-	override function draw() {
-        callFunction("draw");
-        if (doesDefaultDraw)
-            super.draw();
-    }
-
-    public function loadScript(path:String):Void {
-        var scriptContent:String = File.getContent(ModPaths.modFolder('data/objects/' + path + ".hx"));
-        script = parser.parseString(scriptContent);
-        interp.execute(script);
     }
 
 	public function callFunction(funcName:String, ?args:Array<Dynamic>):Dynamic {
