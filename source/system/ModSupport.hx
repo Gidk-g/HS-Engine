@@ -534,6 +534,8 @@ class ModScriptObject extends FlxSprite {
 		interp.allowStaticVariables = true;
         interp.allowPublicVariables = true;
 
+		interp.variables.set("object", this);
+
 		interp.variables.set("Int", Int);
 		interp.variables.set("String", String);
 		interp.variables.set("Float", Float);
