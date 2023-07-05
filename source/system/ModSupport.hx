@@ -144,13 +144,32 @@ class ModScripts {
             }
         });
 
-        interp.variables.set("openSubState", function(substate:String):Void {
+        interp.variables.set("openSubState", function(substate:String, pauseGame:Bool = false):Void {
             var modSubStatePath = ModPaths.modFolder("data/substates/" + substate + ".hx");
             if (modSubStatePath != null) {
                 if (FileSystem.exists(modSubStatePath)) {
                     PlayState.instance.openSubState(Type.createInstance(ModScriptSubstate, [modSubStatePath]));
                 }
             }
+            if(pauseGame) {
+                PlayState.instance.persistentUpdate = false;
+                PlayState.instance.persistentDraw = true;
+                PlayState.instance.paused = true;
+                if(FlxG.sound.music != null) {
+                    FlxG.sound.music.pause();
+                    PlayState.instance.vocals.pause();
+                }
+            }
+        });
+
+        interp.variables.set("closeSubState", function() {
+			if(ModScriptSubstate.instance != null)
+            {
+                PlayState.instance.closeSubState();
+                ModScriptSubstate.instance = null;
+                return true;
+            }
+            return false;
         });
     }
 
@@ -273,13 +292,32 @@ class ModScriptState extends MusicBeatState {
             }
         });
 
-        interp.variables.set("openSubState", function(substate:String):Void {
+        interp.variables.set("openSubState", function(substate:String, pauseGame:Bool = false):Void {
             var modSubStatePath = ModPaths.modFolder("data/substates/" + substate + ".hx");
             if (modSubStatePath != null) {
                 if (FileSystem.exists(modSubStatePath)) {
                     PlayState.instance.openSubState(Type.createInstance(ModScriptSubstate, [modSubStatePath]));
                 }
             }
+            if(pauseGame) {
+                PlayState.instance.persistentUpdate = false;
+                PlayState.instance.persistentDraw = true;
+                PlayState.instance.paused = true;
+                if(FlxG.sound.music != null) {
+                    FlxG.sound.music.pause();
+                    PlayState.instance.vocals.pause();
+                }
+            }
+        });
+
+        interp.variables.set("closeSubState", function() {
+			if(ModScriptSubstate.instance != null)
+            {
+                PlayState.instance.closeSubState();
+                ModScriptSubstate.instance = null;
+                return true;
+            }
+            return false;
         });
 
 		interp.variables.set("add", function(value:FlxObject) {
@@ -313,11 +351,14 @@ class ModScriptState extends MusicBeatState {
 }
 
 class ModScriptSubstate extends MusicBeatSubstate {
+	public static var instance:ModScriptSubstate;
+
     public var scriptPath:String;
 	public var interp = new Interp();
 	public var parser = new Parser();
 
     override public function new(scriptPath:String) {
+		instance = this;
         this.scriptPath = scriptPath;
         executeScript();
         loadScript();
@@ -410,13 +451,32 @@ class ModScriptSubstate extends MusicBeatSubstate {
             }
         });
 
-        interp.variables.set("openSubState", function(substate:String):Void {
+        interp.variables.set("openSubState", function(substate:String, pauseGame:Bool = false):Void {
             var modSubStatePath = ModPaths.modFolder("data/substates/" + substate + ".hx");
             if (modSubStatePath != null) {
                 if (FileSystem.exists(modSubStatePath)) {
                     PlayState.instance.openSubState(Type.createInstance(ModScriptSubstate, [modSubStatePath]));
                 }
             }
+            if(pauseGame) {
+                PlayState.instance.persistentUpdate = false;
+                PlayState.instance.persistentDraw = true;
+                PlayState.instance.paused = true;
+                if(FlxG.sound.music != null) {
+                    FlxG.sound.music.pause();
+                    PlayState.instance.vocals.pause();
+                }
+            }
+        });
+
+        interp.variables.set("closeSubState", function() {
+			if(ModScriptSubstate.instance != null)
+            {
+                PlayState.instance.closeSubState();
+                ModScriptSubstate.instance = null;
+                return true;
+            }
+            return false;
         });
 
 		interp.variables.set("close", function() {
