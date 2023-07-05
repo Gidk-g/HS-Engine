@@ -524,11 +524,11 @@ class ModScriptObject extends FlxSprite {
 	public var interp = new Interp();
 	public var parser = new Parser();
 
-	public function new(scriptPath:String) {
+	public function new(scriptPath:String, x:Float, y:Float) {
         executeScript();
         loadScript(scriptPath);
         callFunction("create");
-        super();
+        super(x, y);
         callFunction("createPost");
     }
 
