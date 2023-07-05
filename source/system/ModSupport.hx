@@ -163,8 +163,7 @@ class ModScripts {
         });
 
         interp.variables.set("closeSubState", function() {
-			if(ModScriptSubstate.instance != null)
-            {
+			if(ModScriptSubstate.instance != null) {
                 PlayState.instance.closeSubState();
                 ModScriptSubstate.instance = null;
                 return true;
@@ -311,8 +310,7 @@ class ModScriptState extends MusicBeatState {
         });
 
         interp.variables.set("closeSubState", function() {
-			if(ModScriptSubstate.instance != null)
-            {
+			if(ModScriptSubstate.instance != null) {
                 PlayState.instance.closeSubState();
                 ModScriptSubstate.instance = null;
                 return true;
@@ -470,8 +468,7 @@ class ModScriptSubstate extends MusicBeatSubstate {
         });
 
         interp.variables.set("closeSubState", function() {
-			if(ModScriptSubstate.instance != null)
-            {
+			if(ModScriptSubstate.instance != null) {
                 PlayState.instance.closeSubState();
                 ModScriptSubstate.instance = null;
                 return true;
