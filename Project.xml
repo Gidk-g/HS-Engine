@@ -2,7 +2,7 @@
 <project>
 	<!-- _________________________ Application Settings _________________________ -->
 
-	<app title="Friday Night Funkin': HS-Engine" file="HS-Engine" packageName="com.ninjamuffin99.funkin" package="com.ninjamuffin99.funkin" main="Main" version="0.1" company="ninjamuffin99" />
+	<app title="Friday Night Funkin': HS-Engine" file="HS-Engine" packageName="com.gidkg.funkin" package="com.gidkg.funkin" main="Main" version="0.1" company="GidkG" />
 
 	<!--Switch Export with Unique ApplicationID and Icon-->
 	<set name="APP_ID" value="0x0100f6c013bbc000" />
@@ -115,6 +115,7 @@
 	<haxelib name="flixel-ui" />
 	<haxelib name="faxe" if='switch'/>
 	<haxelib name="discord_rpc" if="desktop"/>
+	<haxelib name="hxCodec" if="desktop || android" />
 
 	<haxedef name="hscriptPos" />
 	<haxeflag name="-dce" value="no"/>
@@ -158,6 +159,9 @@
 
 	<!--Enable this for Nape release builds for a serious peformance improvement-->
 	<haxedef name="NAPE_RELEASE_BUILD" unless="debug" />
+
+	<!-- LibVLC Logging for hxCodec -->
+	<haxedef name="HXC_LIBVLC_LOGGING" if="debug" />
 
 	<!-- _________________________________ Custom _______________________________ -->
 
