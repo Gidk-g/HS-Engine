@@ -99,6 +99,8 @@ class PlayState extends MusicBeatState
 	public var camGame:FlxCamera;
 
 	public var introSoundsSuffix:String = '';
+	public var noteSkinPath:String = 'NOTE_assets';
+	public var noteSplashesPath:String = 'noteSplashes';
 
 	var dialogue:Array<String> = ['blah blah blah', 'coolswag'];
 
@@ -1266,7 +1268,7 @@ class PlayState extends MusicBeatState
 					}
 
 				default:
-					babyArrow.frames = Paths.getSparrowAtlas('NOTE_assets');
+					babyArrow.frames = Paths.getSparrowAtlas(noteSkinPath);
 					babyArrow.animation.addByPrefix('green', 'arrowUP');
 					babyArrow.animation.addByPrefix('blue', 'arrowDOWN');
 					babyArrow.animation.addByPrefix('purple', 'arrowLEFT');
@@ -1299,6 +1301,11 @@ class PlayState extends MusicBeatState
 							babyArrow.animation.addByPrefix('confirm', 'right confirm', 24, false);
 					}
 			}
+
+			#if sys
+			script.interp.variables.set("babyArrow", babyArrow);
+			script.callFunction('generateStaticArrows', [player]);
+			#end
 
 			babyArrow.updateHitbox();
 			babyArrow.scrollFactor.set();

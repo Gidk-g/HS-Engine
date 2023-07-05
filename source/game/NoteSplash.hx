@@ -26,7 +26,7 @@ class NoteSplash extends FlxSprite
                 noteColor = "red";
         }
 
-        frames = Paths.getSparrowAtlas("noteSplashes");
+        frames = Paths.getSparrowAtlas(PlayState.instance.noteSplashesPath);
         antialiasing = true;
         animation.addByPrefix("splash", "note impact " + FlxG.random.int(1, 2) + " " + noteColor, 24 + FlxG.random.int(-3, 4), false);
         animation.finishCallback = function(n) { kill(); }
