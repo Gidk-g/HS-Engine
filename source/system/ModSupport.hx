@@ -233,6 +233,8 @@ class ModScriptState extends MusicBeatState {
         parser.allowJSON = true;
         parser.allowMetadata = true;
 
+        interp.scriptObject = this;
+
 		interp.allowStaticVariables = true;
         interp.allowPublicVariables = true;
 
@@ -392,6 +394,8 @@ class ModScriptSubstate extends MusicBeatSubstate {
         parser.allowTypes = true;
         parser.allowJSON = true;
         parser.allowMetadata = true;
+
+        interp.scriptObject = this;
 
 		interp.allowStaticVariables = true;
         interp.allowPublicVariables = true;
