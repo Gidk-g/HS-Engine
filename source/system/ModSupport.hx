@@ -108,7 +108,6 @@ class ModScripts {
 		interp.variables.set("FlxText", FlxText);
 		interp.variables.set("FlxGraphic", FlxGraphic);
 		interp.variables.set("FlxTween", FlxTween);
-		interp.variables.set("FlxColor", system.FlxColor_Util);
 		interp.variables.set("FlxCamera", FlxCamera);
 		interp.variables.set("Assets", Assets);
 		interp.variables.set("File", File);
@@ -134,6 +133,14 @@ class ModScripts {
         interp.variables.set("ModPaths", ModPaths);
         interp.variables.set("MusicBeatState", MusicBeatState);
         interp.variables.set("MusicBeatSubstate", MusicBeatSubstate);
+
+        interp.variables.set("FlxColor", system.classes.FlxColorHelper);
+        interp.variables.set("FlxKey", system.classes.FlxKeyHelper);
+        interp.variables.set("BlendMode", system.classes.BlendModeHelper);
+        interp.variables.set("FlxCameraFollowStyle", system.classes.FlxCameraFollowStyleHelper);
+        interp.variables.set("FlxTextAlign", system.classes.FlxTextAlignHelper);
+        interp.variables.set("FlxTextBorderStyle", system.classes.FlxTextBorderStyleHelper);
+        interp.variables.set("StringHelper", system.classes.StringHelper);
 
         interp.variables.set("switchState", function(state:String):Void {
             var modStatePath = ModPaths.modFolder("data/states/" + state + ".hx");
@@ -253,7 +260,6 @@ class ModScriptState extends MusicBeatState {
 		interp.variables.set("FlxText", FlxText);
 		interp.variables.set("FlxGraphic", FlxGraphic);
 		interp.variables.set("FlxTween", FlxTween);
-		interp.variables.set("FlxColor", system.FlxColor_Util);
 		interp.variables.set("FlxCamera", FlxCamera);
 		interp.variables.set("Assets", Assets);
 		interp.variables.set("File", File);
@@ -280,6 +286,14 @@ class ModScriptState extends MusicBeatState {
         interp.variables.set("ModPaths", ModPaths);
         interp.variables.set("MusicBeatState", MusicBeatState);
         interp.variables.set("MusicBeatSubstate", MusicBeatSubstate);
+
+        interp.variables.set("FlxColor", system.classes.FlxColorHelper);
+        interp.variables.set("FlxKey", system.classes.FlxKeyHelper);
+        interp.variables.set("BlendMode", system.classes.BlendModeHelper);
+        interp.variables.set("FlxCameraFollowStyle", system.classes.FlxCameraFollowStyleHelper);
+        interp.variables.set("FlxTextAlign", system.classes.FlxTextAlignHelper);
+        interp.variables.set("FlxTextBorderStyle", system.classes.FlxTextBorderStyleHelper);
+        interp.variables.set("StringHelper", system.classes.StringHelper);
 
 	    interp.variables.set("curBeat", curBeat);
 		interp.variables.set("curStep", curStep);
@@ -414,7 +428,6 @@ class ModScriptSubstate extends MusicBeatSubstate {
 		interp.variables.set("FlxText", FlxText);
 		interp.variables.set("FlxGraphic", FlxGraphic);
 		interp.variables.set("FlxTween", FlxTween);
-		interp.variables.set("FlxColor", system.FlxColor_Util);
 		interp.variables.set("FlxCamera", FlxCamera);
 		interp.variables.set("Assets", Assets);
 		interp.variables.set("File", File);
@@ -440,6 +453,14 @@ class ModScriptSubstate extends MusicBeatSubstate {
         interp.variables.set("ModPaths", ModPaths);
         interp.variables.set("MusicBeatState", MusicBeatState);
         interp.variables.set("MusicBeatSubstate", MusicBeatSubstate);
+
+        interp.variables.set("FlxColor", system.classes.FlxColorHelper);
+        interp.variables.set("FlxKey", system.classes.FlxKeyHelper);
+        interp.variables.set("BlendMode", system.classes.BlendModeHelper);
+        interp.variables.set("FlxCameraFollowStyle", system.classes.FlxCameraFollowStyleHelper);
+        interp.variables.set("FlxTextAlign", system.classes.FlxTextAlignHelper);
+        interp.variables.set("FlxTextBorderStyle", system.classes.FlxTextBorderStyleHelper);
+        interp.variables.set("StringHelper", system.classes.StringHelper);
 
 	    interp.variables.set("curBeat", curBeat);
 		interp.variables.set("curStep", curStep);
