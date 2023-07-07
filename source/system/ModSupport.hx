@@ -22,6 +22,10 @@ import hscript.Parser;
 import hscript.Interp;
 import sys.FileSystem;
 import sys.io.File;
+import llua.Convert;
+import llua.Lua;
+import llua.State;
+import llua.LuaL;
 
 class ModSupport {
     // lol
@@ -533,5 +537,125 @@ class ModScriptSubstate extends MusicBeatSubstate {
 		}
 		return true;
 	}
+}
+
+class ModLuaScripts {
+	public var lua:State = null;
+	public var scriptName:String = '';
+	public var functionsCalled:Array<String> = [];
+
+	function call(funcName:String, args:Array<Dynamic>, ?type:String):Dynamic {
+		functionsCalled.push(funcName);
+
+		var result:Any = null;
+
+		Lua.getglobal(lua, funcName);
+
+		for (arg in args) {
+			Convert.toLua(lua, arg);
+		}
+
+		result = Lua.pcall(lua, args.length, 1, 0);
+
+		if (result == null) {
+			return null;
+		} else {
+			return convert(result, type);
+		}
+	}
+
+	public function callFunction(funcName, ?args:Array<Dynamic>) {
+		return Lua.tostring(lua, call(funcName, args));
+	}
+
+	public function setVar(varName:String, value:Dynamic):Void {
+		Convert.toLua(lua, value);
+		Lua.setglobal(lua, varName);
+	}
+
+	public function getVar(varName:String, type:String):Dynamic {
+		var result:Any = null;
+
+		Lua.getglobal(lua, varName);
+		result = Convert.fromLua(lua, -1);
+		Lua.pop(lua, 1);
+
+		if (result == null)
+			return null;
+		else {
+			var new_result = convert(result, type);
+			return new_result;
+		}
+	}
+
+	private function convert(v:Any, type:String):Dynamic { // I didn't write this lol
+		if (Std.isOfType(v, String) && type != null) {
+			var v:String = v;
+			if (type.substr(0, 4) == 'array') {
+				if (type.substr(4) == 'float') {
+					var array:Array<String> = v.split(',');
+					var array2:Array<Float> = new Array();
+					for (vars in array) {
+						array2.push(Std.parseFloat(vars));
+					}
+					return array2;
+				} else if (type.substr(4) == 'int') {
+					var array:Array<String> = v.split(',');
+					var array2:Array<Int> = new Array();
+					for (vars in array) {
+						array2.push(Std.parseInt(vars));
+					}
+					return array2;
+				} else {
+					var array:Array<String> = v.split(',');
+					return array;
+				}
+			} else if (type == 'float') {
+				return Std.parseFloat(v);
+			} else if (type == 'int') {
+				return Std.parseInt(v);
+			} else if (type == 'bool') {
+				if (v == 'true') {
+					return true;
+				} else {
+					return false;
+				}
+			} else {
+				return v;
+			}
+		} else {
+			return v;
+		}
+	}
+
+	public function new(script:String) {
+		lua = LuaL.newstate();
+		LuaL.openlibs(lua);
+		Lua.init_callbacks(lua);
+
+		try {
+			var result:Dynamic = LuaL.dofile(lua, script);
+			var resultStr:String = Lua.tostring(lua, result);
+			if(resultStr != null && result != 0) {
+				trace('Error on lua script! ' + resultStr);
+				#if windows
+				lime.app.Application.current.window.alert(resultStr, 'Error on lua script!');
+				#else
+				trace('Error loading lua script: "$script"\n' + resultStr);
+				#end
+				lua = null;
+				return;
+			}
+		} catch(e:Dynamic) {
+			trace(e);
+			return;
+		}
+
+		scriptName = script;
+
+		Lua_helper.add_callback(lua, "makeText", function(tag:String, text:String, x:Float, y:Float) {});
+		Lua_helper.add_callback(lua, "makeSprite", function(tag:String, image:String, x:Float, y:Float) {});
+		Lua_helper.add_callback(lua, "makeAnimatedSprite", function(tag:String, image:String, x:Float, y:Float) {});
+    }
 }
 #end

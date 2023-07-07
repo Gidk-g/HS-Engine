@@ -51,5 +51,11 @@ import system.ModSupport.ModPaths;
 import system.ModSupport.ModScripts;
 #end
 
+#if sys
+#if windows
+import system.ModSupport.ModLuaScripts;
+#end
+#end
+
 // paths lmao
 import Paths;
