@@ -25,7 +25,7 @@ class MainMenuState extends MusicBeatState
 	var menuItems:FlxTypedGroup<FlxSprite>;
 
 	#if !switch
-	var optionShit:Array<String> = ['story mode', 'freeplay', 'donate', 'options'];
+	var optionShit:Array<String> = CoolUtil.coolTextFile(Paths.txt('menuButtonlist'));
 	#else
 	var optionShit:Array<String> = ['story mode', 'freeplay'];
 	#end
@@ -42,6 +42,16 @@ class MainMenuState extends MusicBeatState
 
 		transIn = FlxTransitionableState.defaultTransIn;
 		transOut = FlxTransitionableState.defaultTransOut;
+
+		#if sys
+        for (dir in sys.FileSystem.readDirectory('mods'))
+		{
+			if (sys.FileSystem.exists('mods/' + dir + '/data/menuList.txt'))
+			{
+				optionShit = sys.io.File.getContent('mods/' + dir + '/data/menuList.txt').trim().split('\n');
+			}
+		}
+		#end
 
 		if (!FlxG.sound.music.playing)
 		{
@@ -77,12 +87,10 @@ class MainMenuState extends MusicBeatState
 		menuItems = new FlxTypedGroup<FlxSprite>();
 		add(menuItems);
 
-		var tex = Paths.getSparrowAtlas('FNF_main_menu_assets');
-
 		for (i in 0...optionShit.length)
 		{
 			var menuItem:FlxSprite = new FlxSprite(0, 60 + (i * 160));
-			menuItem.frames = tex;
+			menuItem.frames = Paths.getSparrowAtlas('mainMenu/' + optionShit[i]);
 			menuItem.animation.addByPrefix('idle', optionShit[i] + " basic", 24);
 			menuItem.animation.addByPrefix('selected', optionShit[i] + " white", 24);
 			menuItem.animation.play('idle');
@@ -172,12 +180,21 @@ class MainMenuState extends MusicBeatState
 
 								switch (daChoice)
 								{
-									case 'story mode':
+									case 'story_mode':
 										FlxG.switchState(new StoryMenuState());
 									case 'freeplay':
 										FlxG.switchState(new FreeplayState());
 									case 'options':
 										FlxG.switchState(new OptionsState());
+									#if sys
+									default:
+										var modStatePath = ModPaths.modFolder("data/states/" + optionShit[curSelected] + ".hx");
+										if (modStatePath != null) {
+											if (sys.FileSystem.exists(modStatePath)) {
+												FlxG.switchState(Type.createInstance(system.ModSupport.ModScriptState, [modStatePath]));
+											}
+										}
+									#end
 								}
 							});
 						}
