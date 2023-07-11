@@ -154,6 +154,9 @@ class PlayState extends MusicBeatState
 	var detailsPausedText:String = "";
 	#end
 
+	public var backgroundGroup:FlxTypedGroup<FlxSprite>;
+	public var foregroundGroup:FlxTypedGroup<FlxSprite>;
+
 	override public function create()
 	{
 		instance = this;
@@ -591,6 +594,9 @@ class PlayState extends MusicBeatState
 		          }
               }
 
+		backgroundGroup = new FlxTypedGroup<FlxSprite>();
+	    add(backgroundGroup);
+
 		#if sys
 		setScriptFunction();
 		#end
@@ -709,6 +715,9 @@ class PlayState extends MusicBeatState
 
 		add(dad);
 		add(boyfriend);
+
+		foregroundGroup = new FlxTypedGroup<FlxSprite>();
+		add(foregroundGroup);
 
 		var doof:DialogueBox = new DialogueBox(false, dialogue);
 		// doof.x += 70;
@@ -996,7 +1005,7 @@ class PlayState extends MusicBeatState
 	var startTimer:FlxTimer;
 	var perfectMode:Bool = false;
 
-	function startCountdown():Void
+	public function startCountdown():Void
 	{
 		inCutscene = false;
 

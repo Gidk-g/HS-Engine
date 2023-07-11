@@ -4,13 +4,17 @@ package system;
 import haxe.Json;
 import flixel.FlxG;
 import haxe.io.Path;
+import Type.ValueType;
 import flixel.FlxObject;
 import flixel.math.FlxAngle;
 import flixel.group.FlxGroup;
+import flixel.util.FlxTimer;
+import openfl.display.BlendMode;
 import flixel.graphics.atlas.FlxAtlas;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.graphics.FlxGraphic;
+import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.FlxSprite;
 import flixel.FlxCamera;
@@ -26,6 +30,8 @@ import llua.Convert;
 import llua.Lua;
 import llua.State;
 import llua.LuaL;
+
+using StringTools;
 
 class ModSupport {
     // lol
@@ -137,6 +143,8 @@ class ModScripts {
         interp.variables.set("ModPaths", ModPaths);
         interp.variables.set("MusicBeatState", MusicBeatState);
         interp.variables.set("MusicBeatSubstate", MusicBeatSubstate);
+
+		interp.variables.set('Modchart', ModchartAPI);
 
         interp.variables.set("FlxColor", system.classes.FlxColorHelper);
         interp.variables.set("FlxKey", system.classes.FlxKeyHelper);
@@ -290,6 +298,8 @@ class ModScriptState extends MusicBeatState {
         interp.variables.set("ModPaths", ModPaths);
         interp.variables.set("MusicBeatState", MusicBeatState);
         interp.variables.set("MusicBeatSubstate", MusicBeatSubstate);
+
+		interp.variables.set('Modchart', ModchartAPI);
 
         interp.variables.set("FlxColor", system.classes.FlxColorHelper);
         interp.variables.set("FlxKey", system.classes.FlxKeyHelper);
@@ -458,6 +468,8 @@ class ModScriptSubstate extends MusicBeatSubstate {
         interp.variables.set("MusicBeatState", MusicBeatState);
         interp.variables.set("MusicBeatSubstate", MusicBeatSubstate);
 
+		interp.variables.set('Modchart', ModchartAPI);
+
         interp.variables.set("FlxColor", system.classes.FlxColorHelper);
         interp.variables.set("FlxKey", system.classes.FlxKeyHelper);
         interp.variables.set("BlendMode", system.classes.BlendModeHelper);
@@ -543,6 +555,18 @@ class ModLuaScripts {
 	public var lua:State = null;
 	public var scriptName:String = '';
 	public var functionsCalled:Array<String> = [];
+
+	var lePlayState:PlayState = null;
+
+	#if (haxe >= "4.0.0")
+	public var tweens:Map<String, FlxTween> = new Map();
+	public var sprites:Map<String, LuaSprite> = new Map();
+	public var timers:Map<String, FlxTimer> = new Map();
+	#else
+	public var tweens:Map<String, FlxTween> = new Map<String, FlxTween>();
+	public var sprites:Map<String, LuaSprite> = new Map<String, Dynamic>();
+	public var timers:Map<String, FlxTimer> = new Map<String, FlxTimer>();
+	#end
 
 	function call(funcName:String, args:Array<Dynamic>, ?type:String):Dynamic {
 		functionsCalled.push(funcName);
@@ -653,9 +677,782 @@ class ModLuaScripts {
 
 		scriptName = script;
 
-		Lua_helper.add_callback(lua, "makeText", function(tag:String, text:String, x:Float, y:Float) {});
-		Lua_helper.add_callback(lua, "makeSprite", function(tag:String, image:String, x:Float, y:Float) {});
-		Lua_helper.add_callback(lua, "makeAnimatedSprite", function(tag:String, image:String, x:Float, y:Float) {});
+		var curState:Dynamic = FlxG.state;
+		lePlayState = curState;
+
+		setVar('curBpm', Conductor.bpm);
+		setVar('bpm', PlayState.SONG.bpm);
+		setVar('scrollSpeed', PlayState.SONG.speed);
+		setVar('crochet', Conductor.crochet);
+		setVar('stepCrochet', Conductor.stepCrochet);
+		setVar('songLength', FlxG.sound.music.length);
+		setVar('songName', PlayState.SONG.song);
+
+		setVar('cameraX', 0);
+		setVar('cameraY', 0);
+
+		setVar('screenWidth', FlxG.width);
+		setVar('screenHeight', FlxG.height);
+
+		setVar('curBeat', 0);
+		setVar('curStep', 0);
+
+		Lua_helper.add_callback(lua, "playSound", function(sound:String, volume:Float = 1) {
+			FlxG.sound.play(Paths.sound(sound), volume);
+		});	
+
+		Lua_helper.add_callback(lua, "startCountdown", function(variable:String) {
+			lePlayState.startCountdown();
+		});
+
+		Lua_helper.add_callback(lua, "getSongPosition", function() {
+			return Conductor.songPosition;
+		});
+
+		Lua_helper.add_callback(lua, "getColorFromHex", function(color:String) {
+			if(!color.startsWith('0x')) color = '0xff' + color;
+			return Std.parseInt(color);
+		});
+
+		Lua_helper.add_callback(lua, "cameraShake", function(camera:String, intensity:Float, duration:Float) {
+			cameraFromString(camera).shake(intensity, duration);
+		});
+
+		Lua_helper.add_callback(lua, "cameraFlash", function(camera:String, color:String, duration:Float,forced:Bool) {
+			var colorNum:Int = Std.parseInt(color);
+			if(!color.startsWith('0x')) colorNum = Std.parseInt('0xff' + color);
+			cameraFromString(camera).flash(colorNum, duration,null,forced);
+		});
+
+		Lua_helper.add_callback(lua, "cameraFade", function(camera:String, color:String, duration:Float,forced:Bool) {
+			var colorNum:Int = Std.parseInt(color);
+			if(!color.startsWith('0x')) colorNum = Std.parseInt('0xff' + color);
+			cameraFromString(camera).fade(colorNum, duration,false,null,forced);
+		});
+
+		Lua_helper.add_callback(lua, "getProperty", function(variable:String) {
+			var killMe:Array<String> = variable.split('.');
+			if(killMe.length > 1) {
+				var coverMeInPiss:Dynamic = Reflect.getProperty(lePlayState, killMe[0]);
+				for (i in 1...killMe.length-1) {
+					coverMeInPiss = Reflect.getProperty(coverMeInPiss, killMe[i]);
+				}
+				return Reflect.getProperty(coverMeInPiss, killMe[killMe.length-1]);
+			}
+			return Reflect.getProperty(lePlayState, variable);
+		});
+
+		Lua_helper.add_callback(lua, "setProperty", function(variable:String, value:Dynamic) {
+			var killMe:Array<String> = variable.split('.');
+			if(killMe.length > 1) {
+				var coverMeInPiss:Dynamic = Reflect.getProperty(lePlayState, killMe[0]);
+				for (i in 1...killMe.length-1) {
+					coverMeInPiss = Reflect.getProperty(coverMeInPiss, killMe[i]);
+				}
+				return Reflect.setProperty(coverMeInPiss, killMe[killMe.length-1], value);
+			}
+			return Reflect.setProperty(lePlayState, variable, value);
+		});
+
+		Lua_helper.add_callback(lua, "getPropertyFromGroup", function(obj:String, index:Int, variable:Dynamic) {
+			if(Std.isOfType(Reflect.getProperty(lePlayState, obj), FlxTypedGroup)) {
+				return Reflect.getProperty(Reflect.getProperty(lePlayState, obj).members[index], variable);
+			}
+
+			var leArray:Dynamic = Reflect.getProperty(lePlayState, obj)[index];
+			if(leArray != null) {
+				if(Type.typeof(variable) == ValueType.TInt) {
+					return leArray[variable];
+				}
+				return Reflect.getProperty(leArray, variable);
+			}
+			return null;
+		});
+
+		Lua_helper.add_callback(lua, "setPropertyFromGroup", function(obj:String, index:Int, variable:Dynamic, value:Dynamic) {
+			if(Std.isOfType(Reflect.getProperty(lePlayState, obj), FlxTypedGroup)) {
+				return Reflect.setProperty(Reflect.getProperty(lePlayState, obj).members[index], variable, value);
+			}
+
+			var leArray:Dynamic = Reflect.getProperty(lePlayState, obj)[index];
+			if(leArray != null) {
+				if(Type.typeof(variable) == ValueType.TInt) {
+					return leArray[variable] = value;
+				}
+				return Reflect.setProperty(leArray, variable, value);
+			}
+		});
+
+		Lua_helper.add_callback(lua, "removeFromGroup", function(obj:String, index:Int, dontKill:Bool = false, dontDestroy:Bool = false) {
+			if(Std.isOfType(Reflect.getProperty(lePlayState, obj), FlxTypedGroup)) {
+				var sex = Reflect.getProperty(lePlayState, obj).members[index];
+				if(!dontKill)
+					sex.kill();
+				Reflect.getProperty(lePlayState, obj).remove(sex, true);
+				if(!dontDestroy)
+					sex.destroy();
+				return;
+			}
+			Reflect.getProperty(lePlayState, obj).remove(Reflect.getProperty(lePlayState, obj)[index]);
+		});
+
+		Lua_helper.add_callback(lua, "getPropertyFromClass", function(classVar:String, variable:String) {
+			var killMe:Array<String> = variable.split('.');
+			if(killMe.length > 1) {
+				var coverMeInPiss:Dynamic = Reflect.getProperty(Type.resolveClass(classVar), killMe[0]);
+				for (i in 1...killMe.length-1) {
+					coverMeInPiss = Reflect.getProperty(coverMeInPiss, killMe[i]);
+				}
+				return Reflect.getProperty(coverMeInPiss, killMe[killMe.length-1]);
+			}
+			return Reflect.getProperty(Type.resolveClass(classVar), variable);
+		});
+
+		Lua_helper.add_callback(lua, "setPropertyFromClass", function(classVar:String, variable:String, value:Dynamic) {
+			var killMe:Array<String> = variable.split('.');
+			if(killMe.length > 1) {
+				var coverMeInPiss:Dynamic = Reflect.getProperty(Type.resolveClass(classVar), killMe[0]);
+				for (i in 1...killMe.length-1) {
+					coverMeInPiss = Reflect.getProperty(coverMeInPiss, killMe[i]);
+				}
+				return Reflect.setProperty(coverMeInPiss, killMe[killMe.length-1], value);
+			}
+			return Reflect.setProperty(Type.resolveClass(classVar), variable, value);
+		});
+
+		Lua_helper.add_callback(lua, "makeSprite", function(tag:String, image:String, x:Float, y:Float) {
+			resetSpriteTag(tag);
+			var leSprite:LuaSprite = new LuaSprite(x, y);
+			leSprite.loadGraphic(Paths.image(image));
+			leSprite.antialiasing = true;
+			sprites.set(tag, leSprite);
+			leSprite.active = false;
+		});
+
+		Lua_helper.add_callback(lua, "makeAnimatedSprite", function(tag:String, image:String, x:Float, y:Float) {
+			resetSpriteTag(tag);
+			var leSprite:LuaSprite = new LuaSprite(x, y);
+			leSprite.frames = Paths.getSparrowAtlas(image);
+			leSprite.antialiasing = true;
+			sprites.set(tag, leSprite);
+		});
+
+		Lua_helper.add_callback(lua, "makeGraphicSprite", function(tag:String, width:Int, height:Int, color:String) {
+			if(sprites.exists(tag)) {
+				var colorNum:Int = Std.parseInt(color);
+				if(!color.startsWith('0x')) colorNum = Std.parseInt('0xff' + color);
+				var cock:LuaSprite = sprites.get(tag);
+				cock.makeGraphic(width, height, colorNum);
+			}
+		});
+
+		Lua_helper.add_callback(lua, "addAnimationByPrefixSprite", function(tag:String, name:String, prefix:String, framerate:Int = 24, loop:Bool = true) {
+			if(sprites.exists(tag)) {
+				var cock:LuaSprite = sprites.get(tag);
+				cock.animation.addByPrefix(name, prefix, framerate, loop);
+				if(cock.animation.curAnim == null) {
+					cock.animation.play(name, true);
+				}
+			}
+		});
+
+		Lua_helper.add_callback(lua, "addAnimationByIndicesSprite", function(tag:String, name:String, prefix:String, indices:String, framerate:Int = 24) {
+			if(sprites.exists(tag)) {
+				var strIndices:Array<String> = indices.trim().split(',');
+				var die:Array<Int> = [];
+				for (i in 0...strIndices.length) {
+					die.push(Std.parseInt(strIndices[i]));
+				}
+				var pussy:LuaSprite = sprites.get(tag);
+				pussy.animation.addByIndices(name, prefix, die, '', framerate, false);
+				if(pussy.animation.curAnim == null) {
+					pussy.animation.play(name, true);
+				}
+			}
+		});
+
+		Lua_helper.add_callback(lua, "playAnimationSprite", function(tag:String, name:String, forced:Bool = false) {
+			if(sprites.exists(tag)) {
+				sprites.get(tag).animation.play(name, forced);
+			}
+		});
+
+		Lua_helper.add_callback(lua, "setScrollFactorSprite", function(tag:String, scrollX:Float, scrollY:Float) {
+			if(sprites.exists(tag)) {
+				sprites.get(tag).scrollFactor.set(scrollX, scrollY);
+			}
+		});
+
+		Lua_helper.add_callback(lua, "setGraphicSizeSprite", function(tag:String, x:Int, y:Int = 0, updateHitbox:Bool = true) {
+			if(sprites.exists(tag)) {
+				var cock:LuaSprite = sprites.get(tag);
+				cock.setGraphicSize(x, y);
+				if(updateHitbox) cock.updateHitbox();
+				return;
+			}
+		});
+
+		Lua_helper.add_callback(lua, "scaleObjectSprite", function(tag:String, x:Int, y:Int = 0, updateHitbox:Bool = true) {
+			if(sprites.exists(tag)) {
+				var cock:LuaSprite = sprites.get(tag);
+				cock.scale.set(x, y);
+				if(updateHitbox) cock.updateHitbox();
+				return;
+			}
+		});
+
+		Lua_helper.add_callback(lua, "updateHitboxSprite", function(tag:String) {
+			if(sprites.exists(tag)) {
+				var cock:LuaSprite = sprites.get(tag);
+                cock.updateHitbox();
+				return;
+			}
+		});
+
+		Lua_helper.add_callback(lua, "setObjectCameraSprite", function(tag:String, camera:String = '') {
+			if(sprites.exists(tag)) {
+				var cock:LuaSprite = sprites.get(tag);
+                cock.cameras = [cameraFromString(camera)];
+				return;
+			}
+		});
+
+		Lua_helper.add_callback(lua, "setBlendModeSprite", function(tag:String, blend:String = '') {
+			if(sprites.exists(tag)) {
+				var cock:LuaSprite = sprites.get(tag);
+                cock.blend = blendModeFromString(blend);
+				return;
+			}
+		});
+
+		Lua_helper.add_callback(lua, "screenCenterSprite", function(tag:String, pos:String = 'xy') {
+			if(sprites.exists(tag)) {
+			    var spr:LuaSprite = sprites.get(tag);
+			    if(spr != null)
+				{
+					switch(pos.trim().toLowerCase())
+					{
+						case 'x':
+							spr.screenCenter(X);
+							return;
+						case 'y':
+							spr.screenCenter(Y);
+							return;
+						default:
+							spr.screenCenter(XY);
+							return;
+					}
+				}
+		    }
+		});
+
+		Lua_helper.add_callback(lua, "addSprite", function(tag:String, front:Bool = false) {
+			if(sprites.exists(tag)) {
+				var shit:LuaSprite = sprites.get(tag);
+				if(!shit.wasAdded) {
+					if(front) {
+						lePlayState.foregroundGroup.add(shit);
+					} else {
+						lePlayState.backgroundGroup.add(shit);
+					}
+					shit.isInFront = front;
+					shit.wasAdded = true;
+				}
+			}
+		});
+
+		Lua_helper.add_callback(lua, "removeSprite", function(tag:String) {
+			resetSpriteTag(tag);
+		});
+
+		Lua_helper.add_callback(lua, "getPropertySprite", function(tag:String, variable:String) {
+			if(sprites.exists(tag)) {
+				var killMe:Array<String> = variable.split('.');
+				if(killMe.length > 1) {
+					var coverMeInPiss:Dynamic = Reflect.getProperty(sprites.get(tag), killMe[0]);
+					for (i in 1...killMe.length-1) {
+						coverMeInPiss = Reflect.getProperty(coverMeInPiss, killMe[i]);
+					}
+					return Reflect.getProperty(coverMeInPiss, killMe[killMe.length-1]);
+				}
+				return Reflect.getProperty(sprites.get(tag), variable);
+			}
+			return null;
+		});
+
+		Lua_helper.add_callback(lua, "setPropertySprite", function(tag:String, variable:String, value:Dynamic) {
+			if(sprites.exists(tag)) {
+				var killMe:Array<String> = variable.split('.');
+				if(killMe.length > 1) {
+					var coverMeInPiss:Dynamic = Reflect.getProperty(sprites.get(tag), killMe[0]);
+					for (i in 1...killMe.length-1) {
+						coverMeInPiss = Reflect.getProperty(coverMeInPiss, killMe[i]);
+					}
+					return Reflect.setProperty(coverMeInPiss, killMe[killMe.length-1], value);
+				}
+				return Reflect.setProperty(sprites.get(tag), variable, value);
+			}
+		});
+
+		Lua_helper.add_callback(lua, "doTweenX", function(tag:String, vars:String, value:Dynamic, duration:Float, ease:String, delay:Float = 0) {
+			var penisExam:Dynamic = tweenShit(tag, vars);
+			if(penisExam != null) {
+				tweens.set(tag, FlxTween.tween(penisExam, {x: value}, duration, {ease: getFlxEaseByString(ease), startDelay: delay,
+					onComplete: function(twn:FlxTween) {
+						call('onTweenCompleted', [tag]);
+						tweens.remove(tag);
+					}
+				}));
+			}
+		});
+
+		Lua_helper.add_callback(lua, "doTweenY", function(tag:String, vars:String, value:Dynamic, duration:Float, ease:String, delay:Float = 0) {
+			var penisExam:Dynamic = tweenShit(tag, vars);
+			if(penisExam != null) {
+				tweens.set(tag, FlxTween.tween(penisExam, {y: value}, duration, {ease: getFlxEaseByString(ease), startDelay: delay,
+					onComplete: function(twn:FlxTween) {
+						call('onTweenCompleted', [tag]);
+						tweens.remove(tag);
+					}
+				}));
+			}
+		});
+
+		Lua_helper.add_callback(lua, "doTweenAlpha", function(tag:String, vars:String, value:Dynamic, duration:Float, ease:String, delay:Float = 0) {
+			var penisExam:Dynamic = tweenShit(tag, vars);
+			if(penisExam != null) {
+				tweens.set(tag, FlxTween.tween(penisExam, {alpha: value}, duration, {ease: getFlxEaseByString(ease), startDelay: delay,
+					onComplete: function(twn:FlxTween) {
+						call('onTweenCompleted', [tag]);
+						tweens.remove(tag);
+					}
+				}));
+			}
+		});
+
+		Lua_helper.add_callback(lua, "doTweenZoom", function(tag:String, vars:String, value:Dynamic, duration:Float, ease:String, delay:Float = 0) {
+			var penisExam:Dynamic = tweenShit(tag, vars);
+			if(penisExam != null) {
+				tweens.set(tag, FlxTween.tween(penisExam, {zoom: value}, duration, {ease: getFlxEaseByString(ease), startDelay: delay,
+					onComplete: function(twn:FlxTween) {
+						call('onTweenCompleted', [tag]);
+						tweens.remove(tag);
+					}
+				}));
+			}
+		});
+
+		Lua_helper.add_callback(lua, "doTweenColor", function(tag:String, vars:String, targetColor:String, duration:Float, ease:String, delay:Float = 0) {
+			var penisExam:Dynamic = tweenShit(tag, vars);
+			if(penisExam != null) {
+				var color:Int = Std.parseInt(targetColor);
+				if(!targetColor.startsWith('0x')) color = Std.parseInt('0xff' + targetColor);
+				tweens.set(tag, FlxTween.color(penisExam, duration, penisExam.color, color, {ease: getFlxEaseByString(ease), startDelay: delay,
+					onComplete: function(twn:FlxTween) {
+						tweens.remove(tag);
+						call('onTweenCompleted', [tag]);
+					}
+				}));
+			}
+		});
+
+		Lua_helper.add_callback(lua, "noteTweenX", function(tag:String, note:Int, value:Dynamic, duration:Float, ease:String) {
+			cancelTween(tag);
+			if(note < 0) note = 0;
+			var testicle = PlayState.instance.strumLineNotes.members[note % PlayState.instance.strumLineNotes.length];
+			if(testicle != null) {
+				tweens.set(tag, FlxTween.tween(testicle, {x: value}, duration, {ease: getFlxEaseByString(ease),
+					onComplete: function(twn:FlxTween) {
+						call('onTweenCompleted', [tag]);
+						tweens.remove(tag);
+					}
+				}));
+			}
+		});
+
+		Lua_helper.add_callback(lua, "noteTweenY", function(tag:String, note:Int, value:Dynamic, duration:Float, ease:String) {
+			cancelTween(tag);
+			if(note < 0) note = 0;
+			var testicle = PlayState.instance.strumLineNotes.members[note % PlayState.instance.strumLineNotes.length];
+			if(testicle != null) {
+				tweens.set(tag, FlxTween.tween(testicle, {y: value}, duration, {ease: getFlxEaseByString(ease),
+					onComplete: function(twn:FlxTween) {
+						call('onTweenCompleted', [tag]);
+						tweens.remove(tag);
+					}
+				}));
+			}
+		});
+
+		Lua_helper.add_callback(lua, "noteTweenAngle", function(tag:String, note:Int, value:Dynamic, duration:Float, ease:String) {
+			cancelTween(tag);
+			if(note < 0) note = 0;
+			var testicle = PlayState.instance.strumLineNotes.members[note % PlayState.instance.strumLineNotes.length];
+			if(testicle != null) {
+				tweens.set(tag, FlxTween.tween(testicle, {angle: value}, duration, {ease: getFlxEaseByString(ease),
+					onComplete: function(twn:FlxTween) {
+						call('onTweenCompleted', [tag]);
+						tweens.remove(tag);
+					}
+				}));
+			}
+		});
+
+		Lua_helper.add_callback(lua, "noteTweenDirection", function(tag:String, note:Int, value:Dynamic, duration:Float, ease:String) {
+			cancelTween(tag);
+			if(note < 0) note = 0;
+			var testicle = PlayState.instance.strumLineNotes.members[note % PlayState.instance.strumLineNotes.length];
+			if(testicle != null) {
+				tweens.set(tag, FlxTween.tween(testicle, {direction: value}, duration, {ease: getFlxEaseByString(ease),
+					onComplete: function(twn:FlxTween) {
+						call('onTweenCompleted', [tag]);
+						tweens.remove(tag);
+					}
+				}));
+			}
+		});
+
+		Lua_helper.add_callback(lua, "cancelTween", function(tag:String) {
+			cancelTween(tag);
+		});
+
+		Lua_helper.add_callback(lua, "runTimer", function(tag:String, time:Float = 1, loops:Int = 1) {
+			cancelTimer(tag);
+			timers.set(tag, new FlxTimer().start(time, function(tmr:FlxTimer) {
+				if(tmr.finished) {
+					timers.remove(tag);
+				}
+				call('onTimerCompleted', [tag, tmr.loops, tmr.loopsLeft]);
+			}, loops));
+		});
+
+		Lua_helper.add_callback(lua, "cancelTimer", function(tag:String) {
+			cancelTimer(tag);
+		});
     }
+
+	function resetSpriteTag(tag:String) {
+		if(!sprites.exists(tag)) {
+			return;
+		}
+		var pee:LuaSprite = sprites.get(tag);
+		pee.kill();
+		if(pee.wasAdded) {
+			if(pee.isInFront) {
+				lePlayState.foregroundGroup.remove(pee, true);
+			} else {
+				lePlayState.backgroundGroup.remove(pee, true);
+			}
+		}
+		pee.destroy();
+		sprites.remove(tag);
+	}
+
+	function cancelTween(tag:String) {
+		if(tweens.exists(tag)) {
+			tweens.get(tag).cancel();
+			tweens.get(tag).destroy();
+			tweens.remove(tag);
+		}
+	}
+
+	function tweenShit(tag:String, vars:String) {
+		cancelTween(tag);
+		var variables:Array<String> = vars.replace(' ', '').split('.');
+		var sexyProp:Dynamic = Reflect.getProperty(lePlayState, variables[0]);
+		if(sexyProp == null && sprites.exists(variables[0])) {
+			sexyProp = sprites.get(variables[0]);
+		}
+		for (i in 1...variables.length) {
+			sexyProp = Reflect.getProperty(sexyProp, variables[i]);
+		}
+		return sexyProp;
+	}
+
+	function cancelTimer(tag:String) {
+		if(timers.exists(tag)) {
+			timers.get(tag).cancel();
+			timers.get(tag).destroy();
+			timers.remove(tag);
+		}
+	}
+
+	function blendModeFromString(blend:String):BlendMode {
+		switch(blend.toLowerCase().trim()) {
+			case 'add': return ADD;
+			case 'alpha': return ALPHA;
+			case 'darken': return DARKEN;
+			case 'difference': return DIFFERENCE;
+			case 'erase': return ERASE;
+			case 'hardlight': return HARDLIGHT;
+			case 'invert': return INVERT;
+			case 'layer': return LAYER;
+			case 'lighten': return LIGHTEN;
+			case 'multiply': return MULTIPLY;
+			case 'overlay': return OVERLAY;
+			case 'screen': return SCREEN;
+			case 'shader': return SHADER;
+			case 'subtract': return SUBTRACT;
+		}
+		return NORMAL;
+	}
+
+	function getFlxEaseByString(?ease:String = '') {
+		switch(ease.toLowerCase()) {
+			case 'backin': return FlxEase.backIn;
+			case 'backinout': return FlxEase.backInOut;
+			case 'backout': return FlxEase.backOut;
+			case 'bouncein': return FlxEase.bounceIn;
+			case 'bounceinout': return FlxEase.bounceInOut;
+			case 'bounceout': return FlxEase.bounceOut;
+			case 'circin': return FlxEase.circIn;
+			case 'circinout': return FlxEase.circInOut;
+			case 'circout': return FlxEase.circOut;
+			case 'cubein': return FlxEase.cubeIn;
+			case 'cubeinout': return FlxEase.cubeInOut;
+			case 'cubeout': return FlxEase.cubeOut;
+			case 'elasticin': return FlxEase.elasticIn;
+			case 'elasticinout': return FlxEase.elasticInOut;
+			case 'elasticout': return FlxEase.elasticOut;
+			case 'expoin': return FlxEase.expoIn;
+			case 'expoinout': return FlxEase.expoInOut;
+			case 'expoout': return FlxEase.expoOut;
+			case 'quadin': return FlxEase.quadIn;
+			case 'quadinout': return FlxEase.quadInOut;
+			case 'quadout': return FlxEase.quadOut;
+			case 'quartin': return FlxEase.quartIn;
+			case 'quartinout': return FlxEase.quartInOut;
+			case 'quartout': return FlxEase.quartOut;
+			case 'quintin': return FlxEase.quintIn;
+			case 'quintinout': return FlxEase.quintInOut;
+			case 'quintout': return FlxEase.quintOut;
+			case 'sinein': return FlxEase.sineIn;
+			case 'sineinout': return FlxEase.sineInOut;
+			case 'sineout': return FlxEase.sineOut;
+			case 'smoothstepin': return FlxEase.smoothStepIn;
+			case 'smoothstepinout': return FlxEase.smoothStepInOut;
+			case 'smoothstepout': return FlxEase.smoothStepInOut;
+			case 'smootherstepin': return FlxEase.smootherStepIn;
+			case 'smootherstepinout': return FlxEase.smootherStepInOut;
+			case 'smootherstepout': return FlxEase.smootherStepOut;
+		}
+		return FlxEase.linear;
+	}
+
+	public static function cameraFromString(cam:String):FlxCamera {
+		switch(cam.toLowerCase()) {
+			case 'camhud' | 'hud': return PlayState.instance.camHUD;
+		}
+		return PlayState.instance.camGame;
+	}
+}
+
+class LuaSprite extends FlxSprite
+{
+	public var wasAdded:Bool = false;
+	public var isInFront:Bool = false;
+}
+
+class ModchartAPI {
+	static public function triggerEvent(event:String, ?value1:Dynamic, ?value2:Dynamic) {
+		switch(event) {
+			case "Camera Zoom":
+				if (FlxG.camera.zoom < 1.35) {
+					var camZoom:Float = Std.parseFloat(value1);
+					var hudZoom:Float = Std.parseFloat(value2);
+
+					if(Math.isNaN(camZoom)) camZoom = 0.015;
+					if(Math.isNaN(hudZoom)) hudZoom = 0.03;
+
+					FlxG.camera.zoom += camZoom;
+					PlayState.instance.camHUD.zoom += hudZoom;
+				}
+			case 'Screen Shake':
+				var valuesArray:Array<String> = [value1, value2];
+				var targetsArray:Array<FlxCamera> = [PlayState.instance.camGame, PlayState.instance.camHUD];
+
+				for (i in 0...targetsArray.length) {
+					var split:Array<String> = valuesArray[i].split(',');
+
+					var duration:Float = 0;
+					var intensity:Float = 0;
+
+					if(split[0] != null) duration = Std.parseFloat(split[0].trim());
+					if(split[1] != null) intensity = Std.parseFloat(split[1].trim());
+
+					if(Math.isNaN(duration)) duration = 0;
+					if(Math.isNaN(intensity)) intensity = 0;
+
+					if(duration > 0 && intensity != 0) {
+						targetsArray[i].shake(intensity, duration);
+					}
+				}
+			case 'Camera Position':
+				if(PlayState.instance.camFollow != null) {
+				    var val1:Float = Std.parseFloat(value1);
+				    var val2:Float = Std.parseFloat(value2);
+
+			        if(Math.isNaN(val1)) val1 = 0;
+				    if(Math.isNaN(val2)) val2 = 0;
+
+			        if(!Math.isNaN(Std.parseFloat(value1)) || !Math.isNaN(Std.parseFloat(value2))) {
+				        PlayState.instance.camFollow.x = val1;
+				        PlayState.instance.camFollow.y = val2;
+			        }
+		        }
+			case 'Play Animation':
+				var char:Character = PlayState.instance.dad;
+
+				switch(value2.toLowerCase().trim()) {
+					case 'bf' | 'boyfriend':
+						char = PlayState.instance.boyfriend;
+					case 'gf' | 'girlfriend':
+						char = PlayState.instance.gf;
+					default:
+						var val2:Int = Std.parseInt(value2);
+						if(Math.isNaN(val2)) val2 = 0;
+						switch(val2) {
+							case 1: char = PlayState.instance.boyfriend;
+							case 2: char = PlayState.instance.gf;
+						}
+				}
+
+				if (char != null) {
+					char.playAnim(value1, true);
+				}
+			case 'Change Character':
+				// g
+		}
+		PlayState.instance.script.callFunction('event', [event, value1, value2]);
+	}
+
+    // tweens for hscript omg
+	static public function tweenCameraPos(toX:Int, toY:Int, time:Float, camera:Any) {
+		FlxTween.tween(camera, {x: toX, y: toY}, time, {ease: FlxEase.linear} );
+	}
+
+	static public function tweenCameraAngle(toAngle:Float, time:Float, camera:Any) {
+		FlxTween.tween(camera, {angle:toAngle}, time, {ease: FlxEase.linear});
+	};
+
+	static public function tweenCameraZoom(toZoom:Float, time:Float, camera:Any) {
+		FlxTween.tween(camera, {zoom:toZoom}, time, {ease: FlxEase.linear });
+	};
+
+	static public function tweenHudPos(toX:Int, toY:Int, time:Float) {
+		FlxTween.tween(PlayState.instance.camHUD, {x: toX, y: toY}, time, {ease: FlxEase.linear});
+	};
+
+	static public function tweenHudAngle(toAngle:Float, time:Float) {
+		FlxTween.tween(PlayState.instance.camHUD, {angle:toAngle}, time, {ease: FlxEase.linear });
+	};
+
+	static public function tweenHudZoom(toZoom:Float, time:Float) {
+		FlxTween.tween(PlayState.instance.camHUD, {zoom:toZoom}, time, {ease: FlxEase.linear});
+	};
+
+	static public function tweenPos(id:FlxObject , toX:Int, toY:Int, time:Float) {
+		FlxTween.tween(id, {x: toX, y: toY}, time, {ease: FlxEase.linear});
+	};
+
+	static public function tweenPosXAngle(id:FlxObject, toX:Int, toAngle:Float, time:Float) {
+		FlxTween.tween(id, {x: toX, angle: toAngle}, time, {ease: FlxEase.linear});
+	};
+
+	static public function tweenPosYAngle(id:FlxObject, toY:Int, toAngle:Float, time:Float) {
+		FlxTween.tween(id, {y: toY, angle: toAngle}, time, {ease: FlxEase.linear });
+	};
+
+	static public function tweenAngle(id:FlxObject, toAngle:Int, time:Float) {
+		FlxTween.tween(id, {angle: toAngle}, time, {ease: FlxEase.linear});
+	};
+
+	static public function tweenCameraPosOut(toX:Int, toY:Int, time:Float, camera:Any) {
+		FlxTween.tween(camera, {x: toX, y: toY}, time, {ease: FlxEase.cubeOut});
+	};
+
+	static public function tweenCameraAngleOut(toAngle:Float, time:Float, camera:Any) {
+		FlxTween.tween(camera, {angle:toAngle}, time, {ease: FlxEase.cubeOut});
+	};
+
+	static public function tweenCameraZoomOut(toZoom:Float, time:Float, camera:Any) {
+		FlxTween.tween(camera, {zoom:toZoom}, time, {ease: FlxEase.cubeOut});
+	};
+
+	static public function tweenHudPosOut(toX:Int, toY:Int, time:Float) {
+		FlxTween.tween(PlayState.instance.camHUD, {x: toX, y: toY}, time, {ease: FlxEase.cubeOut });
+	};
+
+	static public function tweenHudAngleOut(toAngle:Float, time:Float) {
+		FlxTween.tween(PlayState.instance.camHUD, {angle:toAngle}, time, {ease: FlxEase.cubeOut });
+	};
+
+	static public function tweenHudZoomOut(toZoom:Float, time:Float) {
+		FlxTween.tween(PlayState.instance.camHUD, {zoom:toZoom}, time, {ease: FlxEase.cubeOut });
+	};
+
+	static public function tweenPosOut(id:FlxObject, toX:Int, toY:Int, time:Float) {
+		FlxTween.tween(id, {x: toX, y: toY}, time, {ease: FlxEase.cubeOut});
+	};
+
+	static public function tweenPosXAngleOut(id:FlxObject, toX:Int, toAngle:Float, time:Float) {
+		FlxTween.tween(id, {x: toX, angle: toAngle}, time, {ease: FlxEase.cubeOut});
+	};
+
+	static public function tweenPosYAngleOut(id:FlxObject, toY:Int, toAngle:Float, time:Float) {
+		FlxTween.tween(id, {y: toY, angle: toAngle}, time, {ease: FlxEase.cubeOut});
+	};
+
+	static public function tweenAngleOut(id:FlxObject, toAngle:Int, time:Float) {
+		FlxTween.tween(id, {angle: toAngle}, time, {ease: FlxEase.cubeOut });
+	};
+
+	static public function tweenCameraPosIn(toX:Int, toY:Int, time:Float, camera:Any) {
+		FlxTween.tween(camera, {x: toX, y: toY}, time, {ease: FlxEase.cubeIn });
+	};
+
+	static public function tweenCameraAngleIn(toAngle:Float, time:Float, camera:Any) {
+		FlxTween.tween(camera, {angle:toAngle}, time, {ease: FlxEase.cubeIn });
+	};
+
+	static public function tweenCameraZoomIn(toZoom:Float, time:Float, camera:Any) {
+		FlxTween.tween(camera, {zoom:toZoom}, time, {ease: FlxEase.cubeIn });
+	};
+
+	static public function tweenHudPosIn(toX:Int, toY:Int, time:Float) {
+		FlxTween.tween(PlayState.instance.camHUD, {x: toX, y: toY}, time, {ease: FlxEase.cubeIn });
+	};
+
+	static public function tweenHudAngleIn(toAngle:Float, time:Float) {
+		FlxTween.tween(PlayState.instance.camHUD, {angle:toAngle}, time, {ease: FlxEase.cubeIn });
+	};
+
+	static public function tweenHudZoomIn(toZoom:Float, time:Float) {
+		FlxTween.tween(PlayState.instance.camHUD, {zoom:toZoom}, time, {ease: FlxEase.cubeIn });
+	};
+
+	static public function tweenPosIn(id:FlxObject, toX:Int, toY:Int, time:Float) {
+		FlxTween.tween(id, {x: toX, y: toY}, time, {ease: FlxEase.cubeIn });
+	};
+
+	static public function tweenPosXAngleIn(id:FlxObject, toX:Int, toAngle:Float, time:Float) {
+		FlxTween.tween(id, {x: toX, angle: toAngle}, time, {ease: FlxEase.cubeIn });
+	};
+
+	static public function tweenPosYAngleIn(id:FlxObject, toY:Int, toAngle:Float, time:Float) {
+		FlxTween.tween(id, {y: toY, angle: toAngle}, time, {ease: FlxEase.cubeIn });
+	};
+
+	static public function tweenAngleIn(id:FlxObject, toAngle:Int, time:Float) {
+		FlxTween.tween(id, {angle: toAngle}, time, {ease: FlxEase.cubeIn });
+	};
+
+	static public function tweenFadeIn(id:FlxObject, toAlpha:Float, time:Float) {
+		FlxTween.tween(id, {alpha: toAlpha}, time, {ease: FlxEase.circIn });
+	};
+
+	static public function tweenFadeOut(id:FlxObject, toAlpha:Float, time:Float) {
+		FlxTween.tween(id, {alpha: toAlpha}, time, {ease: FlxEase.circOut });
+	};
 }
 #end
