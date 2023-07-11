@@ -1239,7 +1239,7 @@ class ModLuaScripts {
 		return FlxEase.linear;
 	}
 
-	public static function cameraFromString(cam:String):FlxCamera {
+	function cameraFromString(cam:String):FlxCamera {
 		switch(cam.toLowerCase()) {
 			case 'camhud' | 'hud': return PlayState.instance.camHUD;
 		}
