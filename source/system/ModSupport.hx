@@ -5,6 +5,7 @@ import haxe.Json;
 import flixel.FlxG;
 import haxe.io.Path;
 import Type.ValueType;
+import flixel.FlxBasic;
 import flixel.FlxObject;
 import flixel.math.FlxAngle;
 import flixel.group.FlxGroup;
@@ -552,6 +553,7 @@ class ModScriptSubstate extends MusicBeatSubstate {
 	}
 }
 
+// gay lua psych-hs script
 class ModLuaScripts {
 	public static var Function_Stop = 1;
 	public static var Function_Continue = 0;
@@ -729,7 +731,37 @@ class ModLuaScripts {
 			return Reflect.setProperty(Type.resolveClass(classVar), variable, value);
 		});
 
-		Lua_helper.add_callback(lua, "makeSprite", function(tag:String, image:String, x:Float, y:Float) {
+		Lua_helper.add_callback(lua, "getObjectOrder", function(obj:String) {
+			if(sprites.exists(obj))
+			{
+				return lePlayState.members.indexOf(sprites.get(obj));
+			}
+			var leObj:FlxBasic = Reflect.getProperty(lePlayState, obj);
+			if(leObj != null)
+			{
+				return lePlayState.members.indexOf(leObj);
+			}
+			return -1;
+		});
+
+		Lua_helper.add_callback(lua, "setObjectOrder", function(obj:String, position:Int) {
+			if(sprites.exists(obj)) {
+				var spr:LuaSprite = sprites.get(obj);
+				if(spr.wasAdded) {
+					lePlayState.remove(spr, true);
+				}
+				lePlayState.insert(position, spr);
+				return;
+			}
+			var leObj:FlxBasic = Reflect.getProperty(lePlayState, obj);
+			if(leObj != null) {
+				lePlayState.remove(leObj, true);
+				lePlayState.insert(position, leObj);
+				return;
+			}
+		});
+
+		Lua_helper.add_callback(lua, "makeLuaSprite", function(tag:String, image:String, x:Float, y:Float) {
 			tag = tag.replace('.', '');
 			resetSpriteTag(tag);
 			var leSprite:LuaSprite = new LuaSprite(x, y);
@@ -742,7 +774,7 @@ class ModLuaScripts {
 			leSprite.active = true;
 		});
 
-		Lua_helper.add_callback(lua, "makeAnimatedSprite", function(tag:String, image:String, x:Float, y:Float, ?spriteType:String = "sparrow") {
+		Lua_helper.add_callback(lua, "makeAnimatedLuaSprite", function(tag:String, image:String, x:Float, y:Float, ?spriteType:String = "sparrow") {
 			tag = tag.replace('.', '');
 			resetSpriteTag(tag);
 			var leSprite:LuaSprite = new LuaSprite(x, y);
@@ -940,7 +972,7 @@ class ModLuaScripts {
 			}
 		});
 
-		Lua_helper.add_callback(lua, "addSprite", function(tag:String, front:Bool = false) {
+		Lua_helper.add_callback(lua, "addLuaSprite", function(tag:String, front:Bool = false) {
 			if(sprites.exists(tag)) {
 				var shit:LuaSprite = sprites.get(tag);
 				if(!shit.wasAdded) {
@@ -955,7 +987,7 @@ class ModLuaScripts {
 			}
 		});
 
-		Lua_helper.add_callback(lua, "removeSprite", function(tag:String) {
+		Lua_helper.add_callback(lua, "removeLuaSprite", function(tag:String) {
 			resetSpriteTag(tag);
 		});
 
