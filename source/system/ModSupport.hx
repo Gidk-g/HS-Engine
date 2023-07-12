@@ -641,6 +641,12 @@ class ModLuaScripts {
 			cameraFromString(camera).fade(colorNum, duration,false,null,forced);
 		});
 
+		Lua_helper.add_callback(lua, "triggerEvent", function(event:String, arg1:Dynamic, arg2:Dynamic) {
+			var value1:String = arg1;
+			var value2:String = arg2;
+			ModchartAPI.triggerEvent(event, value1, value2);
+		});
+
 		Lua_helper.add_callback(lua, "getProperty", function(variable:String) {
 			var killMe:Array<String> = variable.split('.');
 			if(killMe.length > 1) {
