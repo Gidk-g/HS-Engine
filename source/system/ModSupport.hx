@@ -644,11 +644,7 @@ class ModLuaScripts {
 		Lua_helper.add_callback(lua, "getProperty", function(variable:String) {
 			var killMe:Array<String> = variable.split('.');
 			if(killMe.length > 1) {
-				var coverMeInPiss:Dynamic = Reflect.getProperty(lePlayState, killMe[0]);
-				for (i in 1...killMe.length-1) {
-					coverMeInPiss = Reflect.getProperty(coverMeInPiss, killMe[i]);
-				}
-				return Reflect.getProperty(coverMeInPiss, killMe[killMe.length-1]);
+				return Reflect.getProperty(getPropertyLoopThingWhatever(killMe), killMe[killMe.length-1]);
 			}
 			return Reflect.getProperty(lePlayState, variable);
 		});
@@ -656,48 +652,44 @@ class ModLuaScripts {
 		Lua_helper.add_callback(lua, "setProperty", function(variable:String, value:Dynamic) {
 			var killMe:Array<String> = variable.split('.');
 			if(killMe.length > 1) {
-				var coverMeInPiss:Dynamic = Reflect.getProperty(lePlayState, killMe[0]);
-				for (i in 1...killMe.length-1) {
-					coverMeInPiss = Reflect.getProperty(coverMeInPiss, killMe[i]);
-				}
-				return Reflect.setProperty(coverMeInPiss, killMe[killMe.length-1], value);
+				return Reflect.setProperty(getPropertyLoopThingWhatever(killMe), killMe[killMe.length-1], value);
 			}
 			return Reflect.setProperty(lePlayState, variable, value);
 		});
 
 		Lua_helper.add_callback(lua, "getPropertyFromGroup", function(obj:String, index:Int, variable:Dynamic) {
 			if(Std.isOfType(Reflect.getProperty(lePlayState, obj), FlxTypedGroup)) {
-				return Reflect.getProperty(Reflect.getProperty(lePlayState, obj).members[index], variable);
+				return getGroupStuff(Reflect.getProperty(lePlayState, obj).members[index], variable);
 			}
-
 			var leArray:Dynamic = Reflect.getProperty(lePlayState, obj)[index];
 			if(leArray != null) {
 				if(Type.typeof(variable) == ValueType.TInt) {
 					return leArray[variable];
 				}
-				return Reflect.getProperty(leArray, variable);
+				return getGroupStuff(leArray, variable);
 			}
 			return null;
 		});
 
 		Lua_helper.add_callback(lua, "setPropertyFromGroup", function(obj:String, index:Int, variable:Dynamic, value:Dynamic) {
 			if(Std.isOfType(Reflect.getProperty(lePlayState, obj), FlxTypedGroup)) {
-				return Reflect.setProperty(Reflect.getProperty(lePlayState, obj).members[index], variable, value);
+				setGroupStuff(Reflect.getProperty(lePlayState, obj).members[index], variable, value);
+				return;
 			}
-
 			var leArray:Dynamic = Reflect.getProperty(lePlayState, obj)[index];
 			if(leArray != null) {
 				if(Type.typeof(variable) == ValueType.TInt) {
-					return leArray[variable] = value;
+					leArray[variable] = value;
+					return;
 				}
-				return Reflect.setProperty(leArray, variable, value);
+				setGroupStuff(leArray, variable, value);
 			}
 		});
 
-		Lua_helper.add_callback(lua, "removeFromGroup", function(obj:String, index:Int, dontKill:Bool = false, dontDestroy:Bool = false) {
+		Lua_helper.add_callback(lua, "removeFromGroup", function(obj:String, index:Int, dontDestroy:Bool = false) {
 			if(Std.isOfType(Reflect.getProperty(lePlayState, obj), FlxTypedGroup)) {
 				var sex = Reflect.getProperty(lePlayState, obj).members[index];
-				if(!dontKill)
+				if(!dontDestroy)
 					sex.kill();
 				Reflect.getProperty(lePlayState, obj).remove(sex, true);
 				if(!dontDestroy)
@@ -732,15 +724,20 @@ class ModLuaScripts {
 		});
 
 		Lua_helper.add_callback(lua, "makeSprite", function(tag:String, image:String, x:Float, y:Float) {
+			tag = tag.replace('.', '');
 			resetSpriteTag(tag);
 			var leSprite:LuaSprite = new LuaSprite(x, y);
-			leSprite.loadGraphic(Paths.image(image));
+			if(image != null && image.length > 0)
+			{
+				leSprite.loadGraphic(Paths.image(image));
+			}
 			leSprite.antialiasing = true;
 			sprites.set(tag, leSprite);
-			leSprite.active = false;
+			leSprite.active = true;
 		});
 
-		Lua_helper.add_callback(lua, "makeAnimatedSprite", function(tag:String, image:String, x:Float, y:Float) {
+		Lua_helper.add_callback(lua, "makeAnimatedSprite", function(tag:String, image:String, x:Float, y:Float, ?spriteType:String = "sparrow") {
+			tag = tag.replace('.', '');
 			resetSpriteTag(tag);
 			var leSprite:LuaSprite = new LuaSprite(x, y);
 			leSprite.frames = Paths.getSparrowAtlas(image);
@@ -748,18 +745,33 @@ class ModLuaScripts {
 			sprites.set(tag, leSprite);
 		});
 
-		Lua_helper.add_callback(lua, "makeGraphicSprite", function(tag:String, width:Int, height:Int, color:String) {
+		Lua_helper.add_callback(lua, "makeGraphic", function(tag:String, width:Int, height:Int, color:String) {
+			var colorNum:Int = Std.parseInt(color);
+			if(!color.startsWith('0x')) colorNum = Std.parseInt('0xff' + color);
+
 			if(sprites.exists(tag)) {
-				var colorNum:Int = Std.parseInt(color);
-				if(!color.startsWith('0x')) colorNum = Std.parseInt('0xff' + color);
-				var cock:LuaSprite = sprites.get(tag);
-				cock.makeGraphic(width, height, colorNum);
+				sprites.get(tag).makeGraphic(width, height, colorNum);
+				return;
+			}
+
+			var object:FlxSprite = Reflect.getProperty(lePlayState, tag);
+			if(object != null) {
+				object.makeGraphic(width, height, colorNum);
 			}
 		});
 
-		Lua_helper.add_callback(lua, "addAnimationByPrefixSprite", function(tag:String, name:String, prefix:String, framerate:Int = 24, loop:Bool = true) {
-			if(sprites.exists(tag)) {
-				var cock:LuaSprite = sprites.get(tag);
+		Lua_helper.add_callback(lua, "addAnimationByPrefix", function(obj:String, name:String, prefix:String, framerate:Int = 24, loop:Bool = true) {
+			if(sprites.exists(obj)) {
+				var cock:LuaSprite = sprites.get(obj);
+				cock.animation.addByPrefix(name, prefix, framerate, loop);
+				if(cock.animation.curAnim == null) {
+					cock.animation.play(name, true);
+				}
+				return;
+			}
+			
+			var cock:FlxSprite = Reflect.getProperty(lePlayState, obj);
+			if(cock != null) {
 				cock.animation.addByPrefix(name, prefix, framerate, loop);
 				if(cock.animation.curAnim == null) {
 					cock.animation.play(name, true);
@@ -767,14 +779,24 @@ class ModLuaScripts {
 			}
 		});
 
-		Lua_helper.add_callback(lua, "addAnimationByIndicesSprite", function(tag:String, name:String, prefix:String, indices:String, framerate:Int = 24) {
-			if(sprites.exists(tag)) {
-				var strIndices:Array<String> = indices.trim().split(',');
-				var die:Array<Int> = [];
-				for (i in 0...strIndices.length) {
-					die.push(Std.parseInt(strIndices[i]));
+		Lua_helper.add_callback(lua, "addAnimationByIndices", function(obj:String, name:String, prefix:String, indices:String, framerate:Int = 24) {
+			var strIndices:Array<String> = indices.trim().split(',');
+			var die:Array<Int> = [];
+			for (i in 0...strIndices.length) {
+				die.push(Std.parseInt(strIndices[i]));
+			}
+
+			if(sprites.exists(obj)) {
+				var pussy:LuaSprite = sprites.get(obj);
+				pussy.animation.addByIndices(name, prefix, die, '', framerate, false);
+				if(pussy.animation.curAnim == null) {
+					pussy.animation.play(name, true);
 				}
-				var pussy:LuaSprite = sprites.get(tag);
+				return;
+			}
+			
+			var pussy:FlxSprite = Reflect.getProperty(lePlayState, obj);
+			if(pussy != null) {
 				pussy.animation.addByIndices(name, prefix, die, '', framerate, false);
 				if(pussy.animation.curAnim == null) {
 					pussy.animation.play(name, true);
@@ -782,79 +804,134 @@ class ModLuaScripts {
 			}
 		});
 
-		Lua_helper.add_callback(lua, "playAnimationSprite", function(tag:String, name:String, forced:Bool = false) {
-			if(sprites.exists(tag)) {
-				sprites.get(tag).animation.play(name, forced);
+		Lua_helper.add_callback(lua, "objectPlayAnimation", function(obj:String, name:String, forced:Bool = false, ?startFrame:Int = 0) {
+			if(sprites.exists(obj)) {
+				sprites.get(obj).animation.play(name, forced, startFrame);
+				return;
+			}
+
+			var spr:FlxSprite = Reflect.getProperty(lePlayState, obj);
+			if(spr != null) {
+				spr.animation.play(name, forced);
 			}
 		});
 
-		Lua_helper.add_callback(lua, "setScrollFactorSprite", function(tag:String, scrollX:Float, scrollY:Float) {
-			if(sprites.exists(tag)) {
-				sprites.get(tag).scrollFactor.set(scrollX, scrollY);
+		Lua_helper.add_callback(lua, "setScrollFactor", function(obj:String, scrollX:Float, scrollY:Float) {
+			if(sprites.exists(obj)) {
+				sprites.get(obj).scrollFactor.set(scrollX, scrollY);
+				return;
+			}
+
+			var object:FlxObject = Reflect.getProperty(lePlayState, obj);
+			if(object != null) {
+				object.scrollFactor.set(scrollX, scrollY);
 			}
 		});
 
-		Lua_helper.add_callback(lua, "setGraphicSizeSprite", function(tag:String, x:Int, y:Int = 0, updateHitbox:Bool = true) {
-			if(sprites.exists(tag)) {
-				var cock:LuaSprite = sprites.get(tag);
-				cock.setGraphicSize(x, y);
-				if(updateHitbox) cock.updateHitbox();
+		Lua_helper.add_callback(lua, "setGraphicSize", function(obj:String, x:Int, y:Int = 0) {
+			if(sprites.exists(obj)) {
+				var shit:LuaSprite = sprites.get(obj);
+				shit.setGraphicSize(x, y);
+				shit.updateHitbox();
+				return;
+			}
+
+			var poop:FlxSprite = Reflect.getProperty(lePlayState, obj);
+			if(poop != null) {
+				poop.setGraphicSize(x, y);
+				poop.updateHitbox();
 				return;
 			}
 		});
 
-		Lua_helper.add_callback(lua, "scaleObjectSprite", function(tag:String, x:Int, y:Int = 0, updateHitbox:Bool = true) {
-			if(sprites.exists(tag)) {
-				var cock:LuaSprite = sprites.get(tag);
-				cock.scale.set(x, y);
-				if(updateHitbox) cock.updateHitbox();
+		Lua_helper.add_callback(lua, "scaleObject", function(obj:String, x:Float, y:Float) {
+			if(sprites.exists(obj)) {
+				var shit:LuaSprite = sprites.get(obj);
+				shit.scale.set(x, y);
+				shit.updateHitbox();
+				return;
+			}
+
+			var poop:FlxSprite = Reflect.getProperty(lePlayState, obj);
+			if(poop != null) {
+				poop.scale.set(x, y);
+				poop.updateHitbox();
 				return;
 			}
 		});
 
-		Lua_helper.add_callback(lua, "updateHitboxSprite", function(tag:String) {
-			if(sprites.exists(tag)) {
-				var cock:LuaSprite = sprites.get(tag);
-                cock.updateHitbox();
+		Lua_helper.add_callback(lua, "updateHitbox", function(obj:String) {
+			if(sprites.exists(obj)) {
+				var shit:LuaSprite = sprites.get(obj);
+				shit.updateHitbox();
+				return;
+			}
+
+			var poop:FlxSprite = Reflect.getProperty(lePlayState, obj);
+			if(poop != null) {
+				poop.updateHitbox();
 				return;
 			}
 		});
 
-		Lua_helper.add_callback(lua, "setObjectCameraSprite", function(tag:String, camera:String = '') {
-			if(sprites.exists(tag)) {
-				var cock:LuaSprite = sprites.get(tag);
-                cock.cameras = [cameraFromString(camera)];
+		Lua_helper.add_callback(lua, "updateHitboxFromGroup", function(group:String, index:Int) {
+			if(Std.isOfType(Reflect.getProperty(lePlayState, group), FlxTypedGroup)) {
+				Reflect.getProperty(lePlayState, group).members[index].updateHitbox();
 				return;
 			}
+			Reflect.getProperty(lePlayState, group)[index].updateHitbox();
 		});
 
-		Lua_helper.add_callback(lua, "setBlendModeSprite", function(tag:String, blend:String = '') {
-			if(sprites.exists(tag)) {
-				var cock:LuaSprite = sprites.get(tag);
-                cock.blend = blendModeFromString(blend);
-				return;
+		Lua_helper.add_callback(lua, "setObjectCamera", function(obj:String, camera:String = '') {
+			if(sprites.exists(obj)) {
+				sprites.get(obj).cameras = [cameraFromString(camera)];
+				return true;
 			}
+			var object:FlxObject = Reflect.getProperty(lePlayState, obj);
+			if(object != null) {
+				object.cameras = [cameraFromString(camera)];
+				return true;
+			}
+			return false;
 		});
 
-		Lua_helper.add_callback(lua, "screenCenterSprite", function(tag:String, pos:String = 'xy') {
-			if(sprites.exists(tag)) {
-			    var spr:LuaSprite = sprites.get(tag);
-			    if(spr != null)
+		Lua_helper.add_callback(lua, "setBlendMode", function(obj:String, blend:String = '') {
+			if(sprites.exists(obj)) {
+				sprites.get(obj).blend = blendModeFromString(blend);
+				return true;
+			}
+
+			var spr:FlxSprite = Reflect.getProperty(lePlayState, obj);
+			if(spr != null) {
+				spr.blend = blendModeFromString(blend);
+				return true;
+			}
+			return false;
+		});
+
+		Lua_helper.add_callback(lua, "screenCenter", function(obj:String, pos:String = 'xy') {
+			var spr:FlxSprite;
+			if(sprites.exists(obj)) {
+				spr = sprites.get(obj);
+			} else {
+				spr = Reflect.getProperty(lePlayState, obj);
+			}
+
+			if(spr != null)
+			{
+				switch(pos.trim().toLowerCase())
 				{
-					switch(pos.trim().toLowerCase())
-					{
-						case 'x':
-							spr.screenCenter(X);
-							return;
-						case 'y':
-							spr.screenCenter(Y);
-							return;
-						default:
-							spr.screenCenter(XY);
-							return;
-					}
+					case 'x':
+						spr.screenCenter(X);
+						return;
+					case 'y':
+						spr.screenCenter(Y);
+						return;
+					default:
+						spr.screenCenter(XY);
+						return;
 				}
-		    }
+			}
 		});
 
 		Lua_helper.add_callback(lua, "addSprite", function(tag:String, front:Bool = false) {
@@ -874,35 +951,6 @@ class ModLuaScripts {
 
 		Lua_helper.add_callback(lua, "removeSprite", function(tag:String) {
 			resetSpriteTag(tag);
-		});
-
-		Lua_helper.add_callback(lua, "getPropertySprite", function(tag:String, variable:String) {
-			if(sprites.exists(tag)) {
-				var killMe:Array<String> = variable.split('.');
-				if(killMe.length > 1) {
-					var coverMeInPiss:Dynamic = Reflect.getProperty(sprites.get(tag), killMe[0]);
-					for (i in 1...killMe.length-1) {
-						coverMeInPiss = Reflect.getProperty(coverMeInPiss, killMe[i]);
-					}
-					return Reflect.getProperty(coverMeInPiss, killMe[killMe.length-1]);
-				}
-				return Reflect.getProperty(sprites.get(tag), variable);
-			}
-			return null;
-		});
-
-		Lua_helper.add_callback(lua, "setPropertySprite", function(tag:String, variable:String, value:Dynamic) {
-			if(sprites.exists(tag)) {
-				var killMe:Array<String> = variable.split('.');
-				if(killMe.length > 1) {
-					var coverMeInPiss:Dynamic = Reflect.getProperty(sprites.get(tag), killMe[0]);
-					for (i in 1...killMe.length-1) {
-						coverMeInPiss = Reflect.getProperty(coverMeInPiss, killMe[i]);
-					}
-					return Reflect.setProperty(coverMeInPiss, killMe[killMe.length-1], value);
-				}
-				return Reflect.setProperty(sprites.get(tag), variable, value);
-			}
 		});
 
 		Lua_helper.add_callback(lua, "characterPlayAnim", function(character:String, anim:String, ?forced:Bool = false) {
@@ -1175,6 +1223,51 @@ class ModLuaScripts {
 		return PlayState.instance.camGame;
 	}
 
+	function getPropertyLoopThingWhatever(killMe:Array<String>, ?checkForTextsToo:Bool = true):Dynamic
+	{
+		var coverMeInPiss:Dynamic = getObjectDirectly(killMe[0], checkForTextsToo);
+		for (i in 1...killMe.length-1) {
+			coverMeInPiss = Reflect.getProperty(coverMeInPiss, killMe[i]);
+		}
+		return coverMeInPiss;
+	}
+
+	function getObjectDirectly(objectName:String, ?checkForTextsToo:Bool = true):Dynamic
+	{
+		var coverMeInPiss:Dynamic = null;
+		if(sprites.exists(objectName)) {
+			coverMeInPiss = sprites.get(objectName);
+		} else {
+			coverMeInPiss = Reflect.getProperty(lePlayState, objectName);
+		}
+		return coverMeInPiss;
+	}
+
+	function setGroupStuff(leArray:Dynamic, variable:String, value:Dynamic) {
+		var killMe:Array<String> = variable.split('.');
+		if(killMe.length > 1) {
+			var coverMeInPiss:Dynamic = Reflect.getProperty(leArray, killMe[0]);
+			for (i in 1...killMe.length-1) {
+				coverMeInPiss = Reflect.getProperty(coverMeInPiss, killMe[i]);
+			}
+			Reflect.setProperty(coverMeInPiss, killMe[killMe.length-1], value);
+			return;
+		}
+		Reflect.setProperty(leArray, variable, value);
+	}
+
+	function getGroupStuff(leArray:Dynamic, variable:String) {
+		var killMe:Array<String> = variable.split('.');
+		if(killMe.length > 1) {
+			var coverMeInPiss:Dynamic = Reflect.getProperty(leArray, killMe[0]);
+			for (i in 1...killMe.length-1) {
+				coverMeInPiss = Reflect.getProperty(coverMeInPiss, killMe[i]);
+			}
+			return Reflect.getProperty(coverMeInPiss, killMe[killMe.length-1]);
+		}
+		return Reflect.getProperty(leArray, variable);
+	}
+
 	public function call(event:String, args:Array<Dynamic>):Dynamic {
 		if(lua == null) {
 			return Function_Continue;
@@ -1245,6 +1338,12 @@ class LuaSprite extends FlxSprite
 {
 	public var wasAdded:Bool = false;
 	public var isInFront:Bool = false;
+
+	public function new(?x:Float = 0, ?y:Float = 0)
+	{
+		super(x, y);
+		antialiasing = true;
+	}
 }
 
 class ModchartAPI {
