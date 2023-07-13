@@ -1094,6 +1094,21 @@ class ModLuaScripts {
 			return key;
 		});
 
+		Lua_helper.add_callback(lua, "keyJustReleased", function(name:String) {
+			var key:Bool = false;
+			switch(name) {
+				case 'left': key = FlxG.keys.justReleased.LEFT;
+				case 'down': key = FlxG.keys.justReleased.DOWN;
+				case 'up': key = FlxG.keys.justReleased.UP;
+				case 'right': key = FlxG.keys.justReleased.RIGHT;
+				case 'back': key = FlxG.keys.justReleased.BACKSPACE;
+				case 'enter': key = FlxG.keys.justReleased.ENTER;
+				case 'reset': key = FlxG.keys.justReleased.R;
+				case 'space': key = FlxG.keys.justReleased.SPACE;
+			}
+			return key;
+		});
+
 		Lua_helper.add_callback(lua, "setHealthBarColors", function(leftHex:String, rightHex:String) {
 			var left:FlxColor = Std.parseInt(leftHex);
 			if(!leftHex.startsWith('0x')) left = Std.parseInt('0xff' + leftHex);
