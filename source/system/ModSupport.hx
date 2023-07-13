@@ -1873,19 +1873,6 @@ class ModchartAPI {
 						targetsArray[i].shake(intensity, duration);
 					}
 				}
-			case 'Camera Position':
-				if(PlayState.instance.camFollow != null) {
-				    var val1:Float = Std.parseFloat(value1);
-				    var val2:Float = Std.parseFloat(value2);
-
-			        if(Math.isNaN(val1)) val1 = 0;
-				    if(Math.isNaN(val2)) val2 = 0;
-
-			        if(!Math.isNaN(Std.parseFloat(value1)) || !Math.isNaN(Std.parseFloat(value2))) {
-				        PlayState.instance.camFollow.x = val1;
-				        PlayState.instance.camFollow.y = val2;
-			        }
-		        }
 			case 'Play Animation':
 				var char:Character = PlayState.instance.dad;
 
