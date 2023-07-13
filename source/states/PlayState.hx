@@ -129,6 +129,7 @@ class PlayState extends MusicBeatState
 	public var scoreTxt:FlxText;
 
 	public static var campaignScore:Int = 0;
+	public static var seenCutscene:Bool = false;
 
 	public var defaultCamZoom:Float = 1.05;
 
@@ -804,7 +805,7 @@ class PlayState extends MusicBeatState
 		// cameras = [FlxG.cameras.list[1]];
 		startingSong = true;
 
-		if (isStoryMode)
+		if (isStoryMode && !seenCutscene)
 		{
 			switch (curSong.toLowerCase())
 			{
@@ -852,6 +853,7 @@ class PlayState extends MusicBeatState
 					#end
 					    startCountdown();
 			}
+			seenCutscene = true;
 		}
 		else
 		{
@@ -1859,6 +1861,7 @@ class PlayState extends MusicBeatState
 		canPause = false;
 		FlxG.sound.music.volume = 0;
 		vocals.volume = 0;
+		seenCutscene = false;
 
 		if (SONG.validScore)
 		{

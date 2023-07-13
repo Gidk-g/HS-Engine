@@ -557,6 +557,7 @@ class ModScriptSubstate extends MusicBeatSubstate {
 }
 
 // gay lua psych-hs script
+#if windows
 class ModLuaScripts {
 	public static var Function_Stop = 1;
 	public static var Function_Continue = 0;
@@ -569,11 +570,15 @@ class ModLuaScripts {
 	public var tweens:Map<String, FlxTween> = new Map();
 	public var sprites:Map<String, LuaSprite> = new Map();
 	public var timers:Map<String, FlxTimer> = new Map();
+	public var sounds:Map<String, FlxSound> = new Map();
 	#else
 	public var tweens:Map<String, FlxTween> = new Map<String, FlxTween>();
-	public var sprites:Map<String, LuaSprite> = new Map<String, Dynamic>();
+	public var sprites:Map<String, LuaSprite> = new Map<String, LuaSprite>();
 	public var timers:Map<String, FlxTimer> = new Map<String, FlxTimer>();
+	public var sounds:Map<String, FlxSound> = new Map<String, FlxSound>();
 	#end
+
+	public var accessedProps:Map<String, Dynamic> = null;
 
 	public function new(script:String) {
 		lua = LuaL.newstate();
@@ -590,6 +595,12 @@ class ModLuaScripts {
 			return;
 		}
 
+		#if (haxe >= "4.0.0")
+		accessedProps = new Map();
+		#else
+		accessedProps = new Map<String, Dynamic>();
+		#end
+
 		var curState:Dynamic = FlxG.state;
 		lePlayState = curState;
 
@@ -604,6 +615,11 @@ class ModLuaScripts {
 		setVar('songLength', FlxG.sound.music.length);
 		setVar('songName', PlayState.SONG.song);
 
+		setVar('isStoryMode', PlayState.isStoryMode);
+		setVar('difficulty', PlayState.storyDifficulty);
+		setVar('weekRaw', PlayState.storyWeek);
+		setVar('seenCutscene', PlayState.seenCutscene);
+
 		setVar('cameraX', 0);
 		setVar('cameraY', 0);
 
@@ -612,10 +628,6 @@ class ModLuaScripts {
 
 		setVar('curBeat', 0);
 		setVar('curStep', 0);
-
-		Lua_helper.add_callback(lua, "playSound", function(sound:String, volume:Float = 1) {
-			FlxG.sound.play(Paths.sound(sound), volume);
-		});	
 
 		Lua_helper.add_callback(lua, "startCountdown", function(variable:String) {
 			lePlayState.startCountdown();
@@ -650,6 +662,30 @@ class ModLuaScripts {
 			var value1:String = arg1;
 			var value2:String = arg2;
 			ModchartAPI.triggerEvent(event, value1, value2);
+		});
+
+		Lua_helper.add_callback(lua, "getRandomInt", function(min:Int, max:Int = FlxMath.MAX_VALUE_INT, exclude:String = '') {
+			var excludeArray:Array<String> = exclude.split(',');
+			var toExclude:Array<Int> = [];
+			for (i in 0...excludeArray.length)
+			{
+				toExclude.push(Std.parseInt(excludeArray[i].trim()));
+			}
+			return FlxG.random.int(min, max, toExclude);
+		});
+
+		Lua_helper.add_callback(lua, "getRandomFloat", function(min:Float, max:Float = 1, exclude:String = '') {
+			var excludeArray:Array<String> = exclude.split(',');
+			var toExclude:Array<Float> = [];
+			for (i in 0...excludeArray.length)
+			{
+				toExclude.push(Std.parseFloat(excludeArray[i].trim()));
+			}
+			return FlxG.random.float(min, max, toExclude);
+		});
+
+		Lua_helper.add_callback(lua, "getRandomBool", function(chance:Float = 50) {
+			return FlxG.random.bool(chance);
 		});
 
 		Lua_helper.add_callback(lua, "getProperty", function(variable:String) {
@@ -871,7 +907,7 @@ class ModLuaScripts {
 
 		Lua_helper.add_callback(lua, "setGraphicSize", function(obj:String, x:Int, y:Int = 0) {
 			if(sprites.exists(obj)) {
-				var shit:LuaSprite = sprites.get(obj);
+				var shit:LuaSprite = .get(obj);
 				shit.setGraphicSize(x, y);
 				shit.updateHitbox();
 				return;
@@ -992,6 +1028,122 @@ class ModLuaScripts {
 
 		Lua_helper.add_callback(lua, "removeLuaSprite", function(tag:String) {
 			resetSpriteTag(tag);
+		});
+
+		Lua_helper.add_callback(lua, "playMusic", function(sound:String, volume:Float = 1, loop:Bool = false) {
+			FlxG.sound.playMusic(Paths.music(sound), volume, loop);
+		});
+
+		Lua_helper.add_callback(lua, "playSound", function(sound:String, volume:Float = 1, ?tag:String = null) {
+			if(tag != null && tag.length > 0) {
+				tag = tag.replace('.', '');
+				if(sounds.exists(tag)) {
+					sounds.get(tag).stop();
+				}
+				sounds.set(tag, FlxG.sound.play(Paths.sound(sound), volume, false, function() {
+					sounds.remove(tag);
+					call('onSoundFinished', [tag]);
+				}));
+				return;
+			}
+			FlxG.sound.play(Paths.sound(sound), volume);
+		});
+
+		Lua_helper.add_callback(lua, "stopSound", function(tag:String) {
+			if(tag != null && tag.length > 1 && sounds.exists(tag)) {
+				sounds.get(tag).stop();
+				sounds.remove(tag);
+			}
+		});
+
+		Lua_helper.add_callback(lua, "pauseSound", function(tag:String) {
+			if(tag != null && tag.length > 1 && sounds.exists(tag)) {
+				sounds.get(tag).pause();
+			}
+		});
+
+		Lua_helper.add_callback(lua, "resumeSound", function(tag:String) {
+			if(tag != null && tag.length > 1 && sounds.exists(tag)) {
+				sounds.get(tag).play();
+			}
+		});
+
+		Lua_helper.add_callback(lua, "soundFadeIn", function(tag:String, duration:Float, fromValue:Float = 0, toValue:Float = 1) {
+			if(tag == null || tag.length < 1) {
+				FlxG.sound.music.fadeIn(duration, fromValue, toValue);
+			} else if(sounds.exists(tag)) {
+				sounds.get(tag).fadeIn(duration, fromValue, toValue);
+			}
+		});
+
+		Lua_helper.add_callback(lua, "soundFadeOut", function(tag:String, duration:Float, toValue:Float = 0) {
+			if(tag == null || tag.length < 1) {
+				FlxG.sound.music.fadeOut(duration, toValue);
+			} else if(sounds.exists(tag)) {
+				sounds.get(tag).fadeOut(duration, toValue);
+			}
+		});
+
+		Lua_helper.add_callback(lua, "soundFadeCancel", function(tag:String) {
+			if(tag == null || tag.length < 1) {
+				if(FlxG.sound.music.fadeTween != null) {
+					FlxG.sound.music.fadeTween.cancel();
+				}
+			} else if(sounds.exists(tag)) {
+				var theSound:FlxSound = sounds.get(tag);
+				if(theSound.fadeTween != null) {
+					theSound.fadeTween.cancel();
+					sounds.remove(tag);
+				}
+			}
+		});
+
+		Lua_helper.add_callback(lua, "getSoundVolume", function(tag:String) {
+			if(tag == null || tag.length < 1) {
+				if(FlxG.sound.music != null) {
+					return FlxG.sound.music.volume;
+				}
+			} else if(sounds.exists(tag)) {
+				return sounds.get(tag).volume;
+			}
+			return 0;
+		});
+
+		Lua_helper.add_callback(lua, "setSoundVolume", function(tag:String, value:Float) {
+			if(tag == null || tag.length < 1) {
+				if(FlxG.sound.music != null) {
+					FlxG.sound.music.volume = value;
+				}
+			} else if(sounds.exists(tag)) {
+				sounds.get(tag).volume = value;
+			}
+		});
+
+		Lua_helper.add_callback(lua, "getSoundTime", function(tag:String) {
+			if(tag != null && tag.length > 0 && sounds.exists(tag)) {
+				return sounds.get(tag).time;
+			}
+			return 0;
+		});
+
+		Lua_helper.add_callback(lua, "setSoundTime", function(tag:String, value:Float) {
+			if(tag != null && tag.length > 0 && sounds.exists(tag)) {
+				var theSound:FlxSound = sounds.get(tag);
+				if(theSound != null) {
+					var wasResumed:Bool = theSound.playing;
+					theSound.pause();
+					theSound.time = value;
+					if(wasResumed) theSound.play();
+				}
+			}
+		});
+
+		Lua_helper.add_callback(lua, "musicFadeIn", function(duration:Float, fromValue:Float = 0, toValue:Float = 1) {
+			FlxG.sound.music.fadeIn(duration, fromValue, toValue);
+		});
+
+		Lua_helper.add_callback(lua, "musicFadeOut", function(duration:Float, toValue:Float = 0) {
+			FlxG.sound.music.fadeOut(duration, toValue);
 		});
 
 		Lua_helper.add_callback(lua, "characterPlayAnim", function(character:String, anim:String, ?forced:Bool = false) {
@@ -1423,11 +1575,12 @@ class ModLuaScripts {
 	}
 
 	public function stop() {
-		sprites.clear();
-		tweens.clear();
-
 		if(lua == null) {
 			return;
+		}
+
+		if(accessedProps != null) {
+			accessedProps.clear();
 		}
 
 		Lua.close(lua);
@@ -1446,6 +1599,7 @@ class LuaSprite extends FlxSprite
 		antialiasing = true;
 	}
 }
+#end
 
 class ModchartAPI {
 	static public function triggerEvent(event:String, ?value1:Dynamic, ?value2:Dynamic) {
