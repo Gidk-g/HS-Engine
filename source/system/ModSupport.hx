@@ -28,10 +28,13 @@ import hscript.Parser;
 import hscript.Interp;
 import sys.FileSystem;
 import sys.io.File;
+
+#if windows
 import llua.Convert;
 import llua.Lua;
 import llua.State;
 import llua.LuaL;
+#end
 
 using StringTools;
 
@@ -1044,6 +1047,51 @@ class ModLuaScripts {
 					boobs = FlxG.mouse.justReleasedRight;
 			}
 			return boobs;
+		});
+
+		Lua_helper.add_callback(lua, "keyJustPressed", function(name:String) {
+			var key:Bool = false;
+			switch(name) {
+				case 'left': key = FlxG.keys.justPressed.LEFT;
+				case 'down': key = FlxG.keys.justPressed.DOWN;
+				case 'up': key = FlxG.keys.justPressed.UP;
+				case 'right': key = FlxG.keys.justPressed.RIGHT;
+				case 'back': key = FlxG.keys.justPressed.BACKSPACE;
+				case 'enter': key = FlxG.keys.justPressed.ENTER;
+				case 'reset': key = FlxG.keys.justPressed.R;
+				case 'space': key = FlxG.keys.justPressed.SPACE;
+			}
+			return key;
+		});
+
+		Lua_helper.add_callback(lua, "keyPressed", function(name:String) {
+			var key:Bool = false;
+			switch(name) {
+				case 'left': key = FlxG.keys.pressed.LEFT;
+				case 'down': key = FlxG.keys.pressed.DOWN;
+				case 'up': key = FlxG.keys.pressed.UP;
+				case 'right': key = FlxG.keys.pressed.RIGHT;
+				case 'back': key = FlxG.keys.pressed.BACKSPACE;
+				case 'enter': key = FlxG.keys.pressed.ENTER;
+				case 'reset': key = FlxG.keys.pressed.R;
+				case 'space': key = FlxG.keys.pressed.SPACE;
+			}
+			return key;
+		});
+
+		Lua_helper.add_callback(lua, "keyReleased", function(name:String) {
+			var key:Bool = false;
+			switch(name) {
+				case 'left': key = FlxG.keys.released.LEFT;
+				case 'down': key = FlxG.keys.released.DOWN;
+				case 'up': key = FlxG.keys.released.UP;
+				case 'right': key = FlxG.keys.released.RIGHT;
+				case 'back': key = FlxG.keys.released.BACKSPACE;
+				case 'enter': key = FlxG.keys.released.ENTER;
+				case 'reset': key = FlxG.keys.released.R;
+				case 'space': key = FlxG.keys.released.SPACE;
+			}
+			return key;
 		});
 
 		Lua_helper.add_callback(lua, "setHealthBarColors", function(leftHex:String, rightHex:String) {
