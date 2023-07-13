@@ -230,9 +230,9 @@ class ModScriptState extends MusicBeatState {
     }
 
     override function create():Void {
-        callFunction("create");
+        callFunction("create", []);
         super.create();
-        callFunction("createPost");
+        callFunction("createPost", []);
     }
 
 	override function update(elapsed:Float) {
@@ -400,9 +400,9 @@ class ModScriptSubstate extends MusicBeatSubstate {
     }
 
     override function create():Void {
-        callFunction("create");
+        callFunction("create", []);
         super.create();
-        callFunction("createPost");
+        callFunction("createPost", []);
     }
 
 	override function update(elapsed:Float) {
@@ -1558,6 +1558,8 @@ class ModLuaScripts {
 		Lua_helper.add_callback(lua, "cancelTimer", function(tag:String) {
 			cancelTimer(tag);
 		});
+
+		call('create', []);
     }
 
 	function resetSpriteTag(tag:String) {
@@ -1907,7 +1909,16 @@ class ModchartAPI {
 			case 'Change Character':
 				// g
 		}
+
+		#if sys
+		#if windows
+		PlayState.instance.callLua('event', [event, value1, value2]);
+		#end
+		#end
+
+		#if sys
 		PlayState.instance.script.callFunction('event', [event, value1, value2]);
+		#end
 	}
 
     // tweens for hscript omg
