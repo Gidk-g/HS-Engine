@@ -571,11 +571,13 @@ class ModLuaScripts {
 	public var sprites:Map<String, LuaSprite> = new Map();
 	public var timers:Map<String, FlxTimer> = new Map();
 	public var sounds:Map<String, FlxSound> = new Map();
+	public var texts:Map<String, LuaText> = new Map();
 	#else
 	public var tweens:Map<String, FlxTween> = new Map<String, FlxTween>();
 	public var sprites:Map<String, LuaSprite> = new Map<String, LuaSprite>();
 	public var timers:Map<String, FlxTimer> = new Map<String, FlxTimer>();
 	public var sounds:Map<String, FlxSound> = new Map<String, FlxSound>();
+	public var texts:Map<String, LuaText> = new Map<String, LuaText>();
 	#end
 
 	public var accessedProps:Map<String, Dynamic> = null;
@@ -780,6 +782,10 @@ class ModLuaScripts {
 			{
 				return lePlayState.members.indexOf(sprites.get(obj));
 			}
+			else if(texts.exists(obj))
+			{
+				return lePlayState.members.indexOf(texts.get(obj));
+			}
 			var leObj:FlxBasic = Reflect.getProperty(lePlayState, obj);
 			if(leObj != null)
 			{
@@ -791,6 +797,14 @@ class ModLuaScripts {
 		Lua_helper.add_callback(lua, "setObjectOrder", function(obj:String, position:Int) {
 			if(sprites.exists(obj)) {
 				var spr:LuaSprite = sprites.get(obj);
+				if(spr.wasAdded) {
+					lePlayState.remove(spr, true);
+				}
+				lePlayState.insert(position, spr);
+				return;
+			}
+			if(texts.exists(obj)) {
+				var spr:LuaText = texts.get(obj);
 				if(spr.wasAdded) {
 					lePlayState.remove(spr, true);
 				}
@@ -830,12 +844,10 @@ class ModLuaScripts {
 		Lua_helper.add_callback(lua, "makeGraphic", function(tag:String, width:Int, height:Int, color:String) {
 			var colorNum:Int = Std.parseInt(color);
 			if(!color.startsWith('0x')) colorNum = Std.parseInt('0xff' + color);
-
 			if(sprites.exists(tag)) {
 				sprites.get(tag).makeGraphic(width, height, colorNum);
 				return;
 			}
-
 			var object:FlxSprite = Reflect.getProperty(lePlayState, tag);
 			if(object != null) {
 				object.makeGraphic(width, height, colorNum);
@@ -851,7 +863,6 @@ class ModLuaScripts {
 				}
 				return;
 			}
-			
 			var cock:FlxSprite = Reflect.getProperty(lePlayState, obj);
 			if(cock != null) {
 				cock.animation.addByPrefix(name, prefix, framerate, loop);
@@ -867,7 +878,6 @@ class ModLuaScripts {
 			for (i in 0...strIndices.length) {
 				die.push(Std.parseInt(strIndices[i]));
 			}
-
 			if(sprites.exists(obj)) {
 				var pussy:LuaSprite = sprites.get(obj);
 				pussy.animation.addByIndices(name, prefix, die, '', framerate, false);
@@ -876,7 +886,6 @@ class ModLuaScripts {
 				}
 				return;
 			}
-			
 			var pussy:FlxSprite = Reflect.getProperty(lePlayState, obj);
 			if(pussy != null) {
 				pussy.animation.addByIndices(name, prefix, die, '', framerate, false);
@@ -891,7 +900,6 @@ class ModLuaScripts {
 				sprites.get(obj).animation.play(name, forced, startFrame);
 				return;
 			}
-
 			var spr:FlxSprite = Reflect.getProperty(lePlayState, obj);
 			if(spr != null) {
 				spr.animation.play(name, forced);
@@ -903,7 +911,6 @@ class ModLuaScripts {
 				sprites.get(obj).scrollFactor.set(scrollX, scrollY);
 				return;
 			}
-
 			var object:FlxObject = Reflect.getProperty(lePlayState, obj);
 			if(object != null) {
 				object.scrollFactor.set(scrollX, scrollY);
@@ -912,12 +919,11 @@ class ModLuaScripts {
 
 		Lua_helper.add_callback(lua, "setGraphicSize", function(obj:String, x:Int, y:Int = 0) {
 			if(sprites.exists(obj)) {
-				var shit:LuaSprite = .get(obj);
+				var shit:LuaSprite = sprites.get(obj);
 				shit.setGraphicSize(x, y);
 				shit.updateHitbox();
 				return;
 			}
-
 			var poop:FlxSprite = Reflect.getProperty(lePlayState, obj);
 			if(poop != null) {
 				poop.setGraphicSize(x, y);
@@ -933,7 +939,6 @@ class ModLuaScripts {
 				shit.updateHitbox();
 				return;
 			}
-
 			var poop:FlxSprite = Reflect.getProperty(lePlayState, obj);
 			if(poop != null) {
 				poop.scale.set(x, y);
@@ -948,7 +953,6 @@ class ModLuaScripts {
 				shit.updateHitbox();
 				return;
 			}
-
 			var poop:FlxSprite = Reflect.getProperty(lePlayState, obj);
 			if(poop != null) {
 				poop.updateHitbox();
@@ -969,6 +973,10 @@ class ModLuaScripts {
 				sprites.get(obj).cameras = [cameraFromString(camera)];
 				return true;
 			}
+			else if(texts.exists(obj)) {
+				texts.get(obj).cameras = [cameraFromString(camera)];
+				return true;
+			}
 			var object:FlxObject = Reflect.getProperty(lePlayState, obj);
 			if(object != null) {
 				object.cameras = [cameraFromString(camera)];
@@ -982,7 +990,6 @@ class ModLuaScripts {
 				sprites.get(obj).blend = blendModeFromString(blend);
 				return true;
 			}
-
 			var spr:FlxSprite = Reflect.getProperty(lePlayState, obj);
 			if(spr != null) {
 				spr.blend = blendModeFromString(blend);
@@ -993,14 +1000,13 @@ class ModLuaScripts {
 
 		Lua_helper.add_callback(lua, "screenCenter", function(obj:String, pos:String = 'xy') {
 			var spr:FlxSprite;
-			if(sprites.exists(obj)) {
+			if(sprites.exists(obj))
 				spr = sprites.get(obj);
-			} else {
+	        else if(texts.exists(obj))
+			    spr = texts.get(obj);
+			else
 				spr = Reflect.getProperty(lePlayState, obj);
-			}
-
-			if(spr != null)
-			{
+			if(spr != null) {
 				switch(pos.trim().toLowerCase())
 				{
 					case 'x':
@@ -1014,6 +1020,45 @@ class ModLuaScripts {
 						return;
 				}
 			}
+		});
+
+		Lua_helper.add_callback(lua, "objectsOverlap", function(obj1:String, obj2:String) {
+			var namesArray:Array<String> = [obj1, obj2];
+			var objectsArray:Array<FlxSprite> = [];
+			for (i in 0...namesArray.length)
+			{
+				if(sprites.exists(namesArray[i])) {
+					objectsArray.push(sprites.get(namesArray[i]));
+				}
+				else if(texts.exists(namesArray[i])) {
+					objectsArray.push(texts.get(namesArray[i]));
+				}
+				else {
+					objectsArray.push(Reflect.getProperty(lePlayState, namesArray[i]));
+				}
+			}
+			if(!objectsArray.contains(null) && FlxG.overlap(objectsArray[0], objectsArray[1]))
+			{
+				return true;
+			}
+			return false;
+		});
+
+		Lua_helper.add_callback(lua, "getPixelColor", function(obj:String, x:Int, y:Int) {
+			var spr:FlxSprite = null;
+			if(sprites.exists(obj)) {
+				spr = sprites.get(obj);
+			} else if(texts.exists(obj)) {
+				spr = texts.get(obj);
+			} else {
+				spr = Reflect.getProperty(lePlayState, obj);
+			}
+			if(spr != null)
+			{
+				if(spr.framePixels != null) spr.framePixels.getPixel32(x, y);
+				return spr.pixels.getPixel32(x, y);
+			}
+			return 0;
 		});
 
 		Lua_helper.add_callback(lua, "addLuaSprite", function(tag:String, front:Bool = false) {
@@ -1351,6 +1396,155 @@ class ModLuaScripts {
 			cancelTween(tag);
 		});
 
+		Lua_helper.add_callback(lua, "makeLuaText", function(tag:String, text:String, width:Int, x:Float, y:Float) {
+			tag = tag.replace('.', '');
+			resetTextTag(tag);
+			var leText:LuaText = new LuaText(x, y, text, width);
+			texts.set(tag, leText);
+		});
+
+		Lua_helper.add_callback(lua, "setTextString", function(tag:String, text:String) {
+			var obj:FlxText = getTextObject(tag);
+			if(obj != null)
+			{
+				obj.text = text;
+			}
+		});
+
+		Lua_helper.add_callback(lua, "setTextSize", function(tag:String, size:Int) {
+			var obj:FlxText = getTextObject(tag);
+			if(obj != null)
+			{
+				obj.size = size;
+			}
+		});
+
+		Lua_helper.add_callback(lua, "setTextWidth", function(tag:String, width:Float) {
+			var obj:FlxText = getTextObject(tag);
+			if(obj != null)
+			{
+				obj.fieldWidth = width;
+			}
+		});
+
+		Lua_helper.add_callback(lua, "setTextBorder", function(tag:String, size:Int, color:String) {
+			var obj:FlxText = getTextObject(tag);
+			if(obj != null)
+			{
+				var colorNum:Int = Std.parseInt(color);
+				if(!color.startsWith('0x')) colorNum = Std.parseInt('0xff' + color);
+
+				obj.borderSize = size;
+				obj.borderColor = colorNum;
+			}
+		});
+
+		Lua_helper.add_callback(lua, "setTextColor", function(tag:String, color:String) {
+			var obj:FlxText = getTextObject(tag);
+			if(obj != null)
+			{
+				var colorNum:Int = Std.parseInt(color);
+				if(!color.startsWith('0x')) colorNum = Std.parseInt('0xff' + color);
+
+				obj.color = colorNum;
+			}
+		});
+
+		Lua_helper.add_callback(lua, "setTextFont", function(tag:String, newFont:String) {
+			var obj:FlxText = getTextObject(tag);
+			if(obj != null)
+			{
+				obj.font = Paths.font(newFont);
+			}
+		});
+
+		Lua_helper.add_callback(lua, "setTextItalic", function(tag:String, italic:Bool) {
+			var obj:FlxText = getTextObject(tag);
+			if(obj != null)
+			{
+				obj.italic = italic;
+			}
+		});
+
+		Lua_helper.add_callback(lua, "setTextAlignment", function(tag:String, alignment:String = 'left') {
+			var obj:FlxText = getTextObject(tag);
+			if(obj != null)
+			{
+				obj.alignment = LEFT;
+				switch(alignment.trim().toLowerCase())
+				{
+					case 'right':
+						obj.alignment = RIGHT;
+					case 'center':
+						obj.alignment = CENTER;
+				}
+			}
+		});
+
+		Lua_helper.add_callback(lua, "getTextString", function(tag:String) {
+			var obj:FlxText = getTextObject(tag);
+			if(obj != null)
+			{
+				return obj.text;
+			}
+			return null;
+		});
+
+		Lua_helper.add_callback(lua, "getTextSize", function(tag:String) {
+			var obj:FlxText = getTextObject(tag);
+			if(obj != null)
+			{
+				return obj.size;
+			}
+			return -1;
+		});
+
+		Lua_helper.add_callback(lua, "getTextFont", function(tag:String) {
+			var obj:FlxText = getTextObject(tag);
+			if(obj != null)
+			{
+				return obj.font;
+			}
+			return null;
+		});
+
+		Lua_helper.add_callback(lua, "getTextWidth", function(tag:String) {
+			var obj:FlxText = getTextObject(tag);
+			if(obj != null)
+			{
+				return obj.fieldWidth;
+			}
+			return 0;
+		});
+
+		Lua_helper.add_callback(lua, "addLuaText", function(tag:String) {
+			if(texts.exists(tag)) {
+				var shit:LuaText = texts.get(tag);
+				if(!shit.wasAdded) {
+					lePlayState.add(shit);
+					shit.wasAdded = true;
+				}
+			}
+		});
+
+		Lua_helper.add_callback(lua, "removeLuaText", function(tag:String, destroy:Bool = true) {
+			if(!texts.exists(tag)) {
+				return;
+			}
+			var pee:LuaText = texts.get(tag);
+			if(destroy) {
+				pee.kill();
+			}
+			if(pee.wasAdded) {
+				lePlayState.remove(pee, true);
+				pee.wasAdded = false;
+			}
+			if(destroy) {
+				pee.destroy();
+				texts.remove(tag);
+			}
+		});
+
 		Lua_helper.add_callback(lua, "runTimer", function(tag:String, time:Float = 1, loops:Int = 1) {
 			cancelTimer(tag);
 			timers.set(tag, new FlxTimer().start(time, function(tmr:FlxTimer) {
@@ -1383,6 +1577,19 @@ class ModLuaScripts {
 		sprites.remove(tag);
 	}
 
+	function resetTextTag(tag:String) {
+		if(!texts.exists(tag)) {
+			return;
+		}
+		var pee:LuaText = texts.get(tag);
+		pee.kill();
+		if(pee.wasAdded) {
+			PlayState.instance.remove(pee, true);
+		}
+		pee.destroy();
+		texts.remove(tag);
+	}
+
 	function cancelTween(tag:String) {
 		if(tweens.exists(tag)) {
 			tweens.get(tag).cancel();
@@ -1395,8 +1602,11 @@ class ModLuaScripts {
 		cancelTween(tag);
 		var variables:Array<String> = vars.replace(' ', '').split('.');
 		var sexyProp:Dynamic = Reflect.getProperty(lePlayState, variables[0]);
-		if(sexyProp == null && sprites.exists(variables[0])) {
+		if(sprites.exists(variables[0])) {
 			sexyProp = sprites.get(variables[0]);
+		}
+		if(texts.exists(variables[0])) {
+			sexyProp = texts.get(variables[0]);
 		}
 		for (i in 1...variables.length) {
 			sexyProp = Reflect.getProperty(sexyProp, variables[i]);
@@ -1495,6 +1705,8 @@ class ModLuaScripts {
 		var coverMeInPiss:Dynamic = null;
 		if(sprites.exists(objectName)) {
 			coverMeInPiss = sprites.get(objectName);
+		} else if(checkForTextsToo && texts.exists(objectName)) {
+			coverMeInPiss = texts.get(objectName);
 		} else {
 			coverMeInPiss = Reflect.getProperty(lePlayState, objectName);
 		}
@@ -1560,6 +1772,11 @@ class ModLuaScripts {
 		return false;
 	}
 
+	function getTextObject(name:String):FlxText
+	{
+		return texts.exists(name) ? texts.get(name) : Reflect.getProperty(lePlayState, name);
+	}
+
 	public function setVar(varName:String, value:Dynamic):Void {
 		if(lua == null) {
 			return;
@@ -1602,6 +1819,20 @@ class LuaSprite extends FlxSprite
 	{
 		super(x, y);
 		antialiasing = true;
+	}
+}
+
+class LuaText extends FlxText
+{
+	public var wasAdded:Bool = false;
+
+	public function new(x:Float, y:Float, text:String, width:Float)
+	{
+		super(x, y, width, text, 16);
+		setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		cameras = [PlayState.instance.camHUD];
+		scrollFactor.set();
+		borderSize = 2;
 	}
 }
 #end
