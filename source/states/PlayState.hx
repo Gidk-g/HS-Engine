@@ -1168,6 +1168,16 @@ class PlayState extends MusicBeatState
 		// Updating Discord Rich Presence (with Time Left)
 		DiscordClient.changePresence(detailsText, SONG.song + " (" + storyDifficultyText + ")", iconRPC, true, songLength);
 		#end
+
+		#if sys
+		script.callFunction('songStart', []);
+        #end
+
+		#if sys
+		#if windows
+		callLua('songStart', []);
+		#end
+		#end
 	}
 
 	var debugNum:Int = 0;
