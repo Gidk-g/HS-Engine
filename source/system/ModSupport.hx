@@ -614,6 +614,7 @@ class ModLuaScripts {
 		setVar('stepCrochet', Conductor.stepCrochet);
 		setVar('songLength', FlxG.sound.music.length);
 		setVar('songName', PlayState.SONG.song);
+		setVar('startedCountdown', false);
 
 		setVar('isStoryMode', PlayState.isStoryMode);
 		setVar('difficulty', PlayState.storyDifficulty);
@@ -628,6 +629,10 @@ class ModLuaScripts {
 
 		setVar('curBeat', 0);
 		setVar('curStep', 0);
+
+		setVar('score', 0);
+		setVar('misses', 0);
+		setVar('hits', 0);
 
 		Lua_helper.add_callback(lua, "startCountdown", function(variable:String) {
 			lePlayState.startCountdown();
