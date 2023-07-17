@@ -1,4 +1,0 @@
-story_mode
-freeplay
-donate
-options

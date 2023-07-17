@@ -16,20 +16,42 @@ class MusicBeatState extends FlxUIState
 	private var curBeat:Int = 0;
 	private var controls(get, never):Controls;
 
+	#if sys
+	public var scriptState:ModScripts = new ModScripts();
+	#end
+
 	inline function get_controls():Controls
 		return PlayerSettings.player1.controls;
 
 	override function create()
 	{
+        #if sys
+		var modStatePath = ModPaths.modFolder("data/states/" + Type.getClassName(Type.getClass(FlxG.state)) + ".hx");
+		if (modStatePath != null) {
+			if (sys.FileSystem.exists(modStatePath)) {
+			    scriptState.loadScript("data/states/" + Type.getClassName(Type.getClass(FlxG.state)));
+			}
+		}
+		scriptState.interp.variables.set("this", this);
+		scriptState.callFunction("create", [this]);
+		#end
+
 		if (transIn != null)
 			trace('reg ' + transIn.region);
 
 		super.create();
+
+        #if sys
+		scriptState.callFunction("createPost", [this]);
+		#end
 	}
 
 	override function update(elapsed:Float)
 	{
-		//everyStep();
+        #if sys
+		scriptState.callFunction("update", [elapsed, this]);
+		#end
+
 		var oldStep:Int = curStep;
 
 		updateCurStep();
@@ -39,6 +61,10 @@ class MusicBeatState extends FlxUIState
 			stepHit();
 
 		super.update(elapsed);
+
+        #if sys
+		scriptState.callFunction("updatePost", [elapsed, this]);
+		#end
 	}
 
 	private function updateBeat():Void
@@ -66,10 +92,15 @@ class MusicBeatState extends FlxUIState
 	{
 		if (curStep % 4 == 0)
 			beatHit();
+        #if sys
+		scriptState.callFunction("stepHit", [curStep, this]);
+		#end
 	}
 
 	public function beatHit():Void
 	{
-		//do literally nothing dumbass
+        #if sys
+		scriptState.callFunction("beatHit", [curBeat, this]);
+		#end
 	}
 }

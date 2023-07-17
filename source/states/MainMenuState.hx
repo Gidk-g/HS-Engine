@@ -25,9 +25,9 @@ class MainMenuState extends MusicBeatState
 	var menuItems:FlxTypedGroup<FlxSprite>;
 
 	#if !switch
-	var optionShit:Array<String> = CoolUtil.coolTextFile(Paths.txt('menuButtonlist'));
+	var optionShit:Array<String> = ['story_mode', 'freeplay', 'donate', 'options'];
 	#else
-	var optionShit:Array<String> = ['story mode', 'freeplay'];
+	var optionShit:Array<String> = ['story_mode', 'freeplay'];
 	#end
 
 	var magenta:FlxSprite;
@@ -42,16 +42,6 @@ class MainMenuState extends MusicBeatState
 
 		transIn = FlxTransitionableState.defaultTransIn;
 		transOut = FlxTransitionableState.defaultTransOut;
-
-		#if sys
-        for (dir in sys.FileSystem.readDirectory('mods'))
-		{
-			if (sys.FileSystem.exists('mods/' + dir + '/data/menuList.txt'))
-			{
-				optionShit = sys.io.File.getContent('mods/' + dir + '/data/menuList.txt').trim().split('\n');
-			}
-		}
-		#end
 
 		if (!FlxG.sound.music.playing)
 		{
@@ -186,15 +176,6 @@ class MainMenuState extends MusicBeatState
 										FlxG.switchState(new FreeplayState());
 									case 'options':
 										FlxG.switchState(new OptionsState());
-									#if sys
-									default:
-										var modStatePath = ModPaths.modFolder("data/states/" + optionShit[curSelected] + ".hx");
-										if (modStatePath != null) {
-											if (sys.FileSystem.exists(modStatePath)) {
-												FlxG.switchState(Type.createInstance(system.ModSupport.ModScriptState, [modStatePath]));
-											}
-										}
-									#end
 								}
 							});
 						}
