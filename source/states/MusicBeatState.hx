@@ -32,6 +32,8 @@ class MusicBeatState extends FlxUIState
 			    scriptState.loadScript("data/states/" + Type.getClassName(Type.getClass(FlxG.state)));
 			}
 		}
+		scriptState.interp.variables.set("curBeat", curBeat);
+		scriptState.interp.variables.set("curStep", curStep);
 		scriptState.interp.variables.set("this", this);
 		scriptState.callFunction("create", [this]);
 		#end
