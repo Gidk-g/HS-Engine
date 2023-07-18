@@ -102,6 +102,8 @@ class PlayState extends MusicBeatState
 	public var noteSkinPath:String = 'NOTE_assets';
 	public var noteSplashesPath:String = 'noteSplashes';
 
+	public var accuracy:Float;
+
 	var dialogue:Array<String> = ['blah blah blah', 'coolswag'];
 
 	var halloweenBG:FlxSprite;
@@ -1490,12 +1492,12 @@ class PlayState extends MusicBeatState
 		if(!Math.isNaN(ratingPercent) && ratingPercent < 0)
 			ratingPercent = 0;
 
-		var rPercent:Float = FlxMath.roundDecimal(ratingPercent * 100, 2);
+		accuracy = FlxMath.roundDecimal(ratingPercent * 100, 2);
 
-		if (Math.isNaN(rPercent))
+		if (Math.isNaN(accuracy))
 			return 0;
 		else
-			return rPercent;
+			return accuracy;
     }
 
 	public var paused:Bool = false;

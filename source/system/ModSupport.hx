@@ -130,6 +130,7 @@ class ModScripts {
 		interp.variables.set("FileSystem", FileSystem);
 		interp.variables.set("PlayState", PlayState);
 		interp.variables.set("FlxGroup", FlxGroup);
+		interp.variables.set("FlxTimer", FlxTimer);
 		interp.variables.set("FlxTypedGroup", FlxTypedGroup);
 		interp.variables.set("CoolUtil", CoolUtil);
 		interp.variables.set("Paths", Paths);
@@ -284,6 +285,7 @@ class ModScriptState extends MusicBeatState {
 		interp.variables.set("FileSystem", FileSystem);
 		interp.variables.set("PlayState", PlayState);
 		interp.variables.set("FlxGroup", FlxGroup);
+		interp.variables.set("FlxTimer", FlxTimer);
 		interp.variables.set("FlxTypedGroup", FlxTypedGroup);
 		interp.variables.set("CoolUtil", CoolUtil);
 		interp.variables.set("Paths", Paths);
@@ -454,6 +456,7 @@ class ModScriptSubstate extends MusicBeatSubstate {
 		interp.variables.set("FileSystem", FileSystem);
 		interp.variables.set("PlayState", PlayState);
 		interp.variables.set("FlxGroup", FlxGroup);
+		interp.variables.set("FlxTimer", FlxTimer);
 		interp.variables.set("FlxTypedGroup", FlxTypedGroup);
 		interp.variables.set("CoolUtil", CoolUtil);
 		interp.variables.set("Paths", Paths);
