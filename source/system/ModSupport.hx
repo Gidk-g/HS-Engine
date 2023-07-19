@@ -36,7 +36,7 @@ class ModPaths {
 
     inline static public function image(path:String):String {
         var fullPath:String = null;
-        for (modFolder in FileSystem.readDirectory(Sys.getCwd() + "mods")) {
+        for (modFolder in getModFolders()) {
             fullPath = Sys.getCwd() + modDirectory + modFolder + "/images/" + path + ".png";
             if (FileSystem.exists(fullPath)) {
                 break;
@@ -47,7 +47,7 @@ class ModPaths {
 
     inline static public function sound(path:String):String {
         var fullPath:String = null;
-        for (modFolder in FileSystem.readDirectory(Sys.getCwd() + "mods")) {
+        for (modFolder in getModFolders()) {
             fullPath = Sys.getCwd() + modDirectory + modFolder + "/" + path + ".ogg";
             if (FileSystem.exists(fullPath)) {
                 break;
@@ -58,7 +58,7 @@ class ModPaths {
 
     inline static public function data(path:String):String {
         var fullPath:String = null;
-        for (modFolder in FileSystem.readDirectory(Sys.getCwd() + "mods")) {
+        for (modFolder in getModFolders()) {
             fullPath = Sys.getCwd() + modDirectory + modFolder + "/data/" + path + ".json";
             if (FileSystem.exists(fullPath)) {
                 break;
@@ -69,7 +69,7 @@ class ModPaths {
 
     inline static public function modFolder(path:String):String {
         var fullPath:String = null;
-        for (modFolder in FileSystem.readDirectory(Sys.getCwd() + "mods")) {
+        for (modFolder in getModFolders()) {
             fullPath = Sys.getCwd() + modDirectory + modFolder + "/" + path;
             if (FileSystem.exists(fullPath)) {
                 break;
@@ -77,6 +77,20 @@ class ModPaths {
         }
         return fullPath;
     }
+
+	private static function getModFolders():Array<String> {
+		var list:Array<String> = [];
+		var modsFolder:String = modDirectory;
+		if(FileSystem.exists(modsFolder)) {
+			for (folder in FileSystem.readDirectory(modsFolder)) {
+				var path = haxe.io.Path.join([modsFolder, folder]);
+				if (sys.FileSystem.isDirectory(path) && !list.contains(folder)) {
+					list.push(folder);
+				}
+			}
+		}
+		return list;
+	}
 }
 
 class ModScripts {
