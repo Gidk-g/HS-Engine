@@ -37,39 +37,37 @@ class FreeplayState extends MusicBeatState
 	{
 		var initSonglist = CoolUtil.coolTextFile(Paths.txt('freeplaySonglist'));
 		var customSongList:Array<String> = [];
+		var songModListIdk:Array<String> = [];
 
         #if sys
 		var songListTxt:Array<String> = [];
 		var list:Array<String> = [];
-
-        if (sys.FileSystem.exists(ModPaths.modFolder('songList.txt')))
-        {
-			list = sys.io.File.getContent(ModPaths.modFolder('songList.txt')).trim().split('\n');
-        }
-
-		for (i in 0...list.length) 
-			list[i] = list[i].trim();
-
-		songListTxt = list;
-
-		for (i in 0...songListTxt.length)
-		{
-			if (songListTxt.length > 0)
-				customSongList.push(songListTxt[i]);
-		}
+        for (dir in ModPaths.getModFolders()) {
+			if (sys.FileSystem.exists(Sys.getCwd() + 'mods/' + dir + '/songList.txt'))
+				list = sys.io.File.getContent(Sys.getCwd() + 'mods/' + dir + '/songList.txt').trim().split('\n');
+		    for (i in 0...list.length) 
+			    list[i] = list[i].trim();
+		    songListTxt = list;
+		    for (i in 0...songListTxt.length) {
+			    if (songListTxt.length > 0) {
+			    	customSongList.push(songListTxt[i]);
+				    songModListIdk.push(dir);
+				}
+		    }
+	    }
 		#end
 
 		for (i in 0...initSonglist.length)
 		{
 			var data:Array<String> = initSonglist[i].split(':');
-			songs.push(new SongMetadata(data[0], Std.parseInt(data[2]), data[1]));
+			songs.push(new SongMetadata(data[0], Std.parseInt(data[2]), data[1], 'fnf'));
 		}
 
         #if sys
 		for (i in 0...customSongList.length)
 		{
 			var bruh:Array<String> = customSongList[i].split(':');
-			songs.push(new SongMetadata(bruh[0], Std.parseInt(bruh[2]), bruh[1]));
+			songs.push(new SongMetadata(bruh[0], Std.parseInt(bruh[2]), bruh[1], songModListIdk[i]));
 		}
 		#end
 
@@ -169,12 +167,12 @@ class FreeplayState extends MusicBeatState
 		super.create();
 	}
 
-	public function addSong(songName:String, weekNum:Int, songCharacter:String)
+	public function addSong(songName:String, weekNum:Int, songCharacter:String, daMod:String)
 	{
-		songs.push(new SongMetadata(songName, weekNum, songCharacter));
+		songs.push(new SongMetadata(songName, weekNum, songCharacter, daMod));
 	}
 
-	public function addWeek(songs:Array<String>, weekNum:Int, ?songCharacters:Array<String>)
+	public function addWeek(songs:Array<String>, weekNum:Int, ?songCharacters:Array<String>, daMod:String)
 	{
 		if (songCharacters == null)
 			songCharacters = ['dad'];
@@ -182,7 +180,7 @@ class FreeplayState extends MusicBeatState
 		var num:Int = 0;
 		for (song in songs)
 		{
-			addSong(song, weekNum, songCharacters[num]);
+			addSong(song, weekNum, songCharacters[num], daMod);
 
 			if (songCharacters.length != 1)
 				num++;
@@ -247,7 +245,6 @@ class FreeplayState extends MusicBeatState
 				PlayState.SONG = Song.loadFromJson(poop, songs[curSelected].songName.toLowerCase());
 				PlayState.isStoryMode = false;
 				PlayState.storyDifficulty = curDifficulty;
-	
 				PlayState.storyWeek = songs[curSelected].week;
 				trace('CUR WEEK' + PlayState.storyWeek);
 				LoadingState.loadAndSwitchState(new PlayState());
@@ -332,11 +329,13 @@ class SongMetadata
 	public var songName:String = "";
 	public var week:Int = 0;
 	public var songCharacter:String = "";
+	public var fromMod:String = "";
 
-	public function new(song:String, week:Int, songCharacter:String)
+	public function new(song:String, week:Int, songCharacter:String, fromMod:String)
 	{
 		this.songName = song;
 		this.week = week;
 		this.songCharacter = songCharacter;
+		this.fromMod = fromMod;
 	}
 }
