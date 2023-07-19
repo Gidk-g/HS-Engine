@@ -4,14 +4,10 @@ package system;
 import haxe.Json;
 import flixel.FlxG;
 import haxe.io.Path;
-import Type.ValueType;
-import flixel.FlxBasic;
 import flixel.FlxObject;
 import flixel.math.FlxAngle;
 import flixel.group.FlxGroup;
 import flixel.util.FlxTimer;
-import flixel.util.FlxColor;
-import openfl.display.BlendMode;
 import flixel.graphics.atlas.FlxAtlas;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.group.FlxGroup.FlxTypedGroup;
@@ -609,9 +605,7 @@ class ModchartAPI {
 			case 'Change Character':
 				// g
 		}
-		#if sys
 		PlayState.instance.script.callFunction('event', [event, value1, value2]);
-		#end
 	}
 
     // tweens for hscript omg
