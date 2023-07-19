@@ -34,6 +34,7 @@ class MusicBeatSubstate extends FlxSubState
 			    scriptSubstate.loadScript("data/substates/" + Type.getClassName(Type.getClass(FlxG.state.subState)));
 			}
 		}
+		scriptSubstate.interp.scriptObject = this;
 		scriptSubstate.interp.variables.set("curBeat", curBeat);
 		scriptSubstate.interp.variables.set("curStep", curStep);
 		scriptSubstate.interp.variables.set("this", this);
