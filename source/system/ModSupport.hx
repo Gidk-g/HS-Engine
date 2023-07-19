@@ -78,7 +78,7 @@ class ModPaths {
         return fullPath;
     }
 
-	private static function getModFolders():Array<String> {
+	static public function getModFolders():Array<String> {
 		var list:Array<String> = [];
 		var modsFolder:String = modDirectory;
 		if(FileSystem.exists(modsFolder)) {
