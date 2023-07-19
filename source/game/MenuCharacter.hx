@@ -35,7 +35,7 @@ class MenuCharacter extends FlxSprite
 			default:
 		        var rawJson = null;
 		        #if sys
-		        var moddyFile:String = ModPaths.data("data/weeks/characters/" + character);
+		        var moddyFile:String = ModPaths.data("weeks/characters/" + character);
 		        if(sys.FileSystem.exists(moddyFile)) {
 			        rawJson = sys.io.File.getContent(moddyFile);
 		        }
