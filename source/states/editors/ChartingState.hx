@@ -165,6 +165,7 @@ class ChartingState extends MusicBeatState
 		addSongUI();
 		addSectionUI();
 		addNoteUI();
+		updateHeads();
 
 		add(curRenderedNotes);
 		add(curRenderedSustains);
@@ -257,12 +258,14 @@ class ChartingState extends MusicBeatState
 		var player1DropDown = new FlxUIDropDownMenu(10, 100, FlxUIDropDownMenu.makeStrIdLabelArray(characters, true), function(character:String)
 		{
 			_song.player1 = characters[Std.parseInt(character)];
+			updateHeads();
 		});
 		player1DropDown.selectedLabel = _song.player1;
 
 		var player2DropDown = new FlxUIDropDownMenu(140, 100, FlxUIDropDownMenu.makeStrIdLabelArray(characters, true), function(character:String)
 		{
 			_song.player2 = characters[Std.parseInt(character)];
+			updateHeads();
 		});
 
 		player2DropDown.selectedLabel = _song.player2;
@@ -694,7 +697,11 @@ class ChartingState extends MusicBeatState
 			+ " / "
 			+ Std.string(FlxMath.roundDecimal(FlxG.sound.music.length / 1000, 2))
 			+ "\nSection: "
-			+ curSection;
+			+ curSection
+			+ "\nCurBeat: "
+			+ curBeat
+			+ "\nCurStep: "
+			+ curStep;
 		super.update(elapsed);
 	}
 
@@ -818,16 +825,41 @@ class ChartingState extends MusicBeatState
 
 	function updateHeads():Void
 	{
+		var healthIconP1:String = loadHealthIconFromCharacter(_song.player1);
+		var healthIconP2:String = loadHealthIconFromCharacter(_song.player2);
+
 		if (check_mustHitSection.checked)
 		{
-			leftIcon.animation.play('bf');
-			rightIcon.animation.play('dad');
+			leftIcon.changeIcon(healthIconP1);
+			rightIcon.changeIcon(healthIconP2);
 		}
 		else
 		{
-			leftIcon.animation.play('dad');
-			rightIcon.animation.play('bf');
+			leftIcon.changeIcon(healthIconP2);
+			rightIcon.changeIcon(healthIconP1);
 		}
+	}
+
+	function loadHealthIconFromCharacter(char:String) {
+		var rawJson = null;
+
+		#if sys
+		var moddyFile:String = ModPaths.data("characters/" + char);
+		if(sys.FileSystem.exists(moddyFile)) {
+			rawJson = sys.io.File.getContent(moddyFile);
+		}
+		#end
+
+		if(rawJson == null) {
+			#if sys
+			rawJson = sys.io.File.getContent(Paths.json("characters/" + char));
+			#else
+			rawJson = Assets.getText(Paths.json("characters/" + char));
+			#end
+		}
+
+		var json:game.Character.CharJson = cast Json.parse(rawJson);
+		return json.healthIcon;
 	}
 
 	function updateNoteUI():Void
