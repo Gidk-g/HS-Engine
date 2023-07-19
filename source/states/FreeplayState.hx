@@ -42,11 +42,11 @@ class FreeplayState extends MusicBeatState
 		var songListTxt:Array<String> = [];
 		var list:Array<String> = [];
 
-        for (dir in sys.FileSystem.readDirectory('mods'))
+        for (dir in sys.FileSystem.readDirectory(Sys.getCwd() + 'mods'))
         {
-            if (sys.FileSystem.exists('mods/' + dir + '/songList.txt'))
+            if (sys.FileSystem.exists(Sys.getCwd() + 'mods/' + dir + '/songList.txt'))
             {
-				list = sys.io.File.getContent('mods/' + dir + '/songList.txt').trim().split('\n');
+				list = sys.io.File.getContent(Sys.getCwd() + 'mods/' + dir + '/songList.txt').trim().split('\n');
             }
         }
 

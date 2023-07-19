@@ -148,12 +148,6 @@ class PlayState extends MusicBeatState
 	public var script:ModScripts = new ModScripts();
 	#end
 
-	#if sys
-	#if windows
-	var luaArray:Array<ModLuaScripts> = [];
-	#end
-	#end
-
 	#if desktop
 	// Discord RPC variables
 	var storyDifficultyText:String = "";
@@ -607,22 +601,6 @@ class PlayState extends MusicBeatState
 	    add(backgroundGroup);
 
 		#if sys
-		#if windows
-		var doPush:Bool = false;
-		var luaFile:String = 'data/charts/' + SONG.song.toLowerCase() + '/script.lua';
-		if(sys.FileSystem.exists(ModPaths.modFolder(luaFile))) {
-			luaFile = ModPaths.modFolder(luaFile);
-			doPush = true;
-		}
-		if(doPush) 
-			luaArray.push(new ModLuaScripts(luaFile));
-		setLua('score', songScore);
-		setLua('misses', songMisses);
-		setLua('hits', songHits);
-		#end
-		#end
-
-		#if sys
 		setScriptFunction();
 		#end
 
@@ -891,12 +869,6 @@ class PlayState extends MusicBeatState
 		super.create();
 
 		#if sys
-		#if windows
-		callLua('createPost', []);
-		#end
-		#end
-
-		#if sys
 		script.callFunction("createPost", []);
 		#end
 	}
@@ -1050,12 +1022,6 @@ class PlayState extends MusicBeatState
 		Conductor.songPosition = 0;
 		Conductor.songPosition -= Conductor.crochet * 5;
 
-		#if sys
-		#if windows
-		setLua('startedCountdown', true);
-		#end
-		#end
-
 		var swagCounter:Int = 0;
 
 		startTimer = new FlxTimer().start(Conductor.crochet / 1000, function(tmr:FlxTimer)
@@ -1174,12 +1140,6 @@ class PlayState extends MusicBeatState
 		#if sys
 		script.callFunction('songStart', []);
         #end
-
-		#if sys
-		#if windows
-		callLua('songStart', []);
-		#end
-		#end
 	}
 
 	var debugNum:Int = 0;
@@ -1535,12 +1495,6 @@ class PlayState extends MusicBeatState
 		}
 
 		#if sys
-		#if windows
-		callLua('update', [elapsed]);
-		#end
-		#end
-
-		#if sys
 		script.callFunction("update", [elapsed]);
 		#end
 
@@ -1856,12 +1810,6 @@ class PlayState extends MusicBeatState
 					script.callFunction("dadNoteHit", [daNote]);
 					#end
 
-					#if sys
-					#if windows
-					callLua("dadNoteHit", [daNote]);
-					#end
-					#end
-
 					dad.holdTimer = 0;
 
 					if (SONG.needsVoices)
@@ -1910,28 +1858,8 @@ class PlayState extends MusicBeatState
 		#end
 
 		#if sys
-		#if windows
-		setLua('cameraX', camFollow.x);
-		setLua('cameraY', camFollow.y);
-		callLua('updatePost', [elapsed]);
-		#end
-		#end
-
-		#if sys
 		script.callFunction("updatePost", [elapsed]);
 		#end
-	}
-
-	override function destroy() {
-		#if sys
-		#if windows
-		for (i in 0...luaArray.length) {
-			luaArray[i].call('destroy', []);
-			luaArray[i].stop();
-		}
-		#end
-		#end
-		super.destroy();
 	}
 
 	function endSong():Void
@@ -2301,12 +2229,6 @@ class PlayState extends MusicBeatState
 			script.callFunction("noteMiss", [direction]);
 			#end
 
-			#if sys
-			#if windows
-			callLua("noteMiss", [direction]);
-			#end
-			#end
-
 			FlxG.sound.play(Paths.soundRandom('missnote', 1, 3), FlxG.random.float(0.1, 0.2));
 			// FlxG.sound.play(Paths.sound('missnote1'), 1, false);
 			// FlxG.log.add('played imss note');
@@ -2356,12 +2278,6 @@ class PlayState extends MusicBeatState
 		{
 			#if sys
 			script.callFunction("goodNoteHit", [note]);
-			#end
-
-			#if sys
-			#if windows
-			callLua('goodNoteHit', [note]);
-			#end
 			#end
 
 			if (!note.isSustainNote)
@@ -2513,13 +2429,6 @@ class PlayState extends MusicBeatState
 		{
 			// dad.dance();
 		}
-
-		#if sys
-		#if windows
-		setLua('curStep', curStep);
-		callLua('stepHit', []);
-		#end
-		#end
 	}
 
 	var lightningStrikeBeat:Int = 0;
@@ -2543,21 +2452,8 @@ class PlayState extends MusicBeatState
 			if (SONG.notes[Math.floor(curStep / 16)].changeBPM)
 			{
 				Conductor.changeBPM(SONG.notes[Math.floor(curStep / 16)].bpm);
-				#if sys
-				#if windows
-				setLua('curBpm', Conductor.bpm);
-				setLua('crochet', Conductor.crochet);
-				setLua('stepCrochet', Conductor.stepCrochet);
 				FlxG.log.add('CHANGED BPM!');
-				#end
-				#end
 			}
-
-			#if sys
-			#if windows
-			setLua('mustHitSection', SONG.notes[Math.floor(curStep / 16)].mustHitSection);
-			#end
-			#end
 
 			// Dad doesnt interupt his own notes
 			if (SONG.notes[Math.floor(curStep / 16)].mustHitSection)
@@ -2652,35 +2548,7 @@ class PlayState extends MusicBeatState
 		{
 			lightningStrikeShit();
 		}
-
-		#if sys
-		#if windows
-		setLua('curBeat', curBeat);
-		callLua('beatHit', []);
-		#end
-		#end
 	}
 
 	var curLight:Int = 0;
-
-	#if sys
-	#if windows
-	public function callLua(event:String, args:Array<Dynamic>):Dynamic {
-		var returnVal:Dynamic = ModLuaScripts.Function_Continue;
-		for (i in 0...luaArray.length) {
-			var ret:Dynamic = luaArray[i].call(event, args);
-			if(ret != ModLuaScripts.Function_Continue) {
-				returnVal = ret;
-			}
-		}
-		return returnVal;
-	}
-
-	public function setLua(variable:String, arg:Dynamic) {
-		for (i in 0...luaArray.length) {
-			luaArray[i].setVar(variable, arg);
-		}
-	}
-	#end
-	#end
 }
