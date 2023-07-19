@@ -1,0 +1,10 @@
+{
+	"idle": "M Mom Idle",
+	"spritePath": "Mom",
+	"offsets": [
+		0,
+		10
+	],
+	"scale": 1,
+	"confirm": "M Dad Idle"
+}

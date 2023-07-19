@@ -1,0 +1,10 @@
+{
+	"idle": "M Spooky Kids Idle",
+	"spritePath": "Spooky_Kids",
+	"offsets": [
+		0,
+		-80
+	],
+	"scale": 1,
+	"confirm": "M Dad Idle"
+}

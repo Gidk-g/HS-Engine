@@ -1,0 +1,10 @@
+{
+	"spritePath": "GF",
+	"offsets": [
+		0,
+		-25
+	],
+	"scale": 1,
+	"idle": "M GF Idle",
+	"confirm": "M GF Idle"
+}

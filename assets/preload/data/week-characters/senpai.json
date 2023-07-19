@@ -1,0 +1,10 @@
+{
+	"idle": "M Senpai Idle",
+	"spritePath": "Senpai",
+	"offsets": [
+		60,
+		-70
+	],
+	"scale": 1,
+	"confirm": "M Dad Idle"
+}
