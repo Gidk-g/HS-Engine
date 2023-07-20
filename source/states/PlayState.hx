@@ -890,6 +890,12 @@ class PlayState extends MusicBeatState
 			script.loadScript("data/charts/" + SONG.song.toLowerCase() + "/script");
 		}
 
+		for (file in sys.FileSystem.readDirectory(ModPaths.modFolder("data/scripts/"))){
+			if (file != null && haxe.io.Path.extension(file).toLowerCase() == 'hx'){
+				script.loadScript(ModPaths.modFolder("data/scripts/" + file));
+			}
+		}
+
 		script.interp.variables.set("add", function(value:FlxObject) {
 			add(value);
 		});
