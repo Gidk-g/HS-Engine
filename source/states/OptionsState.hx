@@ -50,7 +50,7 @@ class OptionsState extends MusicBeatState {
 			case 'Preferences':
                 FlxG.switchState(new FreeplayState());
 			case 'Controls':
-                FlxG.switchState(new FreeplayState());
+				openSubState(new substates.KeyBindMenu());
 			case 'Exit':
                 FlxG.switchState(new MainMenuState());
 		}

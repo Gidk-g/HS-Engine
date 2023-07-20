@@ -5,6 +5,7 @@ import flixel.FlxG;
 class Config {
 	public static var noteSplashes:Bool = true;
 	public static var ghostTapping:Bool = true;
+    public static var keyBinds:Array<String> = ['A','S','W','D','R'];
 
 	public static function save() {
 		FlxG.save.data.noteSplashes = noteSplashes;

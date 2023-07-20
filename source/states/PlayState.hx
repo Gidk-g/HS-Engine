@@ -898,23 +898,6 @@ class PlayState extends MusicBeatState
 			remove(value);
 		});
 
-		script.interp.variables.set("startVideo", function(videoFile:String) {
-			#if VIDEOS
-			if(sys.FileSystem.exists(Paths.video(videoFile))) {
-				startVideo(videoFile);
-				return true;
-			}
-			return false;
-			#else
-			if(endingSong) {
-				endSong();
-			} else {
-				startCountdown();
-			}
-			return true;
-			#end
-		});
-
 		script.interp.variables.set("camFollow", camFollow);
 
 		script.interp.variables.set("boyfriend", boyfriend);
@@ -949,43 +932,6 @@ class PlayState extends MusicBeatState
         script.callFunction('create', []);
 	}
 	#end
-
-	public function startVideo(name:String)
-	{
-		#if VIDEOS
-		inCutscene = true;
-		var filepath:String = Paths.video(name);
-		#if sys
-		if(!sys.FileSystem.exists(filepath))
-		#else
-		if(!OpenFlAssets.exists(filepath))
-		#end
-		{
-		    FlxG.log.warn('Couldnt find video file: ' + name);
-			startAndEnd();
-			return;
-		}
-		var video:MP4Handler = new MP4Handler();
-		video.playVideo(filepath);
-		video.finishCallback = function()
-		{
-			startAndEnd();
-			return;
-		}
-		#else
-		FlxG.log.warn('Platform not supported!');
-		startAndEnd();
-		return;
-		#end
-	}
-
-	function startAndEnd()
-	{
-		if(endingSong)
-			endSong();
-		else
-			startCountdown();
-	}
 
 	function schoolIntro(?dialogueBox:DialogueBox):Void
 	{
@@ -1756,20 +1702,6 @@ class PlayState extends MusicBeatState
 			}
 		}
 		// better streaming of shit
-
-		// RESET = Quick Game Over Screen
-		if (controls.RESET)
-		{
-			health = 0;
-			trace("RESET = True");
-		}
-
-		// CHEAT = brandon's a pussy
-		if (controls.CHEAT)
-		{
-			health += 1;
-			trace("User is cheating!");
-		}
 
 		if (health <= 0)
 		{
