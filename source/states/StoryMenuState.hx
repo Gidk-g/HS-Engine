@@ -413,8 +413,8 @@ class StoryMenuState extends MusicBeatState
 		}
 
         #if sys
-        for (mod in ModPaths.getModFolders()){
-            if (sys.FileSystem.isDirectory('mods/$mod/data/weeks') == true){
+        for (mod in ModPaths.getModFolders()) {
+            if (sys.FileSystem.isDirectory('mods/$mod/data/weeks') == true) {
                 for (weekJson in sys.FileSystem.readDirectory('mods/$mod/data/weeks/')) {
                     if (weekJson != null && weekJson.contains('.json')) {
                         var customWeeks = Json.parse(sys.io.File.getContent('mods/$mod/data/weeks/' + weekJson)).weeks;

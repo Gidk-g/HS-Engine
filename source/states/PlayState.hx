@@ -890,9 +890,9 @@ class PlayState extends MusicBeatState
 			script.loadScript("data/charts/" + SONG.song.toLowerCase() + "/script");
 		}
 
-		for (file in sys.FileSystem.readDirectory(ModPaths.modFolder("data/scripts/"))){
-			if (file != null && haxe.io.Path.extension(file).toLowerCase() == 'hx'){
-				script.loadScript(ModPaths.modFolder("data/scripts/" + file));
+		for (file in sys.FileSystem.readDirectory(ModPaths.modFolder("data/scripts/"))) {
+			if (sys.FileSystem.exists(ModPaths.modFolder("data/scripts/" + file + ".hx"))) {
+				script.loadScript("data/scripts/" + file);
 			}
 		}
 
