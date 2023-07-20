@@ -33,8 +33,18 @@ class MusicBeatState extends FlxUIState
 			}
 		}
 		scriptState.interp.scriptObject = this;
+
+		scriptState.interp.variables.set("add", function(value:flixel.FlxObject) {
+			add(value);
+		});
+
+		scriptState.interp.variables.set("remove", function(value:flixel.FlxObject) {
+			remove(value);
+		});
+
 		scriptState.interp.variables.set("curBeat", curBeat);
 		scriptState.interp.variables.set("curStep", curStep);
+
 		scriptState.interp.variables.set("this", this);
 		scriptState.callFunction("create", [this]);
 		#end

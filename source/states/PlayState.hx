@@ -43,6 +43,12 @@ import openfl.display.BlendMode;
 import openfl.display.StageQuality;
 import openfl.filters.ShaderFilter;
 
+#if VIDEOS
+#if (hxCodec >= "2.6.1") import hxcodec.VideoHandler as MP4Handler;
+#elseif (hxCodec == "2.6.0") import VideoHandler as MP4Handler;
+#else import vlc.MP4Handler; #end
+#end
+
 using StringTools;
 
 class PlayState extends MusicBeatState
@@ -82,6 +88,11 @@ class PlayState extends MusicBeatState
 
 	public var camZooming:Bool = false;
 	public var curSong:String = "";
+
+	public var goToStory:Bool = true;
+	public var goToGame:Bool = true;
+	public var goToGameOver:Bool = true;
+	public var goToPause:Bool = true;
 
 	public var gfSpeed:Int = 1;
 	public var health:Float = 1;
@@ -848,8 +859,8 @@ class PlayState extends MusicBeatState
 					schoolIntro(doof);
 				default:
 					#if sys
-					if (sys.FileSystem.exists(ModPaths.modFolder("data/cutscenes/" + SONG.song + ".hx"))) {
-						script.loadScript("data/cutscenes/" + SONG.song);
+					if (sys.FileSystem.exists(ModPaths.modFolder("data/cutscenes/" + SONG.song.toLowerCase() + ".hx"))) {
+						script.loadScript("data/cutscenes/" + SONG.song.toLowerCase());
 						script.callFunction('startCutscene', []);
 					} else
 					#end
@@ -887,6 +898,23 @@ class PlayState extends MusicBeatState
 			remove(value);
 		});
 
+		script.interp.variables.set("startVideo", function(videoFile:String) {
+			#if VIDEOS
+			if(sys.FileSystem.exists(Paths.video(videoFile))) {
+				startVideo(videoFile);
+				return true;
+			}
+			return false;
+			#else
+			if(endingSong) {
+				endSong();
+			} else {
+				startCountdown();
+			}
+			return true;
+			#end
+		});
+
 		script.interp.variables.set("camFollow", camFollow);
 
 		script.interp.variables.set("boyfriend", boyfriend);
@@ -921,6 +949,43 @@ class PlayState extends MusicBeatState
         script.callFunction('create', []);
 	}
 	#end
+
+	public function startVideo(name:String)
+	{
+		#if VIDEOS
+		inCutscene = true;
+		var filepath:String = Paths.video(name);
+		#if sys
+		if(!sys.FileSystem.exists(filepath))
+		#else
+		if(!OpenFlAssets.exists(filepath))
+		#end
+		{
+		    FlxG.log.warn('Couldnt find video file: ' + name);
+			startAndEnd();
+			return;
+		}
+		var video:MP4Handler = new MP4Handler();
+		video.playVideo(filepath);
+		video.finishCallback = function()
+		{
+			startAndEnd();
+			return;
+		}
+		#else
+		FlxG.log.warn('Platform not supported!');
+		startAndEnd();
+		return;
+		#end
+	}
+
+	function startAndEnd()
+	{
+		if(endingSong)
+			endSong();
+		else
+			startCountdown();
+	}
 
 	function schoolIntro(?dialogueBox:DialogueBox):Void
 	{
@@ -1508,7 +1573,10 @@ class PlayState extends MusicBeatState
 			persistentDraw = true;
 			paused = true;
 
-			openSubState(new PauseSubState(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y));
+		    script.callFunction("pause", []);
+
+			if (goToPause)
+			    openSubState(new PauseSubState(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y));
 		
 			#if desktop
 			DiscordClient.changePresence(detailsPausedText, SONG.song + " (" + storyDifficultyText + ")", iconRPC);
@@ -1714,7 +1782,10 @@ class PlayState extends MusicBeatState
 			vocals.stop();
 			FlxG.sound.music.stop();
 
-			openSubState(new GameOverSubstate(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y));
+            script.callFunction('gameOver', []);
+
+			if (goToGameOver)
+			    openSubState(new GameOverSubstate(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y));
 
 			// FlxG.switchState(new GameOverState(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y));
 			
@@ -1868,6 +1939,7 @@ class PlayState extends MusicBeatState
 		FlxG.sound.music.volume = 0;
 		vocals.volume = 0;
 		seenCutscene = false;
+		endingSong = true;
 
 		if (SONG.validScore)
 		{
@@ -1876,17 +1948,7 @@ class PlayState extends MusicBeatState
 			#end
 		}
 
-		if (isStoryMode) {
-			switch (curSong.toLowerCase()) {
-				default:
-					#if sys
-					if (sys.FileSystem.exists(ModPaths.modFolder("data/cutscenes/" + SONG.song + "-end.hx"))) {
-						script.loadScript("data/cutscenes/" + SONG.song + "-end");
-						script.callFunction('startEndCutscene', []);
-					}
-					#end
-			}
-		}
+		script.callFunction('endSong', []);
 
 		if (isStoryMode)
 		{
@@ -1896,12 +1958,14 @@ class PlayState extends MusicBeatState
 
 			if (storyPlaylist.length <= 0)
 			{
-				FlxG.sound.playMusic(Paths.music('freakyMenu'));
+				if (goToStory)
+				    FlxG.sound.playMusic(Paths.music('freakyMenu'));
 
 				transIn = FlxTransitionableState.defaultTransIn;
 				transOut = FlxTransitionableState.defaultTransOut;
 
-				FlxG.switchState(new StoryMenuState());
+				if (goToStory)
+				    FlxG.switchState(new StoryMenuState());
 
 				if (SONG.validScore)
 				{
@@ -1941,7 +2005,8 @@ class PlayState extends MusicBeatState
 				PlayState.SONG = Song.loadFromJson(PlayState.storyPlaylist[0].toLowerCase() + difficulty, PlayState.storyPlaylist[0]);
 				FlxG.sound.music.stop();
 
-				LoadingState.loadAndSwitchState(new PlayState());
+				if (goToGame)
+				    LoadingState.loadAndSwitchState(new PlayState());
 			}
 		}
 		else
@@ -1990,6 +2055,9 @@ class PlayState extends MusicBeatState
 		if (daRating == 'sick' && Config.noteSplashes) {
 			createNoteSplash(note.noteData);
 		}
+
+		script.interp.variables.set("daRating", daRating);
+        script.callFunction("popUpScore", [strumtime, note]);
 
 		songScore += score;
 

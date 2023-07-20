@@ -25,6 +25,12 @@ import hscript.Interp;
 import sys.FileSystem;
 import sys.io.File;
 
+#if VIDEOS
+#if (hxCodec >= "2.6.1") import hxcodec.VideoHandler as MP4Handler;
+#elseif (hxCodec == "2.6.0") import VideoHandler as MP4Handler;
+#else import vlc.MP4Handler; #end
+#end
+
 using StringTools;
 
 class ModSupport {
@@ -152,6 +158,10 @@ class ModScripts {
         interp.variables.set("ModPaths", ModPaths);
         interp.variables.set("MusicBeatState", MusicBeatState);
         interp.variables.set("MusicBeatSubstate", MusicBeatSubstate);
+
+		#if VIDEOS
+		interp.variables.set('MP4Handler', MP4Handler);
+		#end
 
 		interp.variables.set('Modchart', ModchartAPI);
 
@@ -308,6 +318,10 @@ class ModScriptState extends MusicBeatState {
         interp.variables.set("ModPaths", ModPaths);
         interp.variables.set("MusicBeatState", MusicBeatState);
         interp.variables.set("MusicBeatSubstate", MusicBeatSubstate);
+
+		#if VIDEOS
+		interp.variables.set('MP4Handler', MP4Handler);
+		#end
 
 		interp.variables.set('Modchart', ModchartAPI);
 
@@ -478,6 +492,10 @@ class ModScriptSubstate extends MusicBeatSubstate {
         interp.variables.set("ModPaths", ModPaths);
         interp.variables.set("MusicBeatState", MusicBeatState);
         interp.variables.set("MusicBeatSubstate", MusicBeatSubstate);
+
+		#if VIDEOS
+		interp.variables.set('MP4Handler', MP4Handler);
+		#end
 
 		interp.variables.set('Modchart', ModchartAPI);
 

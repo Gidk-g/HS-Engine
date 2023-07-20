@@ -46,7 +46,8 @@
 	<!-- <define name="PRELOAD_ALL" /> -->
 	<define name="PRELOAD_ALL" unless="web" />
 	<define name="NO_PRELOAD_ALL" unless="PRELOAD_ALL"/>
-	
+	<define name="VIDEOS" if="desktop" unless="32bits"/>
+
 	<section if="PRELOAD_ALL">
 		<library name="songs"    preload="true" />
 		<library name="shared"   preload="true" />
@@ -115,7 +116,7 @@
 	<haxelib name="flixel-ui" />
 	<haxelib name="faxe" if='switch'/>
 	<haxelib name="discord_rpc" if="desktop"/>
-	<haxelib name="hxCodec" if="desktop || android" />
+	<haxelib name="hxCodec" if="VIDEOS"/>
 
 	<haxedef name="hscriptPos" />
 	<haxeflag name="-dce" value="no"/>

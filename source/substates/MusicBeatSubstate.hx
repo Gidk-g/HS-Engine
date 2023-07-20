@@ -35,8 +35,22 @@ class MusicBeatSubstate extends FlxSubState
 			}
 		}
 		scriptSubstate.interp.scriptObject = this;
+
+		scriptSubstate.interp.variables.set("close", function() {
+			close();
+		});
+
+		scriptSubstate.interp.variables.set("add", function(value:flixel.FlxObject) {
+			add(value);
+		});
+
+		scriptSubstate.interp.variables.set("remove", function(value:flixel.FlxObject) {
+			remove(value);
+		});
+
 		scriptSubstate.interp.variables.set("curBeat", curBeat);
 		scriptSubstate.interp.variables.set("curStep", curStep);
+
 		scriptSubstate.interp.variables.set("this", this);
 		scriptSubstate.callFunction("create", [this]);
 		#end
