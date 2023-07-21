@@ -14,7 +14,7 @@ import substates.MusicBeatSubstate;
 import substates.PauseSubState;
 
 // editors
-import states.editors.AnimationDebug;
+import states.editors.CharacterEditorState;
 import states.editors.ChartingState;
 
 // game

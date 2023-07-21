@@ -2,6 +2,8 @@ package states;
 
 import flixel.FlxG;
 import flixel.FlxSprite;
+import flixel.text.FlxText;
+import flixel.util.FlxColor;
 import flixel.group.FlxGroup.FlxTypedGroup;
 
 class OptionsState extends MusicBeatState {
@@ -48,7 +50,7 @@ class OptionsState extends MusicBeatState {
 	function openSelectedOption(label:String) {
 		switch(label) {
 			case 'Preferences':
-                FlxG.switchState(new FreeplayState());
+                openSubState(new PreferencesSubstate());
 			case 'Controls':
 				openSubState(new substates.KeyBindMenu());
 			case 'Exit':
@@ -72,5 +74,249 @@ class OptionsState extends MusicBeatState {
 			}
 		}
 		FlxG.sound.play(Paths.sound('scrollMenu'));
+	}
+}
+
+class PreferencesSubstate extends MusicBeatSubstate
+{
+	private static var curSelected:Int = 0;
+
+	static var unselectableOptions:Array<String> = [
+		'GAMEPLAY'
+	];
+
+	static var options:Array<String> = [
+		'GAMEPLAY',
+		'Note Splashes',
+		'Ghost Tapping',
+		#if !mobile
+		'FPS Counter'
+		#end
+	];
+
+	private var grpOptions:FlxTypedGroup<Alphabet>;
+	private var checkboxArray:Array<CheckboxThingie> = [];
+	private var checkboxNumber:Array<Int> = [];
+	private var descText:FlxText;
+	private var bg:FlxSprite;
+
+	public function new()
+	{
+		super();
+
+	    bg = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
+		bg.color = 0xFFea71fd;
+		add(bg);
+
+		grpOptions = new FlxTypedGroup<Alphabet>();
+		add(grpOptions);
+
+		for (i in 0...options.length)
+		{
+			var isCentered:Bool = unselectableCheck(i);
+			var optionText:Alphabet = new Alphabet(0, 70 * i, options[i], false, false);
+			optionText.isMenuItem = true;
+			if(isCentered) {
+				optionText.screenCenter(X);
+				optionText.forceX = optionText.x;
+			} else {
+				optionText.x += 300;
+				optionText.forceX = 300;
+			}
+			optionText.yMult = 90;
+			optionText.targetY = i;
+			grpOptions.add(optionText);
+
+			if(!isCentered) {
+				var useCheckbox:Bool = true;
+				if(useCheckbox) {
+					var checkbox:CheckboxThingie = new CheckboxThingie(optionText.x - 105, optionText.y, false);
+					checkbox.sprTracker = optionText;
+					checkboxArray.push(checkbox);
+					checkboxNumber.push(i);
+					add(checkbox);
+				}
+			}
+		}
+
+		descText = new FlxText(50, 600, 1180, "", 32);
+		descText.setFormat(Paths.font("vcr.ttf"), 32, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		descText.scrollFactor.set();
+		descText.borderSize = 2.4;
+		add(descText);
+
+		for (i in 0...options.length) {
+			if(!unselectableCheck(i)) {
+				curSelected = i;
+				break;
+			}
+		}
+		changeSelection();
+		reloadValues();
+	}
+
+	var nextAccept:Int = 5;
+
+	override function update(elapsed:Float)
+	{
+		if (controls.UP_P)
+		{
+			changeSelection(-1);
+		}
+
+		if (controls.DOWN_P)
+		{
+			changeSelection(1);
+		}
+
+		if (controls.BACK) {
+			grpOptions.forEachAlive(function(spr:Alphabet) {
+				spr.alpha = 0;
+			});
+			for (i in 0...checkboxArray.length) {
+				var spr:CheckboxThingie = checkboxArray[i];
+				if(spr != null) {
+					spr.alpha = 0;
+				}
+			}
+			bg.alpha = 0;
+			descText.alpha = 0;
+			close();
+		}
+
+		var usesCheckbox = true;
+		if(usesCheckbox) {
+			if(controls.ACCEPT && nextAccept <= 0) {
+				switch(options[curSelected]) {
+					case 'FPS Counter':
+						Config.showFPS = !Config.showFPS;
+						if(Main.fpsVar != null)
+							Main.fpsVar.visible = Config.showFPS;
+					case 'Note Splashes':
+						Config.noteSplashes = !Config.noteSplashes;
+					case 'Ghost Tapping':
+						Config.ghostTapping = !Config.ghostTapping;
+				}
+				FlxG.sound.play(Paths.sound('scrollMenu'));
+				reloadValues();
+			}
+		}
+
+		if(nextAccept > 0) {
+			nextAccept -= 1;
+		}
+		super.update(elapsed);
+	}
+	
+	function changeSelection(change:Int = 0)
+	{
+		do {
+			curSelected += change;
+			if (curSelected < 0)
+				curSelected = options.length - 1;
+			if (curSelected >= options.length)
+				curSelected = 0;
+		} while(unselectableCheck(curSelected));
+
+		var daText:String = '';
+		switch(options[curSelected]) {
+			case 'FPS Counter':
+				daText = "If unchecked, hides FPS Counter.";
+			case 'Ghost Tapping':
+				daText = "If checked, you won't get misses from pressing keys\nwhile there are no notes able to be hit.";
+			case 'Note Splashes':
+				daText = "If unchecked, hitting \"Sick!\" notes won't show particles.";
+		}
+		descText.text = daText;
+
+		var bullShit:Int = 0;
+
+		for (item in grpOptions.members) {
+			item.targetY = bullShit - curSelected;
+			bullShit++;
+			if(!unselectableCheck(bullShit-1)) {
+				item.alpha = 0.6;
+				if (item.targetY == 0) {
+					item.alpha = 1;
+				}
+				for (j in 0...checkboxArray.length) {
+					var tracker:FlxSprite = checkboxArray[j].sprTracker;
+					if(tracker == item) {
+						checkboxArray[j].alpha = item.alpha;
+						break;
+					}
+				}
+			}
+		}
+
+		FlxG.sound.play(Paths.sound('scrollMenu'));
+	}
+
+	function reloadValues() {
+		for (i in 0...checkboxArray.length) {
+			var checkbox:CheckboxThingie = checkboxArray[i];
+			if(checkbox != null) {
+				var daValue:Bool = false;
+				switch(options[checkboxNumber[i]]) {
+					case 'FPS Counter':
+						daValue = Config.showFPS;
+					case 'Note Splashes':
+						daValue = Config.noteSplashes;
+					case 'Ghost Tapping':
+						daValue = Config.ghostTapping;
+				}
+				checkbox.daValue = daValue;
+			}
+		}
+	}
+
+	private function unselectableCheck(num:Int):Bool {
+		for (i in 0...unselectableOptions.length) {
+			if(options[num] == unselectableOptions[i]) {
+				return true;
+			}
+		}
+		return options[num] == '';
+	}
+}
+
+class CheckboxThingie extends FlxSprite
+{
+	public var sprTracker:FlxSprite;
+	public var daValue(default, set):Bool;
+	public var offsetX:Float = 0;
+	public var offsetY:Float = 50;
+
+	public function new(x:Float = 0, y:Float = 0, ?checked = false) {
+		super(x, y);
+
+		frames = Paths.getSparrowAtlas('checkboxThingie');
+		animation.addByPrefix("unchecked", "Check Box unselected", 24, false);
+		animation.addByPrefix("checked", "Check Box selecting animation", 24, false);
+
+		antialiasing = true;
+		setGraphicSize(Std.int(0.9 * width));
+		updateHitbox();
+
+		set_daValue(checked);
+	}
+
+	override function update(elapsed:Float) {
+		if (sprTracker != null)
+			setPosition(sprTracker.x - 130 + offsetX, sprTracker.y - 30 + offsetY);
+		super.update(elapsed);
+	}
+
+	private function set_daValue(check:Bool):Bool {
+		if (check) {
+			if(animation.curAnim.name != 'checked') {
+			    animation.play('checked', true);
+			    offset.set(22, 90);
+			}
+		} else {
+			animation.play('unchecked', true);
+			offset.set();
+		}
+		return check;
 	}
 }

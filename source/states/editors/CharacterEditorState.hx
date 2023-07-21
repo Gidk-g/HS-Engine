@@ -9,10 +9,7 @@ import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
 
-/**
-	*DEBUG MODE
- */
-class AnimationDebug extends FlxState
+class CharacterEditorState extends MusicBeatState
 {
 	var bf:Boyfriend;
 	var dad:Character;
