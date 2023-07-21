@@ -32,8 +32,14 @@ class OptionsState extends MusicBeatState {
         }
 
 		changeSelection();
-        super.create();
-    }
+		Config.save();
+		super.create();
+	}
+
+	override function closeSubState() {
+		super.closeSubState();
+		Config.save();
+	}
 
 	override function update(elapsed:Float) {
         if (controls.UP_P)
@@ -87,6 +93,7 @@ class PreferencesSubstate extends MusicBeatSubstate
 
 	static var options:Array<String> = [
 		'GAMEPLAY',
+		'DownScroll',
 		'Note Splashes',
 		'Ghost Tapping',
 		#if !mobile
@@ -192,6 +199,8 @@ class PreferencesSubstate extends MusicBeatSubstate
 						Config.showFPS = !Config.showFPS;
 						if(Main.fpsVar != null)
 							Main.fpsVar.visible = Config.showFPS;
+					case 'DownScroll':
+						Config.downScroll = !Config.downScroll;
 					case 'Note Splashes':
 						Config.noteSplashes = !Config.noteSplashes;
 					case 'Ghost Tapping':
@@ -221,11 +230,13 @@ class PreferencesSubstate extends MusicBeatSubstate
 		var daText:String = '';
 		switch(options[curSelected]) {
 			case 'FPS Counter':
-				daText = "If unchecked, hides FPS Counter.";
+				daText = "";
+			case 'DownScroll':
+				daText = "";
 			case 'Ghost Tapping':
-				daText = "If checked, you won't get misses from pressing keys\nwhile there are no notes able to be hit.";
+				daText = "";
 			case 'Note Splashes':
-				daText = "If unchecked, hitting \"Sick!\" notes won't show particles.";
+				daText = "";
 		}
 		descText.text = daText;
 
@@ -260,6 +271,8 @@ class PreferencesSubstate extends MusicBeatSubstate
 				switch(options[checkboxNumber[i]]) {
 					case 'FPS Counter':
 						daValue = Config.showFPS;
+					case 'DownScroll':
+						daValue = Config.downScroll;
 					case 'Note Splashes':
 						daValue = Config.noteSplashes;
 					case 'Ghost Tapping':

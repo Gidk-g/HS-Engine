@@ -53,6 +53,8 @@ class TitleState extends MusicBeatState
 
 		FlxG.save.bind('funkin', 'ninjamuffin99');
 
+		Config.load();
+
 		Highscore.load();
 
 		#if FREEPLAY

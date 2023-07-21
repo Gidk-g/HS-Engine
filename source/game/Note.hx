@@ -26,6 +26,7 @@ class Note extends FlxSprite
 	public var sustainChildren:Array<Note> = [];
 
 	public var noteScore:Float = 1;
+	public var originalHeightForCalcs:Float = 6;
 
 	public static var swagWidth:Float = 160 * 0.7;
 	public static var PURP_NOTE:Int = 0;
@@ -87,6 +88,7 @@ class Note extends FlxSprite
 					animation.add('bluehold', [1]);
 				}
 
+				originalHeightForCalcs = height;
 				setGraphicSize(Std.int(width * PlayState.daPixelZoom));
 				updateHitbox();
 
@@ -135,6 +137,8 @@ class Note extends FlxSprite
 		{
 			noteScore * 0.2;
 			alpha = 0.6;
+
+			if(Config.downScroll) flipY = true;
 
 			x += width / 2;
 
