@@ -233,8 +233,7 @@ class Character extends FlxSprite
 	}
 }
 
-typedef CharJson =
-{
+typedef CharJson = {
 	var animations:Array<AnimStuff>;
 	var spritePath:String;
 	var healthIcon:String;
@@ -246,8 +245,7 @@ typedef CharJson =
 	var characterOffset:Array<Int>;
 }
 
-typedef AnimStuff =
-{
+typedef AnimStuff = {
 	var anim:String;
 	var name:String;
 	var fps:Int;

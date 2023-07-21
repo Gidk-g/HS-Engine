@@ -258,3 +258,50 @@ class DialogueBox extends FlxSpriteGroup
 		dialogueList[0] = dialogueList[0].substr(splitName[1].length + 2).trim();
 	}
 }
+
+typedef DialogueFile = {
+	var dialogue:Array<DialogueLine>;
+	var box:Array<DialogueAnimBox>
+	var portrait:Array<DialoguePortrait>
+	var script:Null<String>;
+}
+
+typedef DialogueLine = {
+	var portrait:Null<String>;
+	var portraitAnim:Null<String>;
+	var text:Null<String>;
+	var boxAnim:Null<String>;
+	var sound:Null<String>;
+}
+
+typedef DialogueAnimBox = {
+	var animations:Array<BoxAnimStuff>;
+	var spritePath:Null<String>;
+	var antialiasing:Null<Bool>;
+	var scale:Null<Float>;
+}
+
+typedef BoxAnimStuff = {
+	var anim:Null<String>;
+	var name:Null<String>;
+	var fps:Null<Int>;
+	var loop:Null<Bool>;
+	var indices:Array<Int>;
+	var offsets:Array<Int>;
+}
+
+typedef DialoguePortrait = {
+	var animations:Array<PortraitAnimStuff>;
+	var spritePath:Null<String>;
+	var antialiasing:Null<Bool>;
+	var scale:Null<Float>;
+}
+
+typedef PortraitAnimStuff = {
+	var anim:Null<String>;
+	var name:Null<String>;
+	var fps:Null<Int>;
+	var loop:Null<Bool>;
+	var indices:Array<Int>;
+	var offsets:Array<Int>;
+}
