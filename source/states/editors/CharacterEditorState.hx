@@ -36,7 +36,7 @@ class CharacterEditorState extends MusicBeatState
 	var daAnim:String = 'spooky';
 	var camFollow:FlxObject;
 
-	var characterList:Array<String> = CoolUtil.coolTextFile(Paths.txt('characterList'));
+	var characterList:Array<String> = [];
 	var leHealthIcon:HealthIcon;
 
 	var UI_characterbox:FlxUITabMenu;
@@ -186,7 +186,7 @@ class CharacterEditorState extends MusicBeatState
 			char.flipX = !char.flipX;
 		};
 
-		charDropDown = new FlxUIDropDownMenu(10, 30, FlxUIDropDownMenu.makeStrIdLabelArray(characterList, true), function(character:String)
+		charDropDown = new FlxUIDropDownMenu(10, 30, FlxUIDropDownMenu.makeStrIdLabelArray([''], true), function(character:String)
 		{
 			daAnim = characterList[Std.parseInt(character)];
 			loadChar(!check_player.checked);
@@ -339,7 +339,28 @@ class CharacterEditorState extends MusicBeatState
 	}
 
 	function reloadCharacterDropDown() {
+		var charsLoaded:Map<String, Bool> = new Map();
+		#if sys
+		characterList = [];
+		var directories:Array<String> = [ModPaths.modFolder('data/characters/'), Paths.getPreloadPath('data/characters/')];
+		for (i in 0...directories.length) {
+			var directory:String = directories[i];
+			if(sys.FileSystem.exists(directory)) {
+				for (file in sys.FileSystem.readDirectory(directory)) {
+					var path = haxe.io.Path.join([directory, file]);
+					if (!sys.FileSystem.isDirectory(path) && file.endsWith('.json')) {
+						var charToCheck:String = file.substr(0, file.length - 5);
+						if(!charsLoaded.exists(charToCheck)) {
+							characterList.push(charToCheck);
+							charsLoaded.set(charToCheck, true);
+						}
+					}
+				}
+			}
+		}
+		#else
 		characterList = CoolUtil.coolTextFile(Paths.txt('characterList'));
+		#end
 		charDropDown.setData(FlxUIDropDownMenu.makeStrIdLabelArray(characterList, true));
 		charDropDown.selectedLabel = daAnim;
 	}
