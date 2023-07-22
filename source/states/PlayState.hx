@@ -1238,6 +1238,10 @@ class PlayState extends MusicBeatState
 					{
 						sustainNote.x += FlxG.width / 2; // general offset
 					}
+					else if(Config.middleScroll)
+					{
+						swagNote.x += 310;
+					}
 				}
 
 				swagNote.mustPress = gottaHitNote;
@@ -1246,7 +1250,10 @@ class PlayState extends MusicBeatState
 				{
 					swagNote.x += FlxG.width / 2; // general offset
 				}
-				else {}
+				else if(Config.middleScroll)
+				{
+					swagNote.x += 310;
+				}
 			}
 			daBeats += 1;
 		}
@@ -1266,11 +1273,12 @@ class PlayState extends MusicBeatState
 
 	private function generateStaticArrows(player:Int):Void
 	{
+		var strumLineX:Float = Config.middleScroll ? -278 : 48;
 		var strumLineY:Float = Config.downScroll ? (FlxG.height - 150) : 50;
 		for (i in 0...4)
 		{
 			// FlxG.log.add(i);
-			var babyArrow:FlxSprite = new FlxSprite(48, strumLineY);
+			var babyArrow:FlxSprite = new FlxSprite(strumLineX, strumLineY);
 
 			switch (curStage)
 			{
@@ -1352,18 +1360,29 @@ class PlayState extends MusicBeatState
 			babyArrow.updateHitbox();
 			babyArrow.scrollFactor.set();
 
+			var targetAlpha:Float = 1;
+			if (player < 1)
+			{
+				if(Config.middleScroll) targetAlpha = 0;
+			}
+
 			if (!isStoryMode)
 			{
 				babyArrow.y -= 10;
 				babyArrow.alpha = 0;
-				FlxTween.tween(babyArrow, {y: babyArrow.y + 10, alpha: 1}, 1, {ease: FlxEase.circOut, startDelay: 0.5 + (0.2 * i)});
+				FlxTween.tween(babyArrow, {y: babyArrow.y + 10, alpha: targetAlpha}, 1, {ease: FlxEase.circOut, startDelay: 0.5 + (0.2 * i)});
 			}
+			else
+				babyArrow.alpha = targetAlpha;
 
 			babyArrow.ID = i;
 
 			if (player == 1) {
 				playerStrums.add(babyArrow);
 			} else {
+				if(Config.middleScroll) {
+					babyArrow.x += 310;
+				}
 				dadStrums.add(babyArrow);
 			}
 
@@ -1372,7 +1391,7 @@ class PlayState extends MusicBeatState
 			babyArrow.x += ((FlxG.width / 2) * player);
 
 			dadStrums.forEach(function(spr:FlxSprite)
-			{					
+			{
 				spr.centerOffsets();
 			});
 
@@ -1815,6 +1834,19 @@ class PlayState extends MusicBeatState
 						swagRect.y /= daNote.scale.y;
 						swagRect.height -= swagRect.y;
 						daNote.clipRect = swagRect;
+					}
+				}
+
+				var strum = daNote.mustPress ? playerStrums.members[daNote.noteData] : dadStrums.members[daNote.noteData];
+				if (Config.middleScroll)
+				{
+					if (daNote.isSustainNote)
+					{
+						daNote.alpha = strum.alpha * 0.6;
+					}
+					else
+					{
+						daNote.alpha = strum.alpha;
 					}
 				}
 

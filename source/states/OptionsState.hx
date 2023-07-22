@@ -94,6 +94,7 @@ class PreferencesSubstate extends MusicBeatSubstate
 	static var options:Array<String> = [
 		'GAMEPLAY',
 		'DownScroll',
+		'MiddleScroll',
 		'Note Splashes',
 		'Ghost Tapping',
 		#if !mobile
@@ -201,6 +202,8 @@ class PreferencesSubstate extends MusicBeatSubstate
 							Main.fpsVar.visible = Config.showFPS;
 					case 'DownScroll':
 						Config.downScroll = !Config.downScroll;
+					case 'MiddleScroll':
+						Config.middleScroll = !Config.middleScroll;
 					case 'Note Splashes':
 						Config.noteSplashes = !Config.noteSplashes;
 					case 'Ghost Tapping':
@@ -232,6 +235,8 @@ class PreferencesSubstate extends MusicBeatSubstate
 			case 'FPS Counter':
 				daText = "";
 			case 'DownScroll':
+				daText = "";
+			case 'MiddleScroll':
 				daText = "";
 			case 'Ghost Tapping':
 				daText = "";
@@ -273,6 +278,8 @@ class PreferencesSubstate extends MusicBeatSubstate
 						daValue = Config.showFPS;
 					case 'DownScroll':
 						daValue = Config.downScroll;
+					case 'MiddleScroll':
+						daValue = Config.middleScroll;
 					case 'Note Splashes':
 						daValue = Config.noteSplashes;
 					case 'Ghost Tapping':

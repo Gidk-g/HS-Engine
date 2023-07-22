@@ -4,6 +4,7 @@ import flixel.FlxG;
 
 class Config {
 	public static var downScroll:Bool = false;
+	public static var middleScroll:Bool = false;
 	public static var noteSplashes:Bool = true;
 	public static var ghostTapping:Bool = true;
     public static var showFPS:Bool = true;
@@ -11,6 +12,7 @@ class Config {
 
 	public static function save() {
 		FlxG.save.data.downScroll = downScroll;
+		FlxG.save.data.middleScroll = middleScroll;
 		FlxG.save.data.noteSplashes = noteSplashes;
 		FlxG.save.data.ghostTapping = ghostTapping;
 		FlxG.save.data.showFPS = showFPS;
@@ -20,6 +22,8 @@ class Config {
 	public static function load() {
 		if(FlxG.save.data.downScroll != null)
 			downScroll = FlxG.save.data.downScroll;
+		if(FlxG.save.data.middleScroll != null)
+			middleScroll = FlxG.save.data.middleScroll;
 		if(FlxG.save.data.noteSplashes != null)
 			noteSplashes = FlxG.save.data.noteSplashes;
 		if(FlxG.save.data.ghostTapping != null)
