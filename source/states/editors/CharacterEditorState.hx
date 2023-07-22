@@ -339,25 +339,17 @@ class CharacterEditorState extends MusicBeatState
 	}
 
 	function reloadCharacterDropDown() {
-		var charsLoaded:Map<String, Bool> = new Map();
 		#if sys
-		characterList = [];
-		var directories:Array<String> = [ModPaths.modFolder('data/characters/'), Paths.getPreloadPath('data/characters/')];
-		for (i in 0...directories.length) {
-			var directory:String = directories[i];
-			if(sys.FileSystem.exists(directory)) {
-				for (file in sys.FileSystem.readDirectory(directory)) {
-					var path = haxe.io.Path.join([directory, file]);
-					if (!sys.FileSystem.isDirectory(path) && file.endsWith('.json')) {
-						var charToCheck:String = file.substr(0, file.length - 5);
-						if(!charsLoaded.exists(charToCheck)) {
-							characterList.push(charToCheck);
-							charsLoaded.set(charToCheck, true);
-						}
+		characterList = CoolUtil.coolTextFile(Paths.txt('characterList'));
+		for (mod in ModPaths.getModFolders()) {
+            if (sys.FileSystem.isDirectory('mods/$mod/data/characters') == true) {
+                for (charJson in sys.FileSystem.readDirectory('mods/$mod/data/characters/')) {
+					if (charJson != null && charJson.contains('.json')){
+					    characterList.push(charJson.replace('.json', ''));
 					}
-				}
+                }
 			}
-		}
+        }
 		#else
 		characterList = CoolUtil.coolTextFile(Paths.txt('characterList'));
 		#end
