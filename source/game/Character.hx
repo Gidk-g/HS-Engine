@@ -11,6 +11,7 @@ using StringTools;
 
 class Character extends FlxSprite
 {
+	public var animationsArray:Array<AnimStuff> = [];
 	public var animOffsets:Map<String, Array<Dynamic>>;
 	public var debugMode:Bool = false;
 
@@ -96,15 +97,17 @@ class Character extends FlxSprite
 		healthIcon = json.healthIcon;
 		flipX = json.flipX;
 
-		for (anim in json.animations)
-		{
-			var animIndices:Array<Int> = anim.indices;
-			if (animIndices != null && animIndices.length > 0)
-				animation.addByIndices(anim.anim, anim.name, animIndices, "", anim.fps, anim.loop);
-			else
-				animation.addByPrefix(anim.anim, anim.name, anim.fps, anim.loop);
-			if (anim.offsets != null && anim.offsets.length > 1)
-				addOffset(anim.anim, anim.offsets[0], anim.offsets[1]);
+		animationsArray = json.animations;
+		if(animationsArray != null && animationsArray.length > 0) {
+			for (anim in animationsArray) {
+				var animIndices:Array<Int> = anim.indices;
+				if (animIndices != null && animIndices.length > 0)
+					animation.addByIndices(anim.anim, anim.name, animIndices, "", anim.fps, anim.loop);
+				else
+					animation.addByPrefix(anim.anim, anim.name, anim.fps, anim.loop);
+				if (anim.offsets != null && anim.offsets.length > 1)
+					addOffset(anim.anim, anim.offsets[0], anim.offsets[1]);
+			}
 		}
 
 		if (json.scale != 1)
