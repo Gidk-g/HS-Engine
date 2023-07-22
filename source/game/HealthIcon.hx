@@ -12,6 +12,8 @@ class HealthIcon extends FlxSprite
 
 	public var isPlayer:Bool = false;
 
+	private var char:String = '';
+
 	public function new(char:String = 'face', isPlayer:Bool = false)
 	{
 		super();
@@ -32,6 +34,7 @@ class HealthIcon extends FlxSprite
 				loadGraphic(Paths.image("icons/icon-face"), true, 150, 150);
 			animation.add(char, [0, 1], 0, false, isPlayer);
 		}
+		this.char = char;
 		animation.play(char);
 	}
 
@@ -41,5 +44,9 @@ class HealthIcon extends FlxSprite
 
 		if (sprTracker != null)
 			setPosition(sprTracker.x + sprTracker.width + 10, sprTracker.y - 30);
+	}
+
+	public function getCharacter():String {
+		return char;
 	}
 }

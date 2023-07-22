@@ -27,6 +27,11 @@ class Character extends FlxSprite
 	public var cameraOffset:Array<Int> = [0,0];
 	public var characterOffset:Array<Int> = [0,0];
 
+	public var imageFile:String = '';
+	public var jsonScale:Float = 1;
+	public var goofyAntialiasing:Bool = false;
+	public var originalFlipX:Bool = false;
+
 	public function new(x:Float, y:Float, ?character:String = "bf", ?isPlayer:Bool = false)
 	{
 		super(x, y);
@@ -88,13 +93,17 @@ class Character extends FlxSprite
         else
 			frames = Paths.getSparrowAtlas(json.spritePath);
 
+		imageFile = json.spritePath;
+
 		cameraOffset = json.cameraOffset;
 		characterOffset = json.characterOffset;
 
+		goofyAntialiasing = json.antialiasing;
 		antialiasing = json.antialiasing;
 		singDuration = json.singDuration;
 
 		healthIcon = json.healthIcon;
+		originalFlipX = flipX;
 		flipX = json.flipX;
 
 		animationsArray = json.animations;
@@ -110,9 +119,9 @@ class Character extends FlxSprite
 			}
 		}
 
-		if (json.scale != 1)
-		{
-			setGraphicSize(Std.int(width * json.scale));
+		if (json.scale != 1) {
+			jsonScale = json.scale;
+			setGraphicSize(Std.int(width * jsonScale));
 			updateHitbox();
 		}
 	}
