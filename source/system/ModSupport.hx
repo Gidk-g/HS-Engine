@@ -584,7 +584,7 @@ class ModchartAPI {
 	static public function triggerEvent(event:String, ?value1:Dynamic, ?value2:Dynamic) {
 		switch(event) {
 			case "Camera Zoom":
-				if (FlxG.camera.zoom < 1.35) {
+				if (Config.camZooms && FlxG.camera.zoom < 1.35) {
 					var camZoom:Float = Std.parseFloat(value1);
 					var hudZoom:Float = Std.parseFloat(value2);
 

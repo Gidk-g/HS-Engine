@@ -88,15 +88,18 @@ class PreferencesSubstate extends MusicBeatSubstate
 	private static var curSelected:Int = 0;
 
 	static var unselectableOptions:Array<String> = [
-		'GAMEPLAY'
+		'GAMEPLAY',
+		'VISUALS'
 	];
 
 	static var options:Array<String> = [
 		'GAMEPLAY',
 		'DownScroll',
 		'MiddleScroll',
-		'Note Splashes',
 		'Ghost Tapping',
+		'VISUALS',
+		'Note Splashes',
+		'Camera Zooms',
 		#if !mobile
 		'FPS Counter'
 		#end
@@ -208,6 +211,8 @@ class PreferencesSubstate extends MusicBeatSubstate
 						Config.noteSplashes = !Config.noteSplashes;
 					case 'Ghost Tapping':
 						Config.ghostTapping = !Config.ghostTapping;
+					case 'Camera Zooms':
+						Config.camZooms = !Config.camZooms;
 				}
 				FlxG.sound.play(Paths.sound('scrollMenu'));
 				reloadValues();
@@ -241,6 +246,8 @@ class PreferencesSubstate extends MusicBeatSubstate
 			case 'Ghost Tapping':
 				daText = "";
 			case 'Note Splashes':
+				daText = "";
+			case 'Camera Zooms':
 				daText = "";
 		}
 		descText.text = daText;
@@ -284,6 +291,8 @@ class PreferencesSubstate extends MusicBeatSubstate
 						daValue = Config.noteSplashes;
 					case 'Ghost Tapping':
 						daValue = Config.ghostTapping;
+					case 'Camera Zooms':
+						daValue = Config.camZooms;
 				}
 				checkbox.daValue = daValue;
 			}
