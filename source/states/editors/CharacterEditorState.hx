@@ -340,7 +340,7 @@ class CharacterEditorState extends MusicBeatState
 
 	function reloadCharacterDropDown() {
 		#if sys
-		characterList = CoolUtil.coolTextFile(Paths.txt('characterList'));
+		characterList = CoolUtil.coolTextFile(Paths.txt('characterEditorList'));
 		for (mod in ModPaths.getModFolders()) {
             if (sys.FileSystem.isDirectory('mods/$mod/data/characters') == true) {
                 for (charJson in sys.FileSystem.readDirectory('mods/$mod/data/characters/')) {
@@ -351,7 +351,7 @@ class CharacterEditorState extends MusicBeatState
 			}
         }
 		#else
-		characterList = CoolUtil.coolTextFile(Paths.txt('characterList'));
+		characterList = CoolUtil.coolTextFile(Paths.txt('characterEditorList'));
 		#end
 		charDropDown.setData(FlxUIDropDownMenu.makeStrIdLabelArray(characterList, true));
 		charDropDown.selectedLabel = daAnim;
