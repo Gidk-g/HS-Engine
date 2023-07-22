@@ -189,7 +189,6 @@ class CharacterEditorState extends MusicBeatState
 		charDropDown = new FlxUIDropDownMenu(10, 30, FlxUIDropDownMenu.makeStrIdLabelArray(characterList, true), function(character:String)
 		{
 			daAnim = characterList[Std.parseInt(character)];
-			check_player.checked = daAnim.startsWith('bf');
 			loadChar(!check_player.checked);
 			reloadCharacterDropDown();
 		});
@@ -340,9 +339,9 @@ class CharacterEditorState extends MusicBeatState
 	}
 
 	function reloadCharacterDropDown() {
-		// characterList = CoolUtil.coolTextFile(Paths.txt('characterList'));
-		// charDropDown.setData(FlxUIDropDownMenu.makeStrIdLabelArray(characterList, true));
-		// charDropDown.selectedLabel = daAnim;
+		characterList = CoolUtil.coolTextFile(Paths.txt('characterList'));
+		charDropDown.setData(FlxUIDropDownMenu.makeStrIdLabelArray(characterList, true));
+		charDropDown.selectedLabel = daAnim;
 	}
 
 	function reloadAnimationDropDown() {
@@ -505,21 +504,9 @@ class CharacterEditorState extends MusicBeatState
 	}
 
 	function loadChar(isDad:Bool, blahBlahBlah:Bool = true) {
-		var i:Int = charLayer.members.length-1;
-		while(i >= 0) {
-			var memb:Character = charLayer.members[i];
-			if(memb != null) {
-				memb.kill();
-				charLayer.remove(memb);
-				memb.destroy();
-			}
-			--i;
-		}
 		charLayer.clear();
 		char = new Character(0, 0, daAnim, !isDad);
-		if(char.animationsArray[0] != null) {
-			char.playAnim(char.animationsArray[0].anim, true);
-		}
+		char.screenCenter();
 		char.debugMode = true;
 		charLayer.add(char);
 		char.setPosition(char.characterOffset[0] + 100, char.characterOffset[1]);
