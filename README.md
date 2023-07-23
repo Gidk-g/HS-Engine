@@ -7,7 +7,7 @@ This is the repository of Friday Night Funkin': HS Engine.
 ### HS Engine Developers
 | Credits Icon | Username | Involvement |
 | ------------ | -------- | ----------- |
-| <img src="docs/img/gidk.png" width="64" height="64"/> | [Gidk](https://github.com/Gidk-g) | Programmer of HS Engine'
+| <img src="docs/img/gidk.png" width="64" height="64"/> | [Gidk](https://github.com/Gidk-g) | Programmer of HS Engine
 
 ### Special Thanks
 | Credits Icon | Username | Involvement |
