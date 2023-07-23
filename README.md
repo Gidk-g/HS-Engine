@@ -5,9 +5,13 @@ This is the repository of Friday Night Funkin': HS Engine.
 ## Credits
 
 ### HS Engine Developers
+| Credits Icon | Username | Involvement |
+| ------------ | -------- | ----------- |
 | <img src="docs/img/gidk.png" width="64" height="64"/> | [Gidk](https://github.com/Gidk-g) | Programmer of HS Engine'
 
 ### Special Thanks
+| Credits Icon | Username | Involvement |
+| ------------ | -------- | ----------- |
 | <img src="docs/img/shadowmario.png" width="64" height="64"/> | [Shadow Mario](https://twitter.com/Shadow_Mario_) | Some Stolen Stuff
 
 ### Friday Night Funkin'
