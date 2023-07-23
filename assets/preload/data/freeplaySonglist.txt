@@ -17,3 +17,6 @@ Winter-Horrorland:monster:5
 Senpai:senpai-pixel:6
 Roses:senpai-pixel:6
 Thorns:spirit-pixel:6
+Ugh:tankman:7
+Guns:tankman:7
+Stress:tankman:7

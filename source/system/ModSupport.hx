@@ -158,13 +158,11 @@ class ModScripts {
         interp.variables.set("ModPaths", ModPaths);
         interp.variables.set("MusicBeatState", MusicBeatState);
         interp.variables.set("MusicBeatSubstate", MusicBeatSubstate);
-
 		#if VIDEOS
 		interp.variables.set('MP4Handler', MP4Handler);
 		#end
-
+		interp.variables.set('BGSprite', BGSprite);
 		interp.variables.set('Modchart', ModchartAPI);
-
         interp.variables.set("FlxColor", system.classes.FlxColorHelper);
         interp.variables.set("FlxKey", system.classes.FlxKeyHelper);
         interp.variables.set("BlendMode", system.classes.BlendModeHelper);
@@ -318,13 +316,11 @@ class ModScriptState extends MusicBeatState {
         interp.variables.set("ModPaths", ModPaths);
         interp.variables.set("MusicBeatState", MusicBeatState);
         interp.variables.set("MusicBeatSubstate", MusicBeatSubstate);
-
 		#if VIDEOS
 		interp.variables.set('MP4Handler', MP4Handler);
 		#end
-
+		interp.variables.set('BGSprite', BGSprite);
 		interp.variables.set('Modchart', ModchartAPI);
-
         interp.variables.set("FlxColor", system.classes.FlxColorHelper);
         interp.variables.set("FlxKey", system.classes.FlxKeyHelper);
         interp.variables.set("BlendMode", system.classes.BlendModeHelper);
@@ -492,13 +488,11 @@ class ModScriptSubstate extends MusicBeatSubstate {
         interp.variables.set("ModPaths", ModPaths);
         interp.variables.set("MusicBeatState", MusicBeatState);
         interp.variables.set("MusicBeatSubstate", MusicBeatSubstate);
-
 		#if VIDEOS
 		interp.variables.set('MP4Handler', MP4Handler);
 		#end
-
+		interp.variables.set('BGSprite', BGSprite);
 		interp.variables.set('Modchart', ModchartAPI);
-
         interp.variables.set("FlxColor", system.classes.FlxColorHelper);
         interp.variables.set("FlxKey", system.classes.FlxKeyHelper);
         interp.variables.set("BlendMode", system.classes.BlendModeHelper);

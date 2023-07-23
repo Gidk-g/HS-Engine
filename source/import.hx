@@ -23,6 +23,8 @@ import game.Alphabet;
 import game.HealthIcon;
 import game.Character;
 import game.Boyfriend;
+import game.BGSprite;
+import game.TankmenBG;
 import game.BackgroundDancer;
 import game.BackgroundGirls;
 import game.DialogueBox;

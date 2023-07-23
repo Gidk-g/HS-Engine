@@ -41,6 +41,12 @@
             "texture": "week6",
             "songs": ["Senpai", "Roses", "Thorns"],
             "characters": ["senpai", "bf", "gf"]
+        },
+        {
+            "name": "TANKMAN",
+            "texture": "week7",
+            "songs": ["Ugh", "Guns", "Stress"],
+            "characters": ["tankman", "bf", "gf"]
         }
     ]
 }

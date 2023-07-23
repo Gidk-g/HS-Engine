@@ -11,7 +11,6 @@ import openfl.utils.Assets as OpenFlAssets;
 class Paths
 {
 	inline public static var SOUND_EXT = #if web "mp3" #else "ogg" #end;
-	inline public static var VIDEO_EXT = "mp4";
 
 	#if (haxe >= "4.0.0")
 	public static var customImagesLoaded:Map<String, FlxGraphic> = new Map();
@@ -97,7 +96,7 @@ class Paths
 		return getPath('music/$key.$SOUND_EXT', MUSIC, library);
 	}
 
-	static public function video(key:String)
+	static public function video(key:String, ?library:String)
 	{
 		#if sys
 		var file:String = ModPaths.modFolder('videos/$key.mp4');
@@ -105,7 +104,7 @@ class Paths
 			return file;
 		}
 		#end
-		return 'assets/videos/$key.$VIDEO_EXT';
+		return getPath('videos/$key.mp4', TEXT, library);
 	}
 
 	inline static public function voices(song:String):Any

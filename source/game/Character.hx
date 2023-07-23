@@ -3,6 +3,7 @@ package game;
 import haxe.Json;
 import flixel.FlxG;
 import flixel.FlxSprite;
+import flixel.util.FlxSort;
 import openfl.utils.Assets;
 import flixel.animation.FlxBaseAnimation;
 import flixel.graphics.frames.FlxAtlasFrames;
@@ -11,6 +12,7 @@ using StringTools;
 
 class Character extends FlxSprite
 {
+	public var animationNotes:Array<Dynamic> = [];
 	public var animationsArray:Array<AnimStuff> = [];
 	public var animOffsets:Map<String, Array<Dynamic>>;
 	public var debugMode:Bool = false;
@@ -31,6 +33,7 @@ class Character extends FlxSprite
 	public var jsonScale:Float = 1;
 	public var goofyAntialiasing:Bool = false;
 	public var originalFlipX:Bool = false;
+	public var skipDance:Bool = false;
 
 	public function new(x:Float, y:Float, ?character:String = "bf", ?isPlayer:Bool = false)
 	{
@@ -64,6 +67,14 @@ class Character extends FlxSprite
 					animation.getByName('singLEFTmiss').frames = oldMiss;
 				}
 			}
+		}
+
+		switch(curCharacter)
+		{
+			case 'pico-speaker':
+				skipDance = true;
+				loadMappedAnims();
+				playAnim("shoot1");
 		}
 	}
 
@@ -142,6 +153,21 @@ class Character extends FlxSprite
 			}
 		}
 
+		switch(curCharacter)
+		{
+			case 'pico-speaker':
+				if(animationNotes.length > 0 && Conductor.songPosition > animationNotes[0][0])
+				{
+					var noteData:Int = 1;
+					if(animationNotes[0][1] > 2) noteData = 3;
+
+					noteData += FlxG.random.int(0, 1);
+					playAnim('shoot' + noteData, true);
+					animationNotes.shift();
+				}
+				if(animation.curAnim.finished) playAnim(animation.curAnim.name, false, false, animation.curAnim.frames.length - 3);
+		}
+
 		switch (curCharacter)
 		{
 			case 'gf':
@@ -164,7 +190,7 @@ class Character extends FlxSprite
 	 */
 	public function dance()
 	{
-		if (!debugMode)
+		if (!debugMode && !skipDance)
 		{
 			if (danceIdle)
 			{
@@ -177,9 +203,36 @@ class Character extends FlxSprite
 			}
 			else if (animation.getByName('idle') != null)
 			{
-				playAnim('idle');
+				if (curCharacter == 'tankman' && PlayState.SONG.song.toLowerCase() == 'stress' && PlayState.tankmangood == 1)
+					playAnim('singDOWN-alt');
+				else
+				    playAnim('idle');
 			}
 		}
+	}
+
+	function loadMappedAnims():Void
+	{
+		var noteData:Array<SwagSection> = Song.loadFromJson('picospeaker', formatToSongPath(PlayState.SONG.song)).notes;
+		for (section in noteData) {
+			for (songNotes in section.sectionNotes) {
+				animationNotes.push(songNotes);
+			}
+		}
+		TankmenBG.animationNotes = animationNotes;
+		animationNotes.sort(sortAnims);
+	}
+
+	function formatToSongPath(path:String) {
+		var invalidChars = ~/[~&\\;:<>#]/;
+		var hideChars = ~/[.,'"%?!]/;
+		var path = invalidChars.split(path.replace(' ', '-')).join("-");
+		return hideChars.split(path).join("").toLowerCase();
+	}
+
+	function sortAnims(Obj1:Array<Dynamic>, Obj2:Array<Dynamic>):Int
+	{
+		return FlxSort.byValues(FlxSort.ASCENDING, Obj1[0], Obj2[0]);
 	}
 
 	public var danceEveryNumBeats:Int = 2;

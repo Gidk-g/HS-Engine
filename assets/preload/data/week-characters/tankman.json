@@ -1,0 +1,10 @@
+{
+	"spritePath": "Tankman",
+	"offsets": [
+		40,
+		-50
+	],
+	"scale": 1,
+	"idle": "idle",
+	"confirm": "idle"
+}
