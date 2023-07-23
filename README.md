@@ -2,7 +2,17 @@
 
 This is the repository of Friday Night Funkin': HS Engine.
 
-# Build instructions
+## Credits
+
+### Friday Night Funkin'
+| Credits Icon | Username | Involvement |
+| ------------ | -------- | ----------- |
+| <img src="docs/img/ninjamuffin99.png" width="64" height="64"/> | [ninja_muffin99](https://twitter.com/ninja_muffin99) | Programmer of Friday Night Funkin'
+| <img src="docs/img/phantomarcade.png" width="64" height="64"/> | [PhantomArcade3K](https://twitter.com/PhantomArcade3K) | Artist of Friday Night Funkin'
+| <img src="docs/img/evilsk8r.png" width="64" height="64"/> | [evilsk8r](https://twitter.com/evilsk8r) | Artist of Friday Night Funkin'
+| <img src="docs/img/kawaisprite.png" width="64" height="64"/> | [Kawai Sprite](https://twitter.com/kawaisprite) | Composer of Friday Night Funkin'
+
+## Build instructions
 
 First you need to install Haxe and HaxeFlixel.
 1. [Install Haxe 4.2.5](https://haxe.org/download/version/4.2.5/) (Download 4.2.5 instead of 4.1.5, seriously stop using Haxe 4.1.5, it misses a lot of stuffs)
