@@ -24,8 +24,8 @@ class Character extends FlxSprite
 	public var danceIdle:Bool = false;
 	public var healthIcon:String = 'face';
 
-	public var cameraOffset:Array<Int> = [0,0];
-	public var characterOffset:Array<Int> = [0,0];
+	public var cameraOffset:Array<Float> = [0,0];
+	public var characterOffset:Array<Float> = [0,0];
 
 	public var imageFile:String = '';
 	public var jsonScale:Float = 1;
@@ -253,8 +253,8 @@ typedef CharJson = {
 	var flipX:Bool;
 	var antialiasing:Bool;
 	var singDuration:Float;
-	var cameraOffset:Array<Int>;
-	var characterOffset:Array<Int>;
+	var cameraOffset:Array<Float>;
+	var characterOffset:Array<Float>;
 }
 
 typedef AnimStuff = {

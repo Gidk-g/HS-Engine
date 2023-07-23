@@ -7,6 +7,7 @@ import flixel.FlxSprite;
 import flixel.FlxState;
 import flixel.FlxCamera;
 import flixel.ui.FlxButton;
+import flixel.graphics.FlxGraphic;
 import openfl.net.FileReference;
 import openfl.events.Event;
 import openfl.events.IOErrorEvent;
@@ -19,6 +20,7 @@ import flixel.addons.ui.FlxUIInputText;
 import flixel.addons.ui.FlxUIDropDownMenu;
 import flixel.addons.display.FlxGridOverlay;
 import flixel.group.FlxGroup.FlxTypedGroup;
+import flixel.system.debug.interaction.tools.Pointer.GraphicCursorCross;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
 
@@ -42,6 +44,8 @@ class CharacterEditorState extends MusicBeatState
 	var UI_characterbox:FlxUITabMenu;
 	var UI_charactergbox:FlxUITabMenu;
 	var UI_box:FlxUITabMenu;
+
+	var cameraFollowPointer:FlxSprite;
 
 	private var camEditor:FlxCamera;
 	private var camHUD:FlxCamera;
@@ -92,6 +96,13 @@ class CharacterEditorState extends MusicBeatState
 
 		charLayer = new FlxTypedGroup<Character>();
 		add(charLayer);
+
+		var pointer:FlxGraphic = FlxGraphic.fromClass(GraphicCursorCross);
+		cameraFollowPointer = new FlxSprite().loadGraphic(pointer);
+		cameraFollowPointer.setGraphicSize(40, 40);
+		cameraFollowPointer.updateHitbox();
+		cameraFollowPointer.color = FlxColor.WHITE;
+		add(cameraFollowPointer);
 
 		loadChar(!daAnim.startsWith('bf'), false);
 
@@ -184,6 +195,7 @@ class CharacterEditorState extends MusicBeatState
 		{
 			char.isPlayer = !char.isPlayer;
 			char.flipX = !char.flipX;
+			updatePointerPos();
 		};
 
 		charDropDown = new FlxUIDropDownMenu(10, 30, FlxUIDropDownMenu.makeStrIdLabelArray([''], true), function(character:String)
@@ -415,6 +427,12 @@ class CharacterEditorState extends MusicBeatState
 			}
 		};
 
+		positionXStepper = new FlxUINumericStepper(flipXCheckBox.x + 110, flipXCheckBox.y, 10, char.characterOffset[0], -9000, 9000, 0);
+		positionYStepper = new FlxUINumericStepper(positionXStepper.x + 60, positionXStepper.y, 10, char.characterOffset[1], -9000, 9000, 0);
+
+		positionCameraXStepper = new FlxUINumericStepper(positionXStepper.x, positionXStepper.y + 40, 10, char.cameraOffset[0], -9000, 9000, 0);
+		positionCameraYStepper = new FlxUINumericStepper(positionYStepper.x, positionYStepper.y + 40, 10, char.cameraOffset[1], -9000, 9000, 0);
+
 		var saveCharacterButton:FlxButton = new FlxButton(reloadImage.x, antialiasingCheckBox.y + 40, "Save Character", function() {
 			saveCharacter();
 		});
@@ -423,6 +441,8 @@ class CharacterEditorState extends MusicBeatState
 		tab_group.add(new FlxText(15, healthIconInputText.y - 18, 0, 'Health icon name:'));
 		tab_group.add(new FlxText(15, singDurationStepper.y - 18, 0, 'Sing Animation length:'));
 		tab_group.add(new FlxText(15, scaleStepper.y - 18, 0, 'Scale:'));
+		tab_group.add(new FlxText(positionXStepper.x, positionXStepper.y - 18, 0, 'Character X/Y:'));
+		tab_group.add(new FlxText(positionCameraXStepper.x, positionCameraXStepper.y - 18, 0, 'Camera X/Y:'));
 		tab_group.add(imageInputText);
 		tab_group.add(reloadImage);
 		tab_group.add(healthIconInputText);
@@ -430,6 +450,10 @@ class CharacterEditorState extends MusicBeatState
 		tab_group.add(scaleStepper);
 		tab_group.add(flipXCheckBox);
 		tab_group.add(antialiasingCheckBox);
+		tab_group.add(positionXStepper);
+		tab_group.add(positionYStepper);
+		tab_group.add(positionCameraXStepper);
+		tab_group.add(positionCameraYStepper);
 		tab_group.add(saveCharacterButton);
 
 		UI_charactergbox.addGroup(tab_group);
@@ -451,13 +475,36 @@ class CharacterEditorState extends MusicBeatState
 				char.jsonScale = sender.value;
 				char.setGraphicSize(Std.int(char.width * char.jsonScale));
 				char.updateHitbox();
+				updatePointerPos();
 				if(char.animation.curAnim != null) {
 					char.playAnim(char.animation.curAnim.name, true);
 				}
 			}
+			else if(sender == positionXStepper)
+			{
+				char.characterOffset[0] = positionXStepper.value;
+				char.x = char.characterOffset[0] + 100;
+				updatePointerPos();
+			}
 			else if(sender == singDurationStepper)
 			{
-				char.singDuration = singDurationStepper.value;
+				char.singDuration = singDurationStepper.value;//ermm you forgot this??
+			}
+			else if(sender == positionYStepper)
+			{
+				char.characterOffset[1] = positionYStepper.value;
+				char.y = char.characterOffset[1];
+				updatePointerPos();
+			}
+			else if(sender == positionCameraXStepper)
+			{
+				char.cameraOffset[0] = positionCameraXStepper.value;
+				updatePointerPos();
+			}
+			else if(sender == positionCameraYStepper)
+			{
+				char.cameraOffset[1] = positionCameraYStepper.value;
+				updatePointerPos();
 			}
 		}
 	}
@@ -527,6 +574,22 @@ class CharacterEditorState extends MusicBeatState
 			genBoyOffsets();
 		}
 		reloadCharacterOptions();
+		updatePointerPos();
+	}
+
+	function updatePointerPos() {
+		var x:Float = char.getMidpoint().x;
+		var y:Float = char.getMidpoint().y;
+		if(!char.isPlayer) {
+			x += 150 + char.cameraOffset[0];
+		} else {
+			x -= 100 + char.cameraOffset[0];
+		}
+		y -= 100 - char.cameraOffset[1];
+
+		x -= cameraFollowPointer.width / 2;
+		y -= cameraFollowPointer.height / 2;
+		cameraFollowPointer.setPosition(x, y);
 	}
 
 	function reloadCharacterOptions() {
@@ -538,6 +601,10 @@ class CharacterEditorState extends MusicBeatState
 			flipXCheckBox.checked = char.originalFlipX;
 			antialiasingCheckBox.checked = char.goofyAntialiasing;
 			leHealthIcon.changeIcon(healthIconInputText.text);
+			positionXStepper.value = char.characterOffset[0];
+			positionYStepper.value = char.characterOffset[1];
+			positionCameraXStepper.value = char.cameraOffset[0];
+			positionCameraYStepper.value = char.cameraOffset[1];
 			reloadAnimationDropDown();
 		}
 	}
