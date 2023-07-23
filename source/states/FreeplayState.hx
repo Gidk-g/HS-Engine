@@ -10,6 +10,8 @@ import flixel.addons.display.FlxGridOverlay;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.math.FlxMath;
 import flixel.text.FlxText;
+import flixel.tweens.FlxEase;
+import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import lime.utils.Assets;
 
@@ -27,6 +29,10 @@ class FreeplayState extends MusicBeatState
 	var diffText:FlxText;
 	var lerpScore:Int = 0;
 	var intendedScore:Int = 0;
+
+	var bg:FlxSprite;
+	var intendedColor:Int;
+	var colorTween:FlxTween;
 
 	private var grpSongs:FlxTypedGroup<Alphabet>;
 	private var curPlaying:Bool = false;
@@ -60,14 +66,14 @@ class FreeplayState extends MusicBeatState
 		for (i in 0...initSonglist.length)
 		{
 			var data:Array<String> = initSonglist[i].split(':');
-			songs.push(new SongMetadata(data[0], Std.parseInt(data[2]), data[1], 'fnf'));
+			songs.push(new SongMetadata(data[0], Std.parseInt(data[2]), data[1], data[3], 'fnf'));
 		}
 
         #if sys
 		for (i in 0...customSongList.length)
 		{
 			var bruh:Array<String> = customSongList[i].split(':');
-			songs.push(new SongMetadata(bruh[0], Std.parseInt(bruh[2]), bruh[1], songModListIdk[i]));
+			songs.push(new SongMetadata(bruh[0], Std.parseInt(bruh[2]), bruh[1], bruh[3], songModListIdk[i]));
 		}
 		#end
 
@@ -94,8 +100,12 @@ class FreeplayState extends MusicBeatState
 
 		// LOAD CHARACTERS
 
-		var bg:FlxSprite = new FlxSprite().loadGraphic(Paths.image('menuBGBlue'));
+		bg = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
+		bg.antialiasing = true;
 		add(bg);
+		bg.screenCenter();
+		bg.color = getCurrentBGColor();
+		intendedColor = bg.color; // thx teotm
 
 		grpSongs = new FlxTypedGroup<Alphabet>();
 		add(grpSongs);
@@ -167,12 +177,12 @@ class FreeplayState extends MusicBeatState
 		super.create();
 	}
 
-	public function addSong(songName:String, weekNum:Int, songCharacter:String, daMod:String)
+	public function addSong(songName:String, weekNum:Int, songCharacter:String, color:String, daMod:String)
 	{
-		songs.push(new SongMetadata(songName, weekNum, songCharacter, daMod));
+		songs.push(new SongMetadata(songName, weekNum, songCharacter, color, daMod));
 	}
 
-	public function addWeek(songs:Array<String>, weekNum:Int, ?songCharacters:Array<String>, daMod:String)
+	public function addWeek(songs:Array<String>, weekNum:Int, ?songCharacters:Array<String>, color:String ,daMod:String)
 	{
 		if (songCharacters == null)
 			songCharacters = ['dad'];
@@ -180,11 +190,20 @@ class FreeplayState extends MusicBeatState
 		var num:Int = 0;
 		for (song in songs)
 		{
-			addSong(song, weekNum, songCharacters[num], daMod);
+			addSong(song, weekNum, songCharacters[num], color, daMod);
 
 			if (songCharacters.length != 1)
 				num++;
 		}
+	}
+
+	function getCurrentBGColor() {
+		var bgColor:String = songs[curSelected].color;
+		if(!bgColor.startsWith('0x')) {
+			bgColor = '0xFF' + bgColor;
+		}
+		return Std.parseInt(bgColor);
+		trace(bgColor);
 	}
 
 	override function update(elapsed:Float)
@@ -223,6 +242,9 @@ class FreeplayState extends MusicBeatState
 
 		if (controls.BACK)
 		{
+			if(colorTween != null) {
+				colorTween.cancel();
+			}
 			FlxG.switchState(new MainMenuState());
 		}
 
@@ -294,9 +316,18 @@ class FreeplayState extends MusicBeatState
 		// lerpScore = 0;
 		#end
 
-		#if PRELOAD_ALL
-		FlxG.sound.playMusic(Paths.inst(songs[curSelected].songName), 0);
-		#end
+		var newColor:Int = getCurrentBGColor();
+		if(newColor != intendedColor) {
+			if(colorTween != null) {
+				colorTween.cancel();
+			}
+			intendedColor = newColor;
+			colorTween = FlxTween.color(bg, 1, bg.color, intendedColor, {
+				onComplete: function(twn:FlxTween) {
+					colorTween = null;
+				}
+			});
+		}
 
 		var bullShit:Int = 0;
 
@@ -329,13 +360,15 @@ class SongMetadata
 	public var songName:String = "";
 	public var week:Int = 0;
 	public var songCharacter:String = "";
+	public var color:String = "E0E0E0";
 	public var fromMod:String = "";
 
-	public function new(song:String, week:Int, songCharacter:String, fromMod:String)
+	public function new(song:String, week:Int, songCharacter:String, color:String, fromMod:String)
 	{
 		this.songName = song;
 		this.week = week;
 		this.songCharacter = songCharacter;
+		this.color = color;
 		this.fromMod = fromMod;
 	}
 }
