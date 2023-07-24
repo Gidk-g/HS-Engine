@@ -119,6 +119,10 @@ class PlayState extends MusicBeatState
 
 	var dialogue:Array<String> = ['blah blah blah', 'coolswag'];
 
+	var stageBg:FlxSprite;
+	var stageFront:FlxSprite;
+    var stageCurtains:FlxSprite;
+
 	var halloweenBG:FlxSprite;
 	var isHalloween:Bool = false;
 
@@ -663,13 +667,14 @@ class PlayState extends MusicBeatState
 		          {
 		                  defaultCamZoom = 0.9;
 		                  curStage = 'stage';
-		                  var bg:FlxSprite = new FlxSprite(-600, -200).loadGraphic(Paths.image('stageback'));
-		                  bg.antialiasing = true;
-		                  bg.scrollFactor.set(0.9, 0.9);
-		                  bg.active = false;
-		                  add(bg);
+				
+		                  stageBg = new FlxSprite(-600, -200).loadGraphic(Paths.image('stageback'));
+		                  stageBg.antialiasing = true;
+		                  stageBg.scrollFactor.set(0.9, 0.9);
+		                  stageBg.active = false;
+		                  add(stageBg);
 
-		                  var stageFront:FlxSprite = new FlxSprite(-650, 600).loadGraphic(Paths.image('stagefront'));
+		                  stageFront = new FlxSprite(-650, 600).loadGraphic(Paths.image('stagefront'));
 		                  stageFront.setGraphicSize(Std.int(stageFront.width * 1.1));
 		                  stageFront.updateHitbox();
 		                  stageFront.antialiasing = true;
@@ -677,7 +682,7 @@ class PlayState extends MusicBeatState
 		                  stageFront.active = false;
 		                  add(stageFront);
 
-		                  var stageCurtains:FlxSprite = new FlxSprite(-500, -300).loadGraphic(Paths.image('stagecurtains'));
+		                  stageCurtains = new FlxSprite(-500, -300).loadGraphic(Paths.image('stagecurtains'));
 		                  stageCurtains.setGraphicSize(Std.int(stageCurtains.width * 0.9));
 		                  stageCurtains.updateHitbox();
 		                  stageCurtains.antialiasing = true;
@@ -1029,6 +1034,12 @@ class PlayState extends MusicBeatState
 
 		script.interp.variables.set("remove", function(value:FlxObject) {
 			remove(value);
+		});
+
+		script.interp.variables.set("removeStage", function() {
+            remove(stageBg);
+            remove(stageFront);
+            remove(stageCurtains);
 		});
 
 		script.interp.variables.set("startVideo", function(videoFile:String) {
