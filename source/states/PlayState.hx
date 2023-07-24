@@ -1790,6 +1790,12 @@ class PlayState extends MusicBeatState
 		else
 			iconP2.animation.curAnim.curFrame = 0;
 
+		if (FlxG.keys.justPressed.SIX) {
+			persistentUpdate = false;
+			paused = true;
+			FlxG.switchState(new CharacterEditorState(gfVersion));
+		}
+
 		if (FlxG.keys.justPressed.EIGHT) {
 			persistentUpdate = false;
 			paused = true;
