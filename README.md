@@ -8,6 +8,8 @@ This is the repository of Friday Night Funkin': HS Engine.
 | Credits Icon | Username | Involvement |
 | ------------ | -------- | ----------- |
 | <img src="docs/img/gidk.png" width="64" height="64"/> | [Gidk](https://github.com/Gidk-g) | Programmer of HS Engine
+| <img src="docs/img/teotm4.png" width="64" height="64"/> | [teotm](https://github.com/teotm) | Ex-Programmer of HS Engine
+| <img src="docs/img/kot.png" width="64" height="64"/> | [Codding Cat](https://github.com/CoddingCat) | Ex-Programmer of HS Engine
 
 ### Special Thanks
 | Credits Icon | Username | Involvement |

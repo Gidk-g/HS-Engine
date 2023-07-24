@@ -183,13 +183,11 @@ class CharacterEditorState extends MusicBeatState
 		super.create();
 	}
 
-	var charDropDown:FlxUIDropDownMenu;
-
 	function addSettingsUI() {
 		var tab_group = new FlxUI(null, UI_box);
 		tab_group.name = "Settings";
 
-		var check_player = new FlxUICheckBox(10, 60, null, null, "FlipX Character", 100);
+		var check_player = new FlxUICheckBox(130, 60, null, null, "FlipX Character", 100);
 		check_player.checked = daAnim.startsWith('bf');
 		check_player.callback = function()
 		{
@@ -198,25 +196,12 @@ class CharacterEditorState extends MusicBeatState
 			updatePointerPos();
 		};
 
-		charDropDown = new FlxUIDropDownMenu(10, 30, FlxUIDropDownMenu.makeStrIdLabelArray([''], true), function(character:String)
-		{
-			daAnim = characterList[Std.parseInt(character)];
-			check_player.checked = daAnim.startsWith('bf');
-			loadChar(!check_player.checked);
-			reloadCharacterDropDown();
-		});
-		charDropDown.selectedLabel = daAnim;
-		reloadCharacterDropDown();
-
-		var reloadCharacter:FlxButton = new FlxButton(140, 20, "Reload Char", function()
+		var reloadCharacter:FlxButton = new FlxButton(135, 20, "Reload Char", function()
 		{
 			loadChar(!check_player.checked);
-			reloadCharacterDropDown();
 		});
 
-		tab_group.add(new FlxText(charDropDown.x, charDropDown.y - 18, 0, 'Character:'));
 		tab_group.add(check_player);
-		tab_group.add(charDropDown);
 		tab_group.add(reloadCharacter);
 
 		UI_box.addGroup(tab_group);
@@ -349,25 +334,6 @@ class CharacterEditorState extends MusicBeatState
 		tab_group.add(animationDropDown);
 
 		UI_characterbox.addGroup(tab_group);
-	}
-
-	function reloadCharacterDropDown() {
-		#if sys
-		characterList = CoolUtil.coolTextFile(Paths.txt('characterEditorList'));
-		for (mod in ModPaths.getModFolders()) {
-            if (sys.FileSystem.isDirectory('mods/$mod/data/characters') == true) {
-                for (charJson in sys.FileSystem.readDirectory('mods/$mod/data/characters/')) {
-					if (charJson != null && charJson.contains('.json')){
-					    characterList.push(charJson.replace('.json', ''));
-					}
-                }
-			}
-        }
-		#else
-		characterList = CoolUtil.coolTextFile(Paths.txt('characterEditorList'));
-		#end
-		charDropDown.setData(FlxUIDropDownMenu.makeStrIdLabelArray(characterList, true));
-		charDropDown.selectedLabel = daAnim;
 	}
 
 	function reloadAnimationDropDown() {
@@ -626,89 +592,88 @@ class CharacterEditorState extends MusicBeatState
 			}
 		}
 
-		if(!charDropDown.dropPanel.visible) {
-			if (FlxG.keys.justPressed.ESCAPE) {
-				FlxG.switchState(new PlayState());
-				FlxG.mouse.visible = false;
-				return;
+		if (FlxG.keys.justPressed.ESCAPE) {
+			FlxG.switchState(new PlayState());
+			FlxG.mouse.visible = false;
+			return;
+		}
+
+		if (FlxG.keys.pressed.E && FlxG.camera.zoom < 5) {
+			FlxG.camera.zoom += elapsed * FlxG.camera.zoom;
+			if(FlxG.camera.zoom > 5) FlxG.camera.zoom = 5;
+		}
+		if (FlxG.keys.pressed.Q && FlxG.camera.zoom > 0.1) {
+			FlxG.camera.zoom -= elapsed * FlxG.camera.zoom;
+			if(FlxG.camera.zoom < 0.1) FlxG.camera.zoom = 0.1;
+		}
+
+		if (FlxG.keys.pressed.I || FlxG.keys.pressed.J || FlxG.keys.pressed.K || FlxG.keys.pressed.L)
+		{
+			var shiftMult:Int = 1;
+			if (FlxG.keys.pressed.SHIFT)
+				shiftMult = 4;
+
+			if (FlxG.keys.pressed.I)
+				camFollow.velocity.y = -90 * shiftMult;
+			else if (FlxG.keys.pressed.K)
+				camFollow.velocity.y = 90 * shiftMult;
+			else
+				camFollow.velocity.y = 0;
+
+			if (FlxG.keys.pressed.J)
+				camFollow.velocity.x = -90 * shiftMult;
+			else if (FlxG.keys.pressed.L)
+				camFollow.velocity.x = 90 * shiftMult;
+			else
+				camFollow.velocity.x = 0;
+		}
+		else
+		{
+			camFollow.velocity.set();
+		}
+
+		if(char.animationsArray.length > 0) {
+			if (FlxG.keys.justPressed.W)
+			{
+				curAnim -= 1;
 			}
 
-			if (FlxG.keys.pressed.E && FlxG.camera.zoom < 5) {
-				FlxG.camera.zoom += elapsed * FlxG.camera.zoom;
-				if(FlxG.camera.zoom > 5) FlxG.camera.zoom = 5;
-			}
-			if (FlxG.keys.pressed.Q && FlxG.camera.zoom > 0.1) {
-				FlxG.camera.zoom -= elapsed * FlxG.camera.zoom;
-				if(FlxG.camera.zoom < 0.1) FlxG.camera.zoom = 0.1;
-			}
-	
-			if (FlxG.keys.pressed.I || FlxG.keys.pressed.J || FlxG.keys.pressed.K || FlxG.keys.pressed.L)
+			if (FlxG.keys.justPressed.S)
 			{
-				var shiftMult:Int = 1;
-				if (FlxG.keys.pressed.SHIFT)
-					shiftMult = 4;
-	
-				if (FlxG.keys.pressed.I)
-					camFollow.velocity.y = -90 * shiftMult;
-				else if (FlxG.keys.pressed.K)
-					camFollow.velocity.y = 90 * shiftMult;
-				else
-					camFollow.velocity.y = 0;
-	
-				if (FlxG.keys.pressed.J)
-					camFollow.velocity.x = -90 * shiftMult;
-				else if (FlxG.keys.pressed.L)
-					camFollow.velocity.x = 90 * shiftMult;
-				else
-					camFollow.velocity.x = 0;
+				curAnim += 1;
 			}
-			else
+
+			if (curAnim < 0)
+				curAnim = char.animationsArray.length - 1;
+
+			if (curAnim >= char.animationsArray.length)
+				curAnim = 0;
+
+			if (FlxG.keys.justPressed.S || FlxG.keys.justPressed.W || FlxG.keys.justPressed.SPACE)
 			{
-				camFollow.velocity.set();
+				char.playAnim(char.animationsArray[curAnim].anim, true);
+				genBoyOffsets();
 			}
-	
-			if(char.animationsArray.length > 0) {
-				if (FlxG.keys.justPressed.W)
-				{
-					curAnim -= 1;
-				}
-	
-				if (FlxG.keys.justPressed.S)
-				{
-					curAnim += 1;
-				}
-	
-				if (curAnim < 0)
-					curAnim = char.animationsArray.length - 1;
-	
-				if (curAnim >= char.animationsArray.length)
-					curAnim = 0;
-	
-				if (FlxG.keys.justPressed.S || FlxG.keys.justPressed.W || FlxG.keys.justPressed.SPACE)
-				{
-					char.playAnim(char.animationsArray[curAnim].anim, true);
+
+			var controlArray:Array<Bool> = [FlxG.keys.justPressed.LEFT, FlxG.keys.justPressed.RIGHT, FlxG.keys.justPressed.UP, FlxG.keys.justPressed.DOWN];
+			for (i in 0...controlArray.length) {
+				if(controlArray[i]) {
+					var holdShift = FlxG.keys.pressed.SHIFT;
+					var multiplier = 1;
+					if (holdShift)
+						multiplier = 10;
+					var arrayVal = 0;
+					if(i > 1) arrayVal = 1;
+					var negaMult:Int = 1;
+					if(i % 2 == 1) negaMult = -1;
+					char.animationsArray[curAnim].offsets[arrayVal] += negaMult * multiplier;
+					char.addOffset(char.animationsArray[curAnim].anim, char.animationsArray[curAnim].offsets[0], char.animationsArray[curAnim].offsets[1]);
+					char.playAnim(char.animationsArray[curAnim].anim, false);
 					genBoyOffsets();
 				}
-	
-				var controlArray:Array<Bool> = [FlxG.keys.justPressed.LEFT, FlxG.keys.justPressed.RIGHT, FlxG.keys.justPressed.UP, FlxG.keys.justPressed.DOWN];
-				for (i in 0...controlArray.length) {
-					if(controlArray[i]) {
-						var holdShift = FlxG.keys.pressed.SHIFT;
-						var multiplier = 1;
-						if (holdShift)
-							multiplier = 10;
-						var arrayVal = 0;
-						if(i > 1) arrayVal = 1;
-						var negaMult:Int = 1;
-						if(i % 2 == 1) negaMult = -1;
-						char.animationsArray[curAnim].offsets[arrayVal] += negaMult * multiplier;
-						char.addOffset(char.animationsArray[curAnim].anim, char.animationsArray[curAnim].offsets[0], char.animationsArray[curAnim].offsets[1]);
-						char.playAnim(char.animationsArray[curAnim].anim, false);
-						genBoyOffsets();
-					}
-				}
 			}
-	    }
+		}
+
 		camMenu.zoom = FlxG.camera.zoom;
 		super.update(elapsed);
 	}
