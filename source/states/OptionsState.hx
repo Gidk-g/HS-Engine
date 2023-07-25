@@ -94,6 +94,7 @@ class PreferencesSubstate extends MusicBeatSubstate
 
 	static var options:Array<String> = [
 		'GAMEPLAY',
+		'BotPlay',
 		'DownScroll',
 		'MiddleScroll',
 		'Ghost Tapping',
@@ -203,6 +204,8 @@ class PreferencesSubstate extends MusicBeatSubstate
 						Config.showFPS = !Config.showFPS;
 						if(Main.fpsVar != null)
 							Main.fpsVar.visible = Config.showFPS;
+					case 'BotPlay':
+						Config.botplay = !Config.botplay;
 					case 'DownScroll':
 						Config.downScroll = !Config.downScroll;
 					case 'MiddleScroll':
@@ -238,6 +241,8 @@ class PreferencesSubstate extends MusicBeatSubstate
 		var daText:String = '';
 		switch(options[curSelected]) {
 			case 'FPS Counter':
+				daText = "";
+			case 'BotPlay':
 				daText = "";
 			case 'DownScroll':
 				daText = "";
@@ -283,6 +288,8 @@ class PreferencesSubstate extends MusicBeatSubstate
 				switch(options[checkboxNumber[i]]) {
 					case 'FPS Counter':
 						daValue = Config.showFPS;
+					case 'BotPlay':
+						daValue = Config.botplay;
 					case 'DownScroll':
 						daValue = Config.downScroll;
 					case 'MiddleScroll':

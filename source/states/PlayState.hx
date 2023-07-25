@@ -1235,9 +1235,20 @@ class PlayState extends MusicBeatState
 
 		startTimer = new FlxTimer().start(Conductor.crochet / 1000, function(tmr:FlxTimer)
 		{
-			dad.dance();
-			gf.dance();
-			boyfriend.playAnim('idle');
+			if (gf != null && tmr.loopsLeft % Math.round(gfSpeed * gf.danceEveryNumBeats) == 0 && !gf.stunned && gf.animation.curAnim.name != null && !gf.animation.curAnim.name.startsWith("sing") && !gf.stunned)
+			{
+				gf.dance();
+			}
+
+			if (tmr.loopsLeft % boyfriend.danceEveryNumBeats == 0 && boyfriend.animation.curAnim != null && !boyfriend.animation.curAnim.name.startsWith('sing') && !boyfriend.stunned)
+			{
+				boyfriend.dance();
+			}
+
+			if (tmr.loopsLeft % dad.danceEveryNumBeats == 0 && dad.animation.curAnim != null && !dad.animation.curAnim.name.startsWith('sing') && !dad.stunned)
+			{
+			    dad.dance();
+			}
 
 			var introAssets:Map<String, Array<String>> = new Map<String, Array<String>>();
 			introAssets.set('default', ['ready', "set", "go"]);
@@ -1577,6 +1588,11 @@ class PlayState extends MusicBeatState
 			babyArrow.animation.play('static');
 			babyArrow.x += 50;
 			babyArrow.x += ((FlxG.width / 2) * player);
+
+			playerStrums.forEach(function(spr:FlxSprite)
+			{
+				spr.centerOffsets();
+			});
 
 			dadStrums.forEach(function(spr:FlxSprite)
 			{
@@ -1981,8 +1997,41 @@ class PlayState extends MusicBeatState
 
 		if (generatedMusic)
 		{
+			if (!inCutscene) {
+				if(!Config.botplay) {
+					keyShit();
+				} else if(boyfriend.holdTimer > Conductor.stepCrochet * 0.001 * boyfriend.singDuration && boyfriend.animation.curAnim.name.startsWith('sing') && !boyfriend.animation.curAnim.name.endsWith('miss')) {
+					boyfriend.dance();
+				}
+			}
+
 			notes.forEachAlive(function(daNote:Note)
 			{
+				if (Config.botplay) {
+					if(daNote.mustPress) {
+					    if(daNote.isSustainNote) {
+						    if(daNote.canBeHit && !daNote.tooLate && !daNote.wasGoodHit) {
+							    goodNoteHit(daNote);
+						    }
+					    } else if(daNote.strumTime <= Conductor.songPosition || (daNote.isSustainNote && daNote.canBeHit && daNote.mustPress && !daNote.tooLate && !daNote.wasGoodHit)) {
+						    goodNoteHit(daNote);
+					    }
+					    boyfriend.holdTimer = 0;
+				    }
+
+		            playerStrums.forEach(function(spr:FlxSprite)
+		            {
+			            if (spr.animation.curAnim.name == 'confirm' && !curStage.startsWith('school'))
+			            {
+				            spr.centerOffsets();
+				            spr.offset.x -= 13;
+				            spr.offset.y -= 13;
+			            }
+			            else
+				            spr.centerOffsets();
+		            });
+				}
+
 				if (daNote.y > FlxG.height)
 				{
 					daNote.active = false;
@@ -2117,7 +2166,7 @@ class PlayState extends MusicBeatState
 				if (Config.downScroll) {
 					if (daNote.y > FlxG.height)
 					{
-						if (daNote.tooLate || !daNote.wasGoodHit)
+						if (daNote.tooLate || !daNote.wasGoodHit && !Config.botplay)
 						{
 							noteMiss(Math.abs(daNote.noteData));
 						}
@@ -2132,7 +2181,7 @@ class PlayState extends MusicBeatState
 			    } else {
 					if (daNote.y < -daNote.height)
 					{
-						if (daNote.tooLate || !daNote.wasGoodHit)
+						if (daNote.tooLate || !daNote.wasGoodHit && !Config.botplay)
 						{
 							noteMiss(Math.abs(daNote.noteData));
 						}
@@ -2148,6 +2197,17 @@ class PlayState extends MusicBeatState
 			});
 		}
 
+		if (Config.botplay) {
+			playerStrums.forEach(function(spr:FlxSprite)
+		    {
+			    if (spr.animation.finished)
+			    {
+				    spr.animation.play('static');
+				    spr.centerOffsets();
+			    }
+		    });
+		}
+
 		dadStrums.forEach(function(spr:FlxSprite)
 		{
 			if (spr.animation.finished)
@@ -2156,9 +2216,6 @@ class PlayState extends MusicBeatState
 				spr.centerOffsets();
 			}
 		});
-
-		if (!inCutscene)
-			keyShit();
 
 		#if debug
 		if (FlxG.keys.justPressed.ONE)
@@ -2490,7 +2547,7 @@ class PlayState extends MusicBeatState
 			    });
 		}
 
-		if (boyfriend.holdTimer > 0.004 * Conductor.stepCrochet
+		if (boyfriend.holdTimer > Conductor.stepCrochet * 0.001 * boyfriend.singDuration
 			&& !holdingArray.contains(true)
 			&& boyfriend.animation.curAnim.name.startsWith('sing')
 			&& !boyfriend.animation.curAnim.name.endsWith('miss')) {
@@ -2518,7 +2575,7 @@ class PlayState extends MusicBeatState
 
 	function noteMiss(direction:Float = 1):Void
 	{
-		if (!boyfriend.stunned)
+		if (!boyfriend.stunned && !Config.botplay)
 		{
 			health -= 0.04;
 			if (combo > 5 && gf.animOffsets.exists('sad'))
@@ -2614,7 +2671,7 @@ class PlayState extends MusicBeatState
 			{
 				if (Math.abs(note.noteData) == spr.ID)
 				{
-					spr.animation.play('confirm', true);
+				    spr.animation.play('confirm', true);
 				}
 			});
 
@@ -2750,11 +2807,6 @@ class PlayState extends MusicBeatState
 			resyncVocals();
 		}
 
-		if (dad.curCharacter == 'spooky' && curStep % 4 == 2)
-		{
-			// dad.dance();
-		}
-
 		if (dad.curCharacter == 'tankman' && SONG.song.toLowerCase() == 'ugh')
 		{
 			if (curStep == 59 || curStep == 443 || curStep == 523 || curStep == 827)
@@ -2801,10 +2853,6 @@ class PlayState extends MusicBeatState
 				Conductor.changeBPM(SONG.notes[Math.floor(curStep / 16)].bpm);
 				FlxG.log.add('CHANGED BPM!');
 			}
-
-			// Dad doesnt interupt his own notes
-			if (SONG.notes[Math.floor(curStep / 16)].mustHitSection)
-				dad.dance();
 		}
 		// FlxG.log.add('change bpm' + SONG.notes[Std.int(curStep / 16)].changeBPM);
 		wiggleShit.update(Conductor.crochet);
@@ -2828,14 +2876,19 @@ class PlayState extends MusicBeatState
 		iconP1.updateHitbox();
 		iconP2.updateHitbox();
 
-		if (curBeat % gfSpeed == 0)
+		if (gf != null && curBeat % Math.round(gfSpeed * gf.danceEveryNumBeats) == 0 && !gf.stunned && gf.animation.curAnim.name != null && !gf.animation.curAnim.name.startsWith("sing") && !gf.stunned)
 		{
 			gf.dance();
 		}
 
-		if (!boyfriend.animation.curAnim.name.startsWith("sing"))
+		if (curBeat % boyfriend.danceEveryNumBeats == 0 && boyfriend.animation.curAnim != null && !boyfriend.animation.curAnim.name.startsWith('sing') && !boyfriend.stunned)
 		{
-			boyfriend.playAnim('idle');
+			boyfriend.dance();
+		}
+
+		if (curBeat % dad.danceEveryNumBeats == 0 && dad.animation.curAnim != null && !dad.animation.curAnim.name.startsWith('sing') && !dad.stunned)
+		{
+			dad.dance();
 		}
 
 		if (curBeat % 8 == 7 && curSong == 'Bopeebo')

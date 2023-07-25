@@ -12,6 +12,8 @@ using StringTools;
 
 class Character extends FlxSprite
 {
+	public var stunned:Bool = false;
+
 	public var animationNotes:Array<Dynamic> = [];
 	public var animationsArray:Array<AnimStuff> = [];
 	public var animOffsets:Map<String, Array<Dynamic>>;

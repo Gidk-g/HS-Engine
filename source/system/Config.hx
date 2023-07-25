@@ -3,6 +3,7 @@ package system;
 import flixel.FlxG;
 
 class Config {
+	public static var botplay:Bool = false;
 	public static var downScroll:Bool = false;
 	public static var middleScroll:Bool = false;
 	public static var noteSplashes:Bool = true;
@@ -12,6 +13,7 @@ class Config {
     public static var keyBinds:Array<String> = ['A','S','W','D','R'];
 
 	public static function save() {
+		FlxG.save.data.botplay = botplay;
 		FlxG.save.data.downScroll = downScroll;
 		FlxG.save.data.middleScroll = middleScroll;
 		FlxG.save.data.noteSplashes = noteSplashes;
@@ -22,6 +24,8 @@ class Config {
     }
 
 	public static function load() {
+		if(FlxG.save.data.botplay != null)
+			botplay = FlxG.save.data.botplay;
 		if(FlxG.save.data.downScroll != null)
 			downScroll = FlxG.save.data.downScroll;
 		if(FlxG.save.data.middleScroll != null)
