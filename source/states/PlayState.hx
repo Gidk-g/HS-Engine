@@ -936,7 +936,7 @@ class PlayState extends MusicBeatState
 		botplayTxt.borderSize = 1.25;
 		botplayTxt.y = 90;
 		if (Config.downScroll)
-			botplayTxt.y = FlxG.height - 90;
+			botplayTxt.y = FlxG.height - 105;
 		add(botplayTxt);
 
 		strumLineNotes.cameras = [camHUD];
