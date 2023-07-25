@@ -117,6 +117,8 @@ class PlayState extends MusicBeatState
 
 	public var accuracy:Float;
 
+	public static var botplayTxt:FlxText;
+
 	var dialogue:Array<String> = ['blah blah blah', 'coolswag'];
 
 	var stageBg:FlxSprite;
@@ -928,6 +930,15 @@ class PlayState extends MusicBeatState
 		scoreTxt.scrollFactor.set();
 		add(scoreTxt);
 
+		botplayTxt = new FlxText(0, 0, FlxG.width, "> BOTPLAY <", 28);
+		botplayTxt.setFormat(Paths.font("vcr.ttf"), 28, FlxColor.WHITE, CENTER, OUTLINE, 0xFF000000);
+		botplayTxt.scrollFactor.set();
+		botplayTxt.borderSize = 1.25;
+		botplayTxt.y = 90;
+		if (Config.downScroll)
+			botplayTxt.y = FlxG.height - 90;
+		add(botplayTxt);
+
 		strumLineNotes.cameras = [camHUD];
 		notes.cameras = [camHUD];
 		healthBar.cameras = [camHUD];
@@ -935,6 +946,7 @@ class PlayState extends MusicBeatState
 		iconP1.cameras = [camHUD];
 		iconP2.cameras = [camHUD];
 		scoreTxt.cameras = [camHUD];
+		botplayTxt.cameras = [camHUD];
 		doof.cameras = [camHUD];
 
 		// if (SONG.song == 'South')
@@ -1708,6 +1720,7 @@ class PlayState extends MusicBeatState
 			return accuracy;
     }
 
+	var crap:Float = 0;
 	public static var tankmangood:Int = 0;
 
 	public var paused:Bool = false;
@@ -1754,6 +1767,30 @@ class PlayState extends MusicBeatState
 
 		scoreTxt.text = "Score:" + songScore + " / Misses:" + songMisses + " / Accuracy:" + calculateAccuracy() + "%";
 
+		if (!startingSong)
+		{
+			if (FlxG.sound.music.playing)
+			{
+				if (Config.botplay)
+				{
+					botplayTxt.screenCenter(X);
+					crap += SONG.bpm * elapsed;
+					botplayTxt.alpha = 1 - Math.sin((3.14 * crap) / SONG.bpm);
+					// botplayTxt.alpha = Math.sin((Conductor.songPosition / 1000) * (Conductor.bpm / 60) * -1.0) * 2.5;
+				}
+				else
+				{
+					botplayTxt.screenCenter(X);
+					botplayTxt.alpha = 0;
+				}
+			}
+		}
+		else
+		{
+			botplayTxt.screenCenter(X);
+			botplayTxt.alpha = 0;
+		}
+
 		if (FlxG.keys.justPressed.ENTER && startedCountdown && canPause)
 		{
 			persistentUpdate = false;
@@ -1782,11 +1819,8 @@ class PlayState extends MusicBeatState
 		// FlxG.watch.addQuick('VOL', vocals.amplitudeLeft);
 		// FlxG.watch.addQuick('VOLRight', vocals.amplitudeRight);
 
-		iconP1.setGraphicSize(Std.int(FlxMath.lerp(150, iconP1.width, 0.50)));
-		iconP2.setGraphicSize(Std.int(FlxMath.lerp(150, iconP2.width, 0.50)));
-
-		iconP1.updateHitbox();
-		iconP2.updateHitbox();
+		iconP1.scale.set(FlxMath.lerp(iconP1.scale.x, 1, 0.2), FlxMath.lerp(iconP1.scale.y, 1, 0.2));
+		iconP2.scale.set(FlxMath.lerp(iconP2.scale.x, 1, 0.2), FlxMath.lerp(iconP2.scale.y, 1, 0.2));
 
 		var iconOffset:Int = 26;
 
@@ -2217,6 +2251,12 @@ class PlayState extends MusicBeatState
 			}
 		});
 
+		if (Config.botplay)
+		{
+			bpsl = FlxMath.lerp(1, botplayTxt.scale.x, bound(1 - (elapsed * 9), 0, 1));
+			botplayTxt.scale.set(bpsl, bpsl);
+		}
+
 		#if debug
 		if (FlxG.keys.justPressed.ONE)
 			endSong();
@@ -2225,6 +2265,11 @@ class PlayState extends MusicBeatState
 		#if sys
 		script.callFunction("updatePost", [elapsed]);
 		#end
+	}
+
+	public function bound(toConvert:Float, min:Float, max:Float):Float
+	{
+		return FlxMath.bound(toConvert, min, max);
 	}
 
 	function endSong():Void
@@ -2830,6 +2875,8 @@ class PlayState extends MusicBeatState
 		}
 	}
 
+	var bpsl:Float;
+
 	var lightningStrikeBeat:Int = 0;
 	var lightningOffset:Int = 8;
 
@@ -2870,11 +2917,8 @@ class PlayState extends MusicBeatState
 			camHUD.zoom += 0.03;
 		}
 
-		iconP1.setGraphicSize(Std.int(iconP1.width + 30));
-		iconP2.setGraphicSize(Std.int(iconP2.width + 30));
-
-		iconP1.updateHitbox();
-		iconP2.updateHitbox();
+		iconP1.scale.set(1.2, 1.2);
+		iconP2.scale.set(1.2, 1.2);
 
 		if (gf != null && curBeat % Math.round(gfSpeed * gf.danceEveryNumBeats) == 0 && !gf.stunned && gf.animation.curAnim.name != null && !gf.animation.curAnim.name.startsWith("sing") && !gf.stunned)
 		{
@@ -2951,10 +2995,18 @@ class PlayState extends MusicBeatState
 				tankWatchtower.dance();
 		}
 
+		if (Config.botplay)
+			botplayTextBeat();
+
 		if (isHalloween && FlxG.random.bool(10) && curBeat > lightningStrikeBeat + lightningOffset)
 		{
 			lightningStrikeShit();
 		}
+	}
+
+	function botplayTextBeat() {
+		botplayTxt.scale.x += 0.1;
+		botplayTxt.scale.y += 0.1;
 	}
 
 	var curLight:Int = 0;
