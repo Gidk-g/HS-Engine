@@ -1776,7 +1776,6 @@ class PlayState extends MusicBeatState
 					botplayTxt.screenCenter(X);
 					crap += SONG.bpm * elapsed;
 					botplayTxt.alpha = 1 - Math.sin((3.14 * crap) / SONG.bpm);
-					// botplayTxt.alpha = Math.sin((Conductor.songPosition / 1000) * (Conductor.bpm / 60) * -1.0) * 2.5;
 				}
 				else
 				{
@@ -2251,10 +2250,8 @@ class PlayState extends MusicBeatState
 			}
 		});
 
-		if (Config.botplay)
-		{
-			bpsl = FlxMath.lerp(1, botplayTxt.scale.x, bound(1 - (elapsed * 9), 0, 1));
-			botplayTxt.scale.set(bpsl, bpsl);
+		if (Config.botplay) {
+			botplayTxt.scale.set(FlxMath.lerp(botplayTxt.scale.x, 1, 0.2), FlxMath.lerp(botplayTxt.scale.y, 1, 0.2));
 		}
 
 		#if debug
@@ -2265,11 +2262,6 @@ class PlayState extends MusicBeatState
 		#if sys
 		script.callFunction("updatePost", [elapsed]);
 		#end
-	}
-
-	public function bound(toConvert:Float, min:Float, max:Float):Float
-	{
-		return FlxMath.bound(toConvert, min, max);
 	}
 
 	function endSong():Void
@@ -2875,8 +2867,6 @@ class PlayState extends MusicBeatState
 		}
 	}
 
-	var bpsl:Float;
-
 	var lightningStrikeBeat:Int = 0;
 	var lightningOffset:Int = 8;
 
@@ -2919,6 +2909,10 @@ class PlayState extends MusicBeatState
 
 		iconP1.scale.set(1.2, 1.2);
 		iconP2.scale.set(1.2, 1.2);
+
+		if (Config.botplay) {
+			botplayTxt.scale.set(1.2, 1.2);
+		}
 
 		if (gf != null && curBeat % Math.round(gfSpeed * gf.danceEveryNumBeats) == 0 && !gf.stunned && gf.animation.curAnim.name != null && !gf.animation.curAnim.name.startsWith("sing") && !gf.stunned)
 		{
@@ -2995,18 +2989,10 @@ class PlayState extends MusicBeatState
 				tankWatchtower.dance();
 		}
 
-		if (Config.botplay)
-			botplayTextBeat();
-
 		if (isHalloween && FlxG.random.bool(10) && curBeat > lightningStrikeBeat + lightningOffset)
 		{
 			lightningStrikeShit();
 		}
-	}
-
-	function botplayTextBeat() {
-		botplayTxt.scale.x += 0.1;
-		botplayTxt.scale.y += 0.1;
 	}
 
 	var curLight:Int = 0;
