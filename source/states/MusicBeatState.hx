@@ -26,11 +26,8 @@ class MusicBeatState extends FlxUIState
 	override function create()
 	{
         #if sys
-		var modStatePath = ModPaths.modFolder("data/states/" + Type.getClassName(Type.getClass(FlxG.state)) + ".hx");
-		if (modStatePath != null) {
-			if (sys.FileSystem.exists(modStatePath)) {
-			    scriptState.loadScript("data/states/" + Type.getClassName(Type.getClass(FlxG.state)));
-			}
+		if (sys.FileSystem.exists(ModPaths.script("data/states/" + Type.getClassName(Type.getClass(FlxG.state))))) {
+		    scriptState.loadScript("data/states/" + Type.getClassName(Type.getClass(FlxG.state)));
 		}
 		scriptState.interp.scriptObject = this;
 

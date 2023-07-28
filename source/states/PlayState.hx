@@ -1009,7 +1009,7 @@ class PlayState extends MusicBeatState
 					startVideo('stressCutscene');
 				default:
 					#if sys
-					if (sys.FileSystem.exists(ModPaths.modFolder("data/cutscenes/" + SONG.song.toLowerCase() + ".hx"))) {
+					if (sys.FileSystem.exists(ModPaths.script("data/cutscenes/" + SONG.song.toLowerCase()))) {
 						script.loadScript("data/cutscenes/" + SONG.song.toLowerCase());
 						script.callFunction('startCutscene', []);
 					} else
@@ -1036,12 +1036,12 @@ class PlayState extends MusicBeatState
 
 	#if sys
     function setScriptFunction() {
-		if (sys.FileSystem.exists(ModPaths.modFolder("data/charts/" + SONG.song.toLowerCase() + "/script.hx"))) {
+		if (sys.FileSystem.exists(ModPaths.script("data/charts/" + SONG.song.toLowerCase() + "/script"))) {
 			script.loadScript("data/charts/" + SONG.song.toLowerCase() + "/script");
 		}
 
 		for (file in sys.FileSystem.readDirectory(ModPaths.modFolder("data/scripts/"))) {
-			if (sys.FileSystem.exists(ModPaths.modFolder("data/scripts/" + file + ".hx"))) {
+			if (sys.FileSystem.exists(ModPaths.script("data/scripts/" + file))) {
 				script.loadScript("data/scripts/" + file);
 			}
 		}

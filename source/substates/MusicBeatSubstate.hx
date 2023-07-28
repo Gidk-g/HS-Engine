@@ -28,11 +28,8 @@ class MusicBeatSubstate extends FlxSubState
 	override function create()
 	{
         #if sys
-		var modStatePath = ModPaths.modFolder("data/substates/" + Type.getClassName(Type.getClass(FlxG.state.subState)) + ".hx");
-		if (modStatePath != null) {
-			if (sys.FileSystem.exists(modStatePath)) {
-			    scriptSubstate.loadScript("data/substates/" + Type.getClassName(Type.getClass(FlxG.state.subState)));
-			}
+		if (sys.FileSystem.exists(ModPaths.script("data/substates/" + Type.getClassName(Type.getClass(FlxG.state.subState))))) {
+			scriptSubstate.loadScript("data/substates/" + Type.getClassName(Type.getClass(FlxG.state.subState)));
 		}
 		scriptSubstate.interp.scriptObject = this;
 

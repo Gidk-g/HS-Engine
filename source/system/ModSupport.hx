@@ -73,6 +73,20 @@ class ModPaths {
         return fullPath;
     }
 
+    inline static public function script(path:String):String {
+        var fullPath:String = null;
+		var extensions:Array<String> = ["hx", "hxs", "hsc", "hscript"];
+        for (modFolder in getModFolders()) {
+			for (extension in extensions) {
+                fullPath = Sys.getCwd() + modDirectory + modFolder + "/" + path + "." + extension;
+                if (FileSystem.exists(fullPath)) {
+                    break;
+                }
+		    }
+        }
+        return fullPath;
+    }
+
     inline static public function modFolder(path:String):String {
         var fullPath:String = null;
         for (modFolder in getModFolders()) {
@@ -172,7 +186,7 @@ class ModScripts {
         interp.variables.set("StringHelper", system.classes.StringHelper);
 
         interp.variables.set("switchState", function(state:String):Void {
-            var modStatePath = ModPaths.modFolder("data/states/" + state + ".hx");
+            var modStatePath = ModPaths.script("data/states/" + state);
             if (modStatePath != null) {
                 if (FileSystem.exists(modStatePath)) {
                     FlxG.switchState(Type.createInstance(ModScriptState, [modStatePath]));
@@ -181,7 +195,7 @@ class ModScripts {
         });
 
         interp.variables.set("openSubState", function(substate:String, pauseGame:Bool = false):Void {
-            var modSubStatePath = ModPaths.modFolder("data/substates/" + substate + ".hx");
+            var modSubStatePath = ModPaths.script("data/substates/" + substate);
             if (modSubStatePath != null) {
                 if (FileSystem.exists(modSubStatePath)) {
                     PlayState.instance.openSubState(Type.createInstance(ModScriptSubstate, [modSubStatePath]));
@@ -209,7 +223,7 @@ class ModScripts {
     }
 
     public function loadScript(path:String):Void {
-        var scriptContent:String = File.getContent(ModPaths.modFolder(path + ".hx"));
+        var scriptContent:String = File.getContent(ModPaths.script(path));
         script = parser.parseString(scriptContent);
         interp.execute(script);
     }
@@ -333,7 +347,7 @@ class ModScriptState extends MusicBeatState {
 		interp.variables.set("curStep", curStep);
 
         interp.variables.set("switchState", function(state:String):Void {
-            var modStatePath = ModPaths.modFolder("data/states/" + state + ".hx");
+            var modStatePath = ModPaths.script("data/states/" + state);
             if (modStatePath != null) {
                 if (FileSystem.exists(modStatePath)) {
                     FlxG.switchState(Type.createInstance(ModScriptState, [modStatePath]));
@@ -342,7 +356,7 @@ class ModScriptState extends MusicBeatState {
         });
 
         interp.variables.set("openSubState", function(substate:String, pauseGame:Bool = false):Void {
-            var modSubStatePath = ModPaths.modFolder("data/substates/" + substate + ".hx");
+            var modSubStatePath = ModPaths.script("data/substates/" + substate);
             if (modSubStatePath != null) {
                 if (FileSystem.exists(modSubStatePath)) {
                     PlayState.instance.openSubState(Type.createInstance(ModScriptSubstate, [modSubStatePath]));
@@ -505,7 +519,7 @@ class ModScriptSubstate extends MusicBeatSubstate {
 		interp.variables.set("curStep", curStep);
 
         interp.variables.set("switchState", function(state:String):Void {
-            var modStatePath = ModPaths.modFolder("data/states/" + state + ".hx");
+            var modStatePath = ModPaths.script("data/states/" + state);
             if (modStatePath != null) {
                 if (FileSystem.exists(modStatePath)) {
                     FlxG.switchState(Type.createInstance(ModScriptState, [modStatePath]));
@@ -514,7 +528,7 @@ class ModScriptSubstate extends MusicBeatSubstate {
         });
 
         interp.variables.set("openSubState", function(substate:String, pauseGame:Bool = false):Void {
-            var modSubStatePath = ModPaths.modFolder("data/substates/" + substate + ".hx");
+            var modSubStatePath = ModPaths.script("data/substates/" + substate);
             if (modSubStatePath != null) {
                 if (FileSystem.exists(modSubStatePath)) {
                     PlayState.instance.openSubState(Type.createInstance(ModScriptSubstate, [modSubStatePath]));
