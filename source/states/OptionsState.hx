@@ -100,6 +100,7 @@ class PreferencesSubstate extends MusicBeatSubstate
 		'Ghost Tapping',
 		'VISUALS',
 		'Note Splashes',
+		'Flashing Menu',
 		'Camera Zooms',
 		#if !mobile
 		'FPS Counter'
@@ -212,6 +213,8 @@ class PreferencesSubstate extends MusicBeatSubstate
 						Config.middleScroll = !Config.middleScroll;
 					case 'Note Splashes':
 						Config.noteSplashes = !Config.noteSplashes;
+					case 'Flashing Menu':
+						Config.flashingMenu = !Config.flashingMenu;
 					case 'Ghost Tapping':
 						Config.ghostTapping = !Config.ghostTapping;
 					case 'Camera Zooms':
@@ -249,6 +252,8 @@ class PreferencesSubstate extends MusicBeatSubstate
 			case 'MiddleScroll':
 				daText = "";
 			case 'Ghost Tapping':
+				daText = "";
+			case 'Flashing Menu':
 				daText = "";
 			case 'Note Splashes':
 				daText = "";
@@ -298,6 +303,8 @@ class PreferencesSubstate extends MusicBeatSubstate
 						daValue = Config.noteSplashes;
 					case 'Ghost Tapping':
 						daValue = Config.ghostTapping;
+					case 'Flashing Menu':
+						daValue = Config.flashingMenu;
 					case 'Camera Zooms':
 						daValue = Config.camZooms;
 				}
