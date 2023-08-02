@@ -1054,6 +1054,18 @@ class PlayState extends MusicBeatState
 			remove(value);
 		});
 
+		script.interp.variables.set("addBehindGF", function(value:FlxObject) {
+			addBehindGF(value);
+		});
+
+		script.interp.variables.set("addBehindDad", function(value:FlxObject) {
+			addBehindDad(value);
+		});
+
+		script.interp.variables.set("addBehindBF", function(value:FlxObject) {
+			addBehindBF(value);
+		});
+
 		script.interp.variables.set("removeStage", function() {
             remove(stageBg);
             remove(stageFront);
@@ -2352,6 +2364,21 @@ class PlayState extends MusicBeatState
 			trace('WENT BACK TO FREEPLAY??');
 			FlxG.switchState(new FreeplayState());
 		}
+	}
+
+	public function addBehindGF(obj:FlxObject)
+	{
+		insert(members.indexOf(gf), obj);
+	}
+
+	public function addBehindBF(obj:FlxObject)
+	{
+		insert(members.indexOf(boyfriend), obj);
+	}
+
+	public function addBehindDad(obj:FlxObject)
+	{
+		insert(members.indexOf(dad), obj);
 	}
 
 	var endingSong:Bool = false;
