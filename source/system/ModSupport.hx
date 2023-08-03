@@ -104,7 +104,7 @@ class ModPaths {
 		if(FileSystem.exists(modsFolder)) {
 			for (folder in FileSystem.readDirectory(modsFolder)) {
 				var path = haxe.io.Path.join([modsFolder, folder]);
-				if (sys.FileSystem.isDirectory(path) && !list.contains(folder)) {
+				if (FileSystem.isDirectory(path) && !list.contains(folder)) {
 					list.push(folder);
 				}
 			}
