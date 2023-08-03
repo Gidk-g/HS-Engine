@@ -180,7 +180,7 @@ class FreeplayState extends MusicBeatState
 		songs.push(new SongMetadata(songName, weekNum, songCharacter, color, daMod));
 	}
 
-	public function addWeek(songs:Array<String>, weekNum:Int, ?songCharacters:Array<String>, color:String ,daMod:String)
+	public function addWeek(songs:Array<String>, weekNum:Int, ?songCharacters:Array<String>, color:String, daMod:String)
 	{
 		if (songCharacters == null)
 			songCharacters = ['dad'];

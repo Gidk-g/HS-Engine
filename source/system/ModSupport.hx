@@ -75,14 +75,11 @@ class ModPaths {
 
     inline static public function script(path:String):String {
         var fullPath:String = null;
-		var extensions:Array<String> = ["hx", "hxs", "hsc", "hscript"];
         for (modFolder in getModFolders()) {
-			for (extension in extensions) {
-                fullPath = Sys.getCwd() + modDirectory + modFolder + "/" + path + "." + extension;
-                if (FileSystem.exists(fullPath)) {
-                    break;
-                }
-		    }
+            fullPath = Sys.getCwd() + modDirectory + modFolder + "/" + path + ".hx";
+            if (FileSystem.exists(fullPath)) {
+                break;
+            }
         }
         return fullPath;
     }
