@@ -215,7 +215,7 @@ class Character extends FlxSprite
 
 	function loadMappedAnims():Void
 	{
-		var noteData:Array<SwagSection> = Song.loadFromJson('picospeaker', formatToSongPath(PlayState.SONG.song)).notes;
+		var noteData:Array<SwagSection> = Song.loadFromJson('picospeaker', Paths.formatToSongPath(PlayState.SONG.song)).notes;
 		for (section in noteData) {
 			for (songNotes in section.sectionNotes) {
 				animationNotes.push(songNotes);
@@ -223,13 +223,6 @@ class Character extends FlxSprite
 		}
 		TankmenBG.animationNotes = animationNotes;
 		animationNotes.sort(sortAnims);
-	}
-
-	function formatToSongPath(path:String) {
-		var invalidChars = ~/[~&\\;:<>#]/;
-		var hideChars = ~/[.,'"%?!]/;
-		var path = invalidChars.split(path.replace(' ', '-')).join("-");
-		return hideChars.split(path).join("").toLowerCase();
 	}
 
 	function sortAnims(Obj1:Array<Dynamic>, Obj2:Array<Dynamic>):Int

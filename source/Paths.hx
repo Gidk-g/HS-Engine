@@ -175,6 +175,13 @@ class Paths
 		return false;
 	}
 
+	inline static public function formatToSongPath(path:String) {
+		var invalidChars = ~/[~&\\;:<>#]/;
+		var hideChars = ~/[.,'"%?!]/;
+		var path = invalidChars.split(path.replace(' ', '-')).join("-");
+		return hideChars.split(path).join("").toLowerCase();
+	}
+
     #if sys
 	static private function addCustomGraphic(key:String):FlxGraphic {
 		if(sys.FileSystem.exists(ModPaths.image(key))) {
