@@ -18,6 +18,7 @@ class Note extends FlxSprite
 	public var wasGoodHit:Bool = false;
 	public var missed:Bool = false;
 	public var prevNote:Note;
+	public var type:String = "";
 
 	public var sustainLength:Float = 0;
 	public var isSustainNote:Bool = false;
@@ -34,9 +35,16 @@ class Note extends FlxSprite
 	public static var BLUE_NOTE:Int = 1;
 	public static var RED_NOTE:Int = 3;
 
-	public function new(strumTime:Float, noteData:Int, ?prevNote:Note, ?sustainNote:Bool = false)
+	#if sys
+	public var script:ModScripts = new ModScripts();
+	#end
+
+	public function new(strumTime:Float, noteData:Int, _type:String, ?prevNote:Note, ?sustainNote:Bool = false)
 	{
 		super();
+
+		if (_type != null)
+			type = _type;
 
 		if (prevNote == null)
 			prevNote = this;
@@ -180,6 +188,18 @@ class Note extends FlxSprite
 				// prevNote.setGraphicSize();
 			}
 		}
+
+		#if sys
+		if (type != "" || type != null) {
+			var note:Dynamic = this;
+			if (sys.FileSystem.exists(ModPaths.script("data/notes/" + type))) {
+				script.loadScript("data/notes/" + type);
+				script.interp.scriptObject = this;
+				script.interp.variables.set('note', note);
+			}
+			script.callFunction('create', []);
+		}
+		#end
 	}
 
 	override function update(elapsed:Float)

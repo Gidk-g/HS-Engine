@@ -64,6 +64,8 @@ class ChartingState extends MusicBeatState
 	var curRenderedNotes:FlxTypedGroup<Note>;
 	var curRenderedSustains:FlxTypedGroup<FlxSprite>;
 
+	var noteType:FlxInputText;
+
 	var gridBG:FlxSprite;
 
 	var _song:SwagSong;
@@ -361,6 +363,8 @@ class ChartingState extends MusicBeatState
 		var tab_group_note = new FlxUI(null, UI_box);
 		tab_group_note.name = 'Note';
 
+		noteType = new FlxUIInputText(10, 70, 70, "", 8);
+
 		stepperSusLength = new FlxUINumericStepper(10, 10, Conductor.stepCrochet / 2, 0, 0, Conductor.stepCrochet * 16);
 		stepperSusLength.value = 0;
 		stepperSusLength.name = 'note_susLength';
@@ -369,6 +373,7 @@ class ChartingState extends MusicBeatState
 
 		tab_group_note.add(stepperSusLength);
 		tab_group_note.add(applyLength);
+		tab_group_note.add(noteType);
 
 		UI_box.addGroup(tab_group_note);
 	}
@@ -916,8 +921,9 @@ class ChartingState extends MusicBeatState
 			var daNoteInfo = i[1];
 			var daStrumTime = i[0];
 			var daSus = i[2];
+			var daType = i[3];
 
-			var note:Note = new Note(daStrumTime, daNoteInfo % 4);
+			var note:Note = new Note(daStrumTime, daNoteInfo % 4, daType);
 			note.sustainLength = daSus;
 			note.setGraphicSize(GRID_SIZE, GRID_SIZE);
 			note.updateHitbox();
@@ -1004,18 +1010,20 @@ class ChartingState extends MusicBeatState
 		var noteStrum = getStrumTime(dummyArrow.y) + sectionStartTime();
 		var noteData = Math.floor(FlxG.mouse.x / GRID_SIZE);
 		var noteSus = 0;
+		var noteTypeString = noteType.text;
 
-		_song.notes[curSection].sectionNotes.push([noteStrum, noteData, noteSus]);
+		_song.notes[curSection].sectionNotes.push([noteStrum, noteData, noteSus, noteTypeString]);
 
 		curSelectedNote = _song.notes[curSection].sectionNotes[_song.notes[curSection].sectionNotes.length - 1];
 
 		if (FlxG.keys.pressed.CONTROL)
 		{
-			_song.notes[curSection].sectionNotes.push([noteStrum, (noteData + 4) % 8, noteSus]);
+			_song.notes[curSection].sectionNotes.push([noteStrum, (noteData + 4) % 8, noteSus, noteTypeString]);
 		}
 
 		trace(noteStrum);
 		trace(curSection);
+		trace("adding \"" + noteType.text + "\" note");
 
 		updateGrid();
 		updateNoteUI();
