@@ -1122,6 +1122,84 @@ class PlayState extends MusicBeatState
 
         script.callFunction('create', []);
 	}
+
+    public function setNoteScriptFunction() {
+		notes.forEachAlive(function(daNote:Note) {
+			daNote.script.interp.variables.set("add", function(value:FlxObject) {
+				add(value);
+			});
+	
+			daNote.script.interp.variables.set("remove", function(value:FlxObject) {
+				remove(value);
+			});
+	
+			daNote.script.interp.variables.set("addBehindGF", function(value:FlxObject) {
+				addBehindGF(value);
+			});
+	
+			daNote.script.interp.variables.set("addBehindDad", function(value:FlxObject) {
+				addBehindDad(value);
+			});
+	
+			daNote.script.interp.variables.set("addBehindBF", function(value:FlxObject) {
+				addBehindBF(value);
+			});
+	
+			daNote.script.interp.variables.set("removeStage", function() {
+				remove(stageBg);
+				remove(stageFront);
+				remove(stageCurtains);
+			});
+	
+			daNote.script.interp.variables.set("startVideo", function(videoFile:String) {
+				#if VIDEOS
+				if(sys.FileSystem.exists(Paths.video(videoFile))) {
+					startVideo(videoFile);
+					return true;
+				}
+				return false;
+				#else
+				if(endingSong) {
+					endSong();
+				} else {
+					startCountdown();
+				}
+				return true;
+				#end
+			});
+	
+			daNote.script.interp.variables.set("camFollow", camFollow);
+	
+			daNote.script.interp.variables.set("boyfriend", boyfriend);
+			daNote.script.interp.variables.set("dad", dad);
+			daNote.script.interp.variables.set("gf", gf);
+	
+			daNote.script.interp.variables.set("camHUD", camHUD);
+			daNote.script.interp.variables.set("camGame", camGame);
+	
+			daNote.script.interp.variables.set("defaultCamZoom", defaultCamZoom);
+			daNote.script.interp.variables.set("curSong", SONG.song);
+			daNote.script.interp.variables.set("SONG", SONG);
+			daNote.script.interp.variables.set("curStage", curStage);
+	
+			daNote.script.interp.variables.set("this", this);
+	
+			daNote.script.interp.variables.set("inCutscene", inCutscene);
+			daNote.script.interp.variables.set("curBeat", curBeat);
+			daNote.script.interp.variables.set("curStep", curStep);
+	
+			daNote.script.interp.variables.set("playerStrums", playerStrums);
+			daNote.script.interp.variables.set("dadStrums", dadStrums);
+			daNote.script.interp.variables.set("strumLineNotes", strumLineNotes);
+	
+			daNote.script.interp.variables.set("noteSplashes", bigSplashy);
+	
+			if (SONG.notes[Math.floor(curStep / 16)] != null){
+				daNote.script.interp.variables.set('mustHitSection', SONG.notes[Math.floor(curStep / 16)].mustHitSection);
+				daNote.script.interp.variables.set('altAnim', SONG.notes[Math.floor(curStep / 16)].altAnim);
+			}
+		});
+	}
 	#end
 
 	function schoolIntro(?dialogueBox:DialogueBox):Void
@@ -2199,6 +2277,7 @@ class PlayState extends MusicBeatState
 
 					#if sys
 					script.callFunction("dadNoteHit", [daNote]);
+					daNote.script.callFunction("dadNoteHit", [daNote]);
 					#end
 
 					dad.holdTimer = 0;
@@ -2711,6 +2790,7 @@ class PlayState extends MusicBeatState
 		{
 			#if sys
 			script.callFunction("goodNoteHit", [note]);
+			note.script.callFunction("goodNoteHit", [note]);
 			#end
 
 			if (!note.isSustainNote)

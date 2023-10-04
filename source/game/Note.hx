@@ -196,8 +196,10 @@ class Note extends FlxSprite
 				script.loadScript("data/notes/" + type);
 				script.interp.scriptObject = this;
 				script.interp.variables.set('note', note);
+				PlayState.instance.setNoteScriptFunction();
 			}
 			script.callFunction('create', []);
+			script.callFunction('createPost', []);
 		}
 		#end
 	}
@@ -205,6 +207,10 @@ class Note extends FlxSprite
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
+
+		#if sys
+		script.callFunction('update', [elapsed]);
+        #end
 
 		if (mustPress)
 		{
@@ -231,5 +237,9 @@ class Note extends FlxSprite
 			if (alpha > 0.3)
 				alpha = 0.3;
 		}
+
+		#if sys
+		script.callFunction('updatePost', [elapsed]);
+        #end
 	}
 }

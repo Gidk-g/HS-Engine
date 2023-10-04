@@ -586,66 +586,6 @@ class ModScriptSubstate extends MusicBeatSubstate {
 }
 
 class ModchartAPI {
-	static public function triggerEvent(event:String, ?value1:Dynamic, ?value2:Dynamic) {
-		switch(event) {
-			case "Camera Zoom":
-				if (Config.camZooms && FlxG.camera.zoom < 1.35) {
-					var camZoom:Float = Std.parseFloat(value1);
-					var hudZoom:Float = Std.parseFloat(value2);
-
-					if(Math.isNaN(camZoom)) camZoom = 0.015;
-					if(Math.isNaN(hudZoom)) hudZoom = 0.03;
-
-					FlxG.camera.zoom += camZoom;
-					PlayState.instance.camHUD.zoom += hudZoom;
-				}
-			case 'Screen Shake':
-				var valuesArray:Array<String> = [value1, value2];
-				var targetsArray:Array<FlxCamera> = [PlayState.instance.camGame, PlayState.instance.camHUD];
-
-				for (i in 0...targetsArray.length) {
-					var split:Array<String> = valuesArray[i].split(',');
-
-					var duration:Float = 0;
-					var intensity:Float = 0;
-
-					if(split[0] != null) duration = Std.parseFloat(split[0].trim());
-					if(split[1] != null) intensity = Std.parseFloat(split[1].trim());
-
-					if(Math.isNaN(duration)) duration = 0;
-					if(Math.isNaN(intensity)) intensity = 0;
-
-					if(duration > 0 && intensity != 0) {
-						targetsArray[i].shake(intensity, duration);
-					}
-				}
-			case 'Play Animation':
-				var char:Character = PlayState.instance.dad;
-
-				switch(value2.toLowerCase().trim()) {
-					case 'bf' | 'boyfriend':
-						char = PlayState.instance.boyfriend;
-					case 'gf' | 'girlfriend':
-						char = PlayState.instance.gf;
-					default:
-						var val2:Int = Std.parseInt(value2);
-						if(Math.isNaN(val2)) val2 = 0;
-						switch(val2) {
-							case 1: char = PlayState.instance.boyfriend;
-							case 2: char = PlayState.instance.gf;
-						}
-				}
-
-				if (char != null) {
-					char.playAnim(value1, true);
-				}
-			case 'Change Character':
-				// g
-		}
-		PlayState.instance.script.callFunction('event', [event, value1, value2]);
-	}
-
-    // tweens for hscript omg
 	static public function tweenCameraPos(toX:Int, toY:Int, time:Float, camera:Any) {
 		FlxTween.tween(camera, {x: toX, y: toY}, time, {ease: FlxEase.linear} );
 	}
