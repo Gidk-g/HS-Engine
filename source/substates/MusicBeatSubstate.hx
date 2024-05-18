@@ -4,8 +4,12 @@ import system.Conductor.BPMChangeEvent;
 import flixel.FlxG;
 import flixel.FlxSubState;
 
+using StringTools;
+
 class MusicBeatSubstate extends FlxSubState
 {
+	public static var curSubstate:String;
+
 	public function new()
 	{
 		super();
@@ -27,9 +31,11 @@ class MusicBeatSubstate extends FlxSubState
 
 	override function create()
 	{
+		curSubstate = CoolUtil.formatClass(this, false);
+
         #if sys
-		if (sys.FileSystem.exists(ModPaths.script("data/substates/" + Type.getClassName(Type.getClass(FlxG.state.subState))))) {
-			scriptSubstate.loadScript("data/substates/" + Type.getClassName(Type.getClass(FlxG.state.subState)));
+		if (sys.FileSystem.exists(ModPaths.script('data/substates/${CoolUtil.formatClass(this).split('substates/')[1]}'))) {
+			scriptSubstate.loadScript('data/substates/${CoolUtil.formatClass(this).split('substates/')[1]}');
 		}
 		scriptSubstate.interp.scriptObject = this;
 

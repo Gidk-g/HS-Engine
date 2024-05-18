@@ -26,9 +26,10 @@ import sys.FileSystem;
 import sys.io.File;
 
 #if VIDEOS
-#if (hxCodec >= "2.6.1") import hxcodec.VideoHandler as MP4Handler;
-#elseif (hxCodec == "2.6.0") import VideoHandler as MP4Handler;
-#else import vlc.MP4Handler; #end
+#if (hxCodec >= "3.0.0") import hxcodec.flixel.FlxVideo as VideoHandler;
+#elseif (hxCodec >= "2.6.1") import hxcodec.VideoHandler as VideoHandler;
+#elseif (hxCodec == "2.6.0") import VideoHandler;
+#else import vlc.MP4Handler as VideoHandler; #end
 #end
 
 using StringTools;
@@ -41,53 +42,29 @@ class ModPaths {
     public static var modDirectory:String = "mods/";
 
     inline static public function image(path:String):String {
-        var fullPath:String = null;
-        for (modFolder in getModFolders()) {
-            fullPath = Sys.getCwd() + modDirectory + modFolder + "/images/" + path + ".png";
-            if (FileSystem.exists(fullPath)) {
-                break;
-            }
-        }
-        return fullPath;
+        return findFileInModFolders("images", path + ".png");
     }
 
     inline static public function sound(path:String):String {
-        var fullPath:String = null;
-        for (modFolder in getModFolders()) {
-            fullPath = Sys.getCwd() + modDirectory + modFolder + "/" + path + ".ogg";
-            if (FileSystem.exists(fullPath)) {
-                break;
-            }
-        }
-        return fullPath;
+        return findFileInModFolders("", path + ".ogg");
     }
 
     inline static public function data(path:String):String {
-        var fullPath:String = null;
-        for (modFolder in getModFolders()) {
-            fullPath = Sys.getCwd() + modDirectory + modFolder + "/data/" + path + ".json";
-            if (FileSystem.exists(fullPath)) {
-                break;
-            }
-        }
-        return fullPath;
+        return findFileInModFolders("data", path + ".json");
     }
 
     inline static public function script(path:String):String {
-        var fullPath:String = null;
-        for (modFolder in getModFolders()) {
-            fullPath = Sys.getCwd() + modDirectory + modFolder + "/" + path + ".hx";
-            if (FileSystem.exists(fullPath)) {
-                break;
-            }
-        }
-        return fullPath;
+        return findFileInModFolders("", path + ".hx");
     }
 
     inline static public function modFolder(path:String):String {
+        return findFileInModFolders("", path);
+    }
+
+    static private function findFileInModFolders(subfolder:String, path:String):String {
         var fullPath:String = null;
         for (modFolder in getModFolders()) {
-            fullPath = Sys.getCwd() + modDirectory + modFolder + "/" + path;
+            fullPath = haxe.io.Path.join([Sys.getCwd(), modDirectory, modFolder, subfolder, path]);
             if (FileSystem.exists(fullPath)) {
                 break;
             }
@@ -95,19 +72,19 @@ class ModPaths {
         return fullPath;
     }
 
-	static public function getModFolders():Array<String> {
-		var list:Array<String> = [];
-		var modsFolder:String = modDirectory;
-		if(FileSystem.exists(modsFolder)) {
-			for (folder in FileSystem.readDirectory(modsFolder)) {
-				var path = haxe.io.Path.join([modsFolder, folder]);
-				if (FileSystem.isDirectory(path) && !list.contains(folder)) {
-					list.push(folder);
-				}
-			}
-		}
-		return list;
-	}
+    static public function getModFolders():Array<String> {
+        var modFolders:Array<String> = [];
+        var modsFolder:String = modDirectory;
+        if (FileSystem.exists(modsFolder)) {
+            for (folder in FileSystem.readDirectory(modsFolder)) {
+                var folderPath = haxe.io.Path.join([modsFolder, folder]);
+                if (FileSystem.isDirectory(folderPath) && !modFolders.contains(folder)) {
+                    modFolders.push(folder);
+                }
+            }
+        }
+        return modFolders;
+    }
 }
 
 class ModScripts {
@@ -166,11 +143,12 @@ class ModScripts {
 		interp.variables.set("Conductor", Conductor);
 		interp.variables.set("Note", Note);
 		interp.variables.set("Config", Config);
+		interp.variables.set("Logger", Logger);
         interp.variables.set("ModPaths", ModPaths);
         interp.variables.set("MusicBeatState", MusicBeatState);
         interp.variables.set("MusicBeatSubstate", MusicBeatSubstate);
 		#if VIDEOS
-		interp.variables.set('MP4Handler', MP4Handler);
+		interp.variables.set('VideoHandler', VideoHandler);
 		#end
 		interp.variables.set('BGSprite', BGSprite);
 		interp.variables.set('Modchart', ModchartAPI);
@@ -234,7 +212,7 @@ class ModScripts {
 				return Reflect.callMethod(null, func, args);
 		} catch (error:Dynamic) {
 			FlxG.log.add(error.details());
-            trace(error);
+            Logger.log("Error:" + error);
 		}
 		return true;
 	}
@@ -324,11 +302,12 @@ class ModScriptState extends MusicBeatState {
         interp.variables.set("controls", controls);
 		interp.variables.set("Note", Note);
 		interp.variables.set("Config", Config);
+		interp.variables.set("Logger", Logger);
         interp.variables.set("ModPaths", ModPaths);
         interp.variables.set("MusicBeatState", MusicBeatState);
         interp.variables.set("MusicBeatSubstate", MusicBeatSubstate);
 		#if VIDEOS
-		interp.variables.set('MP4Handler', MP4Handler);
+		interp.variables.set('VideoHandler', VideoHandler);
 		#end
 		interp.variables.set('BGSprite', BGSprite);
 		interp.variables.set('Modchart', ModchartAPI);
@@ -403,7 +382,7 @@ class ModScriptState extends MusicBeatState {
 				return Reflect.callMethod(null, func, args);
 		} catch (error:Dynamic) {
 			FlxG.log.add(error.details());
-            trace(error);
+            Logger.log("Error:" + error);
 		}
 		return true;
 	}
@@ -496,11 +475,12 @@ class ModScriptSubstate extends MusicBeatSubstate {
 		interp.variables.set("Conductor", Conductor);
 		interp.variables.set("Note", Note);
 		interp.variables.set("Config", Config);
+		interp.variables.set("Logger", Logger);
         interp.variables.set("ModPaths", ModPaths);
         interp.variables.set("MusicBeatState", MusicBeatState);
         interp.variables.set("MusicBeatSubstate", MusicBeatSubstate);
 		#if VIDEOS
-		interp.variables.set('MP4Handler', MP4Handler);
+		interp.variables.set('VideoHandler', VideoHandler);
 		#end
 		interp.variables.set('BGSprite', BGSprite);
 		interp.variables.set('Modchart', ModchartAPI);
@@ -579,7 +559,7 @@ class ModScriptSubstate extends MusicBeatSubstate {
 				return Reflect.callMethod(null, func, args);
 		} catch (error:Dynamic) {
 			FlxG.log.add(error.details());
-            trace(error);
+            Logger.log("Error:" + error);
 		}
 		return true;
 	}

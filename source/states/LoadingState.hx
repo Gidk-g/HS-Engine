@@ -91,7 +91,7 @@ class LoadingState extends MusicBeatState
 	
 	function checkLibrary(library:String)
 	{
-		trace(Assets.hasLibrary(library));
+		Logger.log(Assets.hasLibrary(library));
 		if (Assets.getLibrary(library) == null)
 		{
 			@:privateAccess
@@ -121,7 +121,7 @@ class LoadingState extends MusicBeatState
 		super.update(elapsed);
 		#if debug
 		if (FlxG.keys.justPressed.SPACE)
-			trace('fired: ' + callbacks.getFired() + " unfired:" + callbacks.getUnfired());
+			Logger.log('fired: ' + callbacks.getFired() + " unfired:" + callbacks.getUnfired());
 		#end
 	}
 	
@@ -301,7 +301,7 @@ class MultiCallback
 	inline function log(msg):Void
 	{
 		if (logId != null)
-			trace('$logId: $msg');
+			Logger.log('$logId: $msg');
 	}
 	
 	public function getFired() return fired.copy();

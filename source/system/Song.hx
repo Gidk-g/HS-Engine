@@ -50,7 +50,7 @@ class Song
 		#if sys
 		var moddyFile:String = ModPaths.data("charts/" + folder.toLowerCase() + '/' + jsonInput.toLowerCase());
 		if(FileSystem.exists(moddyFile)) {
-			rawJson = File.getContent(moddyFile).trim();
+		    rawJson = File.getContent(moddyFile).trim();
 		}
 		#end
 
@@ -70,13 +70,13 @@ class Song
 
 		// FIX THE CASTING ON WINDOWS/NATIVE
 		// Windows???
-		// trace(songData);
+		// Logger.log(songData);
 
-		// trace('LOADED FROM JSON: ' + songData.notes);
+		// Logger.log('LOADED FROM JSON: ' + songData.notes);
 		/* 
 			for (i in 0...songData.notes.length)
 			{
-				trace('LOADED FROM JSON: ' + songData.notes[i].sectionNotes);
+				Logger.log('LOADED FROM JSON: ' + songData.notes[i].sectionNotes);
 				// songData.notes[i].sectionNotes = songData.notes[i].sectionNotes
 			}
 

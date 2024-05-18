@@ -569,7 +569,7 @@ class Controls extends FlxActionSet
 	public function loadKeyBinds()
 	{
 
-		//trace(FlxKey.fromString(FlxG.save.data.upBind));
+		//Logger.log(FlxKey.fromString(FlxG.save.data.upBind));
 
 		removeKeyboard();
 		if (gamepadsAdded.length != 0)

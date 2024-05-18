@@ -30,10 +30,6 @@ class FreeplayState extends MusicBeatState
 	var lerpScore:Int = 0;
 	var intendedScore:Int = 0;
 
-	var bg:FlxSprite;
-	var intendedColor:Int;
-	var colorTween:FlxTween;
-
 	private var grpSongs:FlxTypedGroup<Alphabet>;
 	private var curPlaying:Bool = false;
 
@@ -66,22 +62,16 @@ class FreeplayState extends MusicBeatState
 		for (i in 0...initSonglist.length)
 		{
 			var data:Array<String> = initSonglist[i].split(':');
-			songs.push(new SongMetadata(data[0], Std.parseInt(data[2]), data[1], data[3], 'fnf'));
+			songs.push(new SongMetadata(data[0], Std.parseInt(data[2]), data[1], 'fnf'));
 		}
 
         #if sys
 		for (i in 0...customSongList.length)
 		{
 			var bruh:Array<String> = customSongList[i].split(':');
-			songs.push(new SongMetadata(bruh[0], Std.parseInt(bruh[2]), bruh[1], bruh[3], songModListIdk[i]));
+			songs.push(new SongMetadata(bruh[0], Std.parseInt(bruh[2]), bruh[1], songModListIdk[i]));
 		}
 		#end
-
-		if (FlxG.sound.music != null)
-		{
-			if (!FlxG.sound.music.playing)
-				FlxG.sound.playMusic(Paths.music('freakyMenu'));
-		}
 
 		#if desktop
 		// Updating Discord Rich Presence
@@ -98,12 +88,8 @@ class FreeplayState extends MusicBeatState
 
 		// LOAD CHARACTERS
 
-		bg = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
-		bg.antialiasing = true;
+		var bg:FlxSprite = new FlxSprite().loadGraphic(Paths.image('menuBGBlue'));
 		add(bg);
-		bg.screenCenter();
-		bg.color = getCurrentBGColor();
-		intendedColor = bg.color; // thx teotm
 
 		grpSongs = new FlxTypedGroup<Alphabet>();
 		add(grpSongs);
@@ -169,18 +155,18 @@ class FreeplayState extends MusicBeatState
 
 			// scoreText.textField.htmlText = md;
 
-			trace(md);
+			Logger.log(md);
 		 */
 
 		super.create();
 	}
 
-	public function addSong(songName:String, weekNum:Int, songCharacter:String, color:String, daMod:String)
+	public function addSong(songName:String, weekNum:Int, songCharacter:String, daMod:String)
 	{
-		songs.push(new SongMetadata(songName, weekNum, songCharacter, color, daMod));
+		songs.push(new SongMetadata(songName, weekNum, songCharacter, daMod));
 	}
 
-	public function addWeek(songs:Array<String>, weekNum:Int, ?songCharacters:Array<String>, color:String, daMod:String)
+	public function addWeek(songs:Array<String>, weekNum:Int, ?songCharacters:Array<String>, daMod:String)
 	{
 		if (songCharacters == null)
 			songCharacters = ['dad'];
@@ -188,20 +174,11 @@ class FreeplayState extends MusicBeatState
 		var num:Int = 0;
 		for (song in songs)
 		{
-			addSong(song, weekNum, songCharacters[num], color, daMod);
+			addSong(song, weekNum, songCharacters[num], daMod);
 
 			if (songCharacters.length != 1)
 				num++;
 		}
-	}
-
-	function getCurrentBGColor() {
-		var bgColor:String = songs[curSelected].color;
-		if(!bgColor.startsWith('0x')) {
-			bgColor = '0xFF' + bgColor;
-		}
-		return Std.parseInt(bgColor);
-		trace(bgColor);
 	}
 
 	override function update(elapsed:Float)
@@ -240,9 +217,6 @@ class FreeplayState extends MusicBeatState
 
 		if (controls.BACK)
 		{
-			if(colorTween != null) {
-				colorTween.cancel();
-			}
 			FlxG.switchState(new MainMenuState());
 		}
 
@@ -260,13 +234,13 @@ class FreeplayState extends MusicBeatState
 			}
 			else
 			{
-				trace(poop);
+				Logger.log(poop);
 
 				PlayState.SONG = Song.loadFromJson(poop, songs[curSelected].songName.toLowerCase());
 				PlayState.isStoryMode = false;
 				PlayState.storyDifficulty = curDifficulty;
 				PlayState.storyWeek = songs[curSelected].week;
-				trace('CUR WEEK' + PlayState.storyWeek);
+				Logger.log('CUR WEEK' + PlayState.storyWeek);
 				LoadingState.loadAndSwitchState(new PlayState());
 			}
 		}
@@ -314,18 +288,9 @@ class FreeplayState extends MusicBeatState
 		// lerpScore = 0;
 		#end
 
-		var newColor:Int = getCurrentBGColor();
-		if(newColor != intendedColor) {
-			if(colorTween != null) {
-				colorTween.cancel();
-			}
-			intendedColor = newColor;
-			colorTween = FlxTween.color(bg, 1, bg.color, intendedColor, {
-				onComplete: function(twn:FlxTween) {
-					colorTween = null;
-				}
-			});
-		}
+		#if PRELOAD_ALL
+		FlxG.sound.playMusic(Paths.inst(songs[curSelected].songName), 0);
+		#end
 
 		var bullShit:Int = 0;
 
@@ -358,15 +323,13 @@ class SongMetadata
 	public var songName:String = "";
 	public var week:Int = 0;
 	public var songCharacter:String = "";
-	public var color:String = "E0E0E0";
 	public var fromMod:String = "";
 
-	public function new(song:String, week:Int, songCharacter:String, color:String, fromMod:String)
+	public function new(song:String, week:Int, songCharacter:String, fromMod:String)
 	{
 		this.songName = song;
 		this.week = week;
 		this.songCharacter = songCharacter;
-		this.color = color;
 		this.fromMod = fromMod;
 	}
 }

@@ -9,20 +9,20 @@ class DiscordClient
 {
 	public function new()
 	{
-		trace("Discord Client starting...");
+		Logger.log("Discord Client starting...");
 		DiscordRpc.start({
 			clientID: "814588678700924999",
 			onReady: onReady,
 			onError: onError,
 			onDisconnected: onDisconnected
 		});
-		trace("Discord Client started.");
+		Logger.log("Discord Client started.");
 
 		while (true)
 		{
 			DiscordRpc.process();
 			sleep(2);
-			//trace("Discord Client Update");
+			// Logger.log("Discord Client Update");
 		}
 
 		DiscordRpc.shutdown();
@@ -45,12 +45,12 @@ class DiscordClient
 
 	static function onError(_code:Int, _message:String)
 	{
-		trace('Error! $_code : $_message');
+		Logger.log('Error: $_code : $_message');
 	}
 
 	static function onDisconnected(_code:Int, _message:String)
 	{
-		trace('Disconnected! $_code : $_message');
+		Logger.log('Disconnected! $_code : $_message');
 	}
 
 	public static function initialize()
@@ -59,7 +59,7 @@ class DiscordClient
 		{
 			new DiscordClient();
 		});
-		trace("Discord Client initialized");
+		Logger.log("Discord Client initialized");
 	}
 
 	public static function changePresence(details:String, state:Null<String>, ?smallImageKey : String, ?hasStartTimestamp : Bool, ?endTimestamp: Float)
@@ -82,6 +82,6 @@ class DiscordClient
             endTimestamp : Std.int(endTimestamp / 1000)
 		});
 
-		//trace('Discord RPC Updated. Arguments: $details, $state, $smallImageKey, $hasStartTimestamp, $endTimestamp');
+		// Logger.log('Discord RPC Updated. Arguments: $details, $state, $smallImageKey, $hasStartTimestamp, $endTimestamp');
 	}
 }

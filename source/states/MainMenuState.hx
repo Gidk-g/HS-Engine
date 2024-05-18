@@ -21,15 +21,12 @@ using StringTools;
 class MainMenuState extends MusicBeatState
 {
 	var curSelected:Int = 0;
-
 	var menuItems:FlxTypedGroup<FlxSprite>;
-
-	#if !switch
+	#if sys
 	var optionShit:Array<String> = ['story_mode', 'freeplay', 'mods', 'options'];
 	#else
-	var optionShit:Array<String> = ['story_mode', 'freeplay'];
+	var optionShit:Array<String> = ['story_mode', 'freeplay', 'options'];
 	#end
-
 	var magenta:FlxSprite;
 	var camFollow:FlxObject;
 
@@ -165,8 +162,10 @@ class MainMenuState extends MusicBeatState
 									FlxG.switchState(new StoryMenuState());
 								case 'freeplay':
 									FlxG.switchState(new FreeplayState());
+								#if sys
 								case 'mods':
 									FlxG.switchState(new states.ModState());
+								#end
 								case 'options':
 									FlxG.switchState(new OptionsState());
 							}

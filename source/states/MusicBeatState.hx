@@ -7,8 +7,12 @@ import flixel.addons.ui.FlxUIState;
 import flixel.math.FlxRect;
 import flixel.util.FlxTimer;
 
+using StringTools;
+
 class MusicBeatState extends FlxUIState
 {
+	public static var curState:String;
+
 	private var lastBeat:Float = 0;
 	private var lastStep:Float = 0;
 
@@ -25,41 +29,50 @@ class MusicBeatState extends FlxUIState
 
 	override function create()
 	{
+		// thx again maru
+		curState = CoolUtil.formatClass(this, false);
+
         #if sys
-		if (sys.FileSystem.exists(ModPaths.script("data/states/" + Type.getClassName(Type.getClass(FlxG.state))))) {
-		    scriptState.loadScript("data/states/" + Type.getClassName(Type.getClass(FlxG.state)));
-		}
-		scriptState.interp.scriptObject = this;
+		if (!curState.endsWith("PlayState")) {
+			if (sys.FileSystem.exists(ModPaths.script('data/states/${CoolUtil.formatClass(this).split('states/')[1]}'))) {
+				scriptState.loadScript('data/states/${CoolUtil.formatClass(this).split('states/')[1]}');
+			}
+			scriptState.interp.scriptObject = this;
 
-		scriptState.interp.variables.set("add", function(value:flixel.FlxObject) {
-			add(value);
-		});
+			scriptState.interp.variables.set("add", function(value:flixel.FlxObject) {
+				add(value);
+			});
 
-		scriptState.interp.variables.set("remove", function(value:flixel.FlxObject) {
-			remove(value);
-		});
+			scriptState.interp.variables.set("remove", function(value:flixel.FlxObject) {
+				remove(value);
+			});
 
-		scriptState.interp.variables.set("curBeat", curBeat);
-		scriptState.interp.variables.set("curStep", curStep);
+			scriptState.interp.variables.set("curBeat", curBeat);
+			scriptState.interp.variables.set("curStep", curStep);
 
-		scriptState.interp.variables.set("this", this);
-		scriptState.callFunction("create", [this]);
+			scriptState.interp.variables.set("this", this);
+			scriptState.callFunction("create", [this]);
+	    }
 		#end
 
 		if (transIn != null)
-			trace('reg ' + transIn.region);
+			Logger.log('reg ' + transIn.region);
 
 		super.create();
 
-        #if sys
-		scriptState.callFunction("createPost", [this]);
+		#if sys
+		if (!curState.endsWith("PlayState")) {
+		    scriptState.callFunction("createPost", [this]);
+	    }
 		#end
 	}
 
 	override function update(elapsed:Float)
 	{
         #if sys
-		scriptState.callFunction("update", [elapsed, this]);
+		if (!curState.endsWith("PlayState")) {
+		    scriptState.callFunction("update", [elapsed, this]);
+		}
 		#end
 
 		var oldStep:Int = curStep;
@@ -73,7 +86,9 @@ class MusicBeatState extends FlxUIState
 		super.update(elapsed);
 
         #if sys
-		scriptState.callFunction("updatePost", [elapsed, this]);
+		if (!curState.endsWith("PlayState")) {
+		    scriptState.callFunction("updatePost", [elapsed, this]);
+		}
 		#end
 	}
 
@@ -102,15 +117,20 @@ class MusicBeatState extends FlxUIState
 	{
 		if (curStep % 4 == 0)
 			beatHit();
+
         #if sys
-		scriptState.callFunction("stepHit", [curStep, this]);
+		if (!curState.endsWith("PlayState")) {
+		    scriptState.callFunction("stepHit", [curStep, this]);
+		}
 		#end
 	}
 
 	public function beatHit():Void
 	{
         #if sys
-		scriptState.callFunction("beatHit", [curBeat, this]);
+		if (!curState.endsWith("PlayState")) {
+		    scriptState.callFunction("beatHit", [curBeat, this]);
+		}
 		#end
 	}
 }

@@ -34,6 +34,8 @@ class DialogueBox extends FlxSpriteGroup
 	var handSelect:FlxSprite;
 	var bgFade:FlxSprite;
 
+	var face:FlxSprite;
+
 	public function new(talkingRight:Bool = true, ?dialogueList:Array<String>)
 	{
 		super();
@@ -84,7 +86,7 @@ class DialogueBox extends FlxSpriteGroup
 				box.animation.addByPrefix('normalOpen', 'Spirit Textbox spawn', 24, false);
 				box.animation.addByIndices('normal', 'Spirit Textbox spawn', [11], "", 24);
 
-				var face:FlxSprite = new FlxSprite(320, 170).loadGraphic(Paths.image('weeb/spiritFaceForward'));
+				face = new FlxSprite(320, 170).loadGraphic(Paths.image('weeb/spiritFaceForward'));
 				face.setGraphicSize(Std.int(face.width * 6));
 				add(face);
 		}
@@ -94,7 +96,11 @@ class DialogueBox extends FlxSpriteGroup
 		if (!hasDialog)
 			return;
 		
-		portraitLeft = new FlxSprite(-20, 40);
+		if (PlayState.SONG.song.toLowerCase() == 'thorns')
+		    portraitLeft = new FlxSprite(-20, 60);
+		else
+			portraitLeft = new FlxSprite(-20, 40);
+
 		portraitLeft.frames = Paths.getSparrowAtlas('weeb/senpaiPortrait');
 		portraitLeft.animation.addByPrefix('enter', 'Senpai Portrait Enter', 24, false);
 		portraitLeft.setGraphicSize(Std.int(portraitLeft.width * PlayState.daPixelZoom * 0.9));
@@ -198,6 +204,8 @@ class DialogueBox extends FlxSpriteGroup
 						bgFade.alpha -= 1 / 5 * 0.7;
 						portraitLeft.visible = false;
 						portraitRight.visible = false;
+						if (PlayState.SONG.song.toLowerCase() == 'thorns')
+						    face.alpha -= 1 / 5;
 						swagDialogue.alpha -= 1 / 5;
 						dropText.alpha = swagDialogue.alpha;
 					}, 5);

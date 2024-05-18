@@ -82,7 +82,7 @@ class StoryMenuState extends MusicBeatState
 		grpLocks = new FlxTypedGroup<FlxSprite>();
 		add(grpLocks);
 
-		trace("Line 70");
+		Logger.log("Line 70");
 		
 		#if desktop
 		// Updating Discord Rich Presence
@@ -101,7 +101,7 @@ class StoryMenuState extends MusicBeatState
 			// weekThing.updateHitbox();
 		}
 
-		trace("Line 96");
+		Logger.log("Line 96");
 
 		for (char in 0...3)
 		{
@@ -113,7 +113,7 @@ class StoryMenuState extends MusicBeatState
 		difficultySelectors = new FlxGroup();
 		add(difficultySelectors);
 
-		trace("Line 124");
+		Logger.log("Line 124");
 
 		leftArrow = new FlxSprite(grpWeekText.members[0].x + grpWeekText.members[0].width + 10, grpWeekText.members[0].y + 10);
 		leftArrow.frames = ui_tex;
@@ -139,7 +139,7 @@ class StoryMenuState extends MusicBeatState
 		rightArrow.animation.play('idle');
 		difficultySelectors.add(rightArrow);
 
-		trace("Line 150");
+		Logger.log("Line 150");
 
 		add(yellowBG);
 		add(grpWeekCharacters);
@@ -155,7 +155,7 @@ class StoryMenuState extends MusicBeatState
 
 		updateText();
 
-		trace("Line 165");
+		Logger.log("Line 165");
 
 		super.create();
 	}
@@ -413,18 +413,18 @@ class StoryMenuState extends MusicBeatState
 		}
 
         #if sys
-        for (mod in ModPaths.getModFolders()) {
-            if (sys.FileSystem.isDirectory('mods/$mod/data/weeks') == true) {
-                for (weekJson in sys.FileSystem.readDirectory('mods/$mod/data/weeks/')) {
-                    if (weekJson != null && weekJson.contains('.json')) {
-                        var customWeeks = Json.parse(sys.io.File.getContent('mods/$mod/data/weeks/' + weekJson)).weeks;
-		                for (i in 0...customWeeks.length) {
-			                addWeek(cast customWeeks[i]);
-		                }
-                    }
-                }
+		for (mod in ModPaths.getModFolders()) {
+			if (sys.FileSystem.isDirectory('mods/$mod/data/weeks') == true) {
+				for (weekJson in sys.FileSystem.readDirectory('mods/$mod/data/weeks/')) {
+					if (weekJson != null && weekJson.contains('.json')) {
+						var customWeeks = Json.parse(sys.io.File.getContent('mods/$mod/data/weeks/' + weekJson)).weeks;
+						for (i in 0...customWeeks.length) {
+							addWeek(cast customWeeks[i]);
+						}
+					}
+				}
 			}
-        }
+		}
 		#end
 	}
 }

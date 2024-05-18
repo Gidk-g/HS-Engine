@@ -14,7 +14,6 @@ import substates.MusicBeatSubstate;
 import substates.PauseSubState;
 
 // editors
-import states.editors.CharacterEditorState;
 import states.editors.ChartingState;
 
 // game
@@ -46,6 +45,7 @@ import system.PlayerSettings;
 import system.Section;
 import system.Song;
 import system.Windows;
+import system.CoolUtil;
 
 #if sys
 import system.ModSupport;

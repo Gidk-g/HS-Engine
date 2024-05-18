@@ -16,18 +16,20 @@ class Note extends FlxSprite
 	public var canBeHit:Bool = false;
 	public var tooLate:Bool = false;
 	public var wasGoodHit:Bool = false;
+	public var ignoreNote:Bool = false;
 	public var missed:Bool = false;
 	public var prevNote:Note;
-	public var type:String = "";
 
 	public var sustainLength:Float = 0;
 	public var isSustainNote:Bool = false;
 
-	public var sustainParent:Note;
-	public var sustainChildren:Array<Note> = [];
-
 	public var noteScore:Float = 1;
 	public var originalHeightForCalcs:Float = 6;
+
+	public var offsetX:Float = 0;
+	public var offsetY:Float = 0;
+
+	private var earlyHitMult:Float = 0.5;
 
 	public static var swagWidth:Float = 160 * 0.7;
 	public static var PURP_NOTE:Int = 0;
@@ -35,16 +37,9 @@ class Note extends FlxSprite
 	public static var BLUE_NOTE:Int = 1;
 	public static var RED_NOTE:Int = 3;
 
-	#if sys
-	public var script:ModScripts = new ModScripts();
-	#end
-
-	public function new(strumTime:Float, noteData:Int, _type:String, ?prevNote:Note, ?sustainNote:Bool = false)
+	public function new(strumTime:Float, noteData:Int, ?prevNote:Note, ?sustainNote:Bool = false)
 	{
 		super();
-
-		if (_type != null)
-			type = _type;
 
 		if (prevNote == null)
 			prevNote = this;
@@ -58,16 +53,6 @@ class Note extends FlxSprite
 		this.strumTime = strumTime;
 
 		this.noteData = noteData;
-
-		if (noteData != -1) {
-			if (isSustainNote && !prevNote.isSustainNote) {
-				sustainParent = prevNote;
-				prevNote.sustainChildren.push(this);
-			} else if (isSustainNote && prevNote.isSustainNote) {
-				sustainParent = prevNote.sustainParent;
-				sustainParent.sustainChildren.push(this);
-			}
-		}
 
 		var daStage:String = PlayState.curStage;
 
@@ -108,15 +93,18 @@ class Note extends FlxSprite
 				animation.addByPrefix('blueScroll', 'blue0');
 				animation.addByPrefix('purpleScroll', 'purple0');
 
-				animation.addByPrefix('purpleholdend', 'pruple end hold');
-				animation.addByPrefix('greenholdend', 'green hold end');
-				animation.addByPrefix('redholdend', 'red hold end');
-				animation.addByPrefix('blueholdend', 'blue hold end');
-
-				animation.addByPrefix('purplehold', 'purple hold piece');
-				animation.addByPrefix('greenhold', 'green hold piece');
-				animation.addByPrefix('redhold', 'red hold piece');
-				animation.addByPrefix('bluehold', 'blue hold piece');
+				if (isSustainNote)
+				{
+					animation.addByPrefix('purpleholdend', 'pruple end hold');
+					animation.addByPrefix('greenholdend', 'green hold end');
+					animation.addByPrefix('redholdend', 'red hold end');
+					animation.addByPrefix('blueholdend', 'blue hold end');
+	
+					animation.addByPrefix('purplehold', 'purple hold piece');
+					animation.addByPrefix('greenhold', 'green hold piece');
+					animation.addByPrefix('redhold', 'red hold piece');
+					animation.addByPrefix('bluehold', 'blue hold piece');
+				}
 
 				setGraphicSize(Std.int(width * 0.7));
 				updateHitbox();
@@ -139,7 +127,7 @@ class Note extends FlxSprite
 				animation.play('redScroll');
 		}
 
-		// trace(prevNote);
+		// Logger.log(prevNote);
 
 		if (isSustainNote && prevNote != null)
 		{
@@ -148,7 +136,7 @@ class Note extends FlxSprite
 
 			if(Config.downScroll) flipY = true;
 
-			x += width / 2;
+			offsetX += width / 2;
 
 			switch (noteData)
 			{
@@ -164,10 +152,10 @@ class Note extends FlxSprite
 
 			updateHitbox();
 
-			x -= width / 2;
+			offsetX -= width / 2;
 
 			if (PlayState.curStage.startsWith('school'))
-				x += 30;
+				offsetX += 30;
 
 			if (prevNote.isSustainNote)
 			{
@@ -187,36 +175,20 @@ class Note extends FlxSprite
 				prevNote.updateHitbox();
 				// prevNote.setGraphicSize();
 			}
+		} else if(!isSustainNote) {
+			earlyHitMult = 1;
 		}
-
-		#if sys
-		if (type != "" || type != null) {
-			var note:Dynamic = this;
-			if (sys.FileSystem.exists(ModPaths.script("data/notes/" + type))) {
-				script.loadScript("data/notes/" + type);
-				script.interp.scriptObject = this;
-				script.interp.variables.set('note', note);
-				PlayState.instance.setNoteScriptFunction();
-			}
-			script.callFunction('create', []);
-			script.callFunction('createPost', []);
-		}
-		#end
+		x += offsetX;
 	}
 
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
 
-		#if sys
-		script.callFunction('update', [elapsed]);
-        #end
-
 		if (mustPress)
 		{
-			// The * 0.5 is so that it's easier to hit them too late, instead of too early
 			if (strumTime > Conductor.songPosition - Conductor.safeZoneOffset
-				&& strumTime < Conductor.songPosition + (Conductor.safeZoneOffset * 0.9))
+				&& strumTime < Conductor.songPosition + (Conductor.safeZoneOffset * earlyHitMult))
 				canBeHit = true;
 			else
 				canBeHit = false;
@@ -237,9 +209,5 @@ class Note extends FlxSprite
 			if (alpha > 0.3)
 				alpha = 0.3;
 		}
-
-		#if sys
-		script.callFunction('updatePost', [elapsed]);
-        #end
 	}
 }
