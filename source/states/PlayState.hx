@@ -1865,7 +1865,9 @@ class PlayState extends MusicBeatState
 			persistentDraw = true;
 			paused = true;
 
+			#if sys
 		    script.callFunction("pause", []);
+			#end
 
 			if (goToPause)
 			    openSubState(new PauseSubState(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y));
@@ -1949,7 +1951,9 @@ class PlayState extends MusicBeatState
 			{
 				camFollow.setPosition(dad.getMidpoint().x + 150 + dad.cameraOffset[0], dad.getMidpoint().y - 100 + dad.cameraOffset[1]);
 
+				#if sys
                 script.callFunction("dadTurn", []);
+				#end
 
 				switch (dad.curCharacter)
 				{
@@ -1976,7 +1980,9 @@ class PlayState extends MusicBeatState
 			{
 				camFollow.setPosition(boyfriend.getMidpoint().x - 100 + boyfriend.cameraOffset[0], boyfriend.getMidpoint().y - 100 + boyfriend.cameraOffset[1]);
 
+				#if sys
                 script.callFunction("bfTurn", []);
+				#end
 
 				switch (curStage)
 				{
@@ -2050,7 +2056,9 @@ class PlayState extends MusicBeatState
 			vocals.stop();
 			FlxG.sound.music.stop();
 
+			#if sys
             script.callFunction('gameOver', []);
+			#end
 
 			deathCounter += 1;
 
@@ -2329,7 +2337,9 @@ class PlayState extends MusicBeatState
 			#end
 		}
 
+		#if sys
 		script.callFunction('endSong', []);
+		#end
 
 		if (isStoryMode)
 		{
@@ -2577,8 +2587,10 @@ class PlayState extends MusicBeatState
 			createNoteSplash(note.noteData);
 		}
 
+		#if sys
 		script.interp.variables.set("daRating", daRating);
         script.callFunction("popUpScore", [strumtime, note]);
+		#end
 
 		songScore += score;
 
