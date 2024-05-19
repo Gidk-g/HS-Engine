@@ -44,7 +44,7 @@ import system.Highscore;
 import system.PlayerSettings;
 import system.Section;
 import system.Song;
-import system.Windows;
+import system.Window;
 import system.CoolUtil;
 
 #if sys

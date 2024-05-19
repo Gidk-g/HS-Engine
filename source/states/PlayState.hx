@@ -1943,17 +1943,13 @@ class PlayState extends MusicBeatState
 		if (generatedMusic)
 			notes.sort(FlxSort.byY, Config.downScroll ? FlxSort.ASCENDING : FlxSort.DESCENDING);
 
-		if (generatedMusic && PlayState.SONG.notes[Std.int(curStep / 16)] != null)
+		if (generatedMusic && PlayState.SONG.notes[Math.floor(curStep / 16)] != null)
 		{
-			if (curBeat % 4 == 0)
-			{
-				// Logger.log(PlayState.SONG.notes[Std.int(curStep / 16)].mustHitSection);
-			}
-
-			if (camFollow.x != dad.getMidpoint().x + 150 + dad.cameraOffset[0] && !PlayState.SONG.notes[Std.int(curStep / 16)].mustHitSection)
+			if (camFollow.x != dad.getMidpoint().x + 150 + dad.cameraOffset[0] && !PlayState.SONG.notes[Math.floor(curStep / 16)].mustHitSection)
 			{
 				camFollow.setPosition(dad.getMidpoint().x + 150 + dad.cameraOffset[0], dad.getMidpoint().y - 100 + dad.cameraOffset[1]);
-				// camFollow.setPosition(lucky.getMidpoint().x - 120, lucky.getMidpoint().y + 210);
+
+                script.callFunction("dadTurn", []);
 
 				switch (dad.curCharacter)
 				{
@@ -1976,9 +1972,11 @@ class PlayState extends MusicBeatState
 				}
 			}
 
-			if (PlayState.SONG.notes[Std.int(curStep / 16)].mustHitSection && camFollow.x != boyfriend.getMidpoint().x - 100 + boyfriend.cameraOffset[0])
+			if (PlayState.SONG.notes[Math.floor(curStep / 16)].mustHitSection && camFollow.x != boyfriend.getMidpoint().x - 100 + boyfriend.cameraOffset[0])
 			{
 				camFollow.setPosition(boyfriend.getMidpoint().x - 100 + boyfriend.cameraOffset[0], boyfriend.getMidpoint().y - 100 + boyfriend.cameraOffset[1]);
+
+                script.callFunction("bfTurn", []);
 
 				switch (curStage)
 				{
@@ -2850,6 +2848,12 @@ class PlayState extends MusicBeatState
 		if (!note.missed && !Config.ghostTapping) {
 		    note.missed = true;
 
+			if (note.sustainChildren.length > 0) {
+				for (i in note.sustainChildren) {
+					note.missed = true;
+				}
+			}
+
 		    for (i in 0...controlArray.length) {
 			    if (controlArray[i])
 				    noteMiss(i);
@@ -3078,7 +3082,7 @@ class PlayState extends MusicBeatState
 				FlxG.log.add('CHANGED BPM!');
 			}
 		}
-		// FlxG.log.add('change bpm' + SONG.notes[Std.int(curStep / 16)].changeBPM);
+		// FlxG.log.add('change bpm' + SONG.notes[Math.floor(curStep / 16)].changeBPM);
 		wiggleShit.update(Conductor.crochet);
 
 		// HARDCODING FOR MILF ZOOMS!

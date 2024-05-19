@@ -23,6 +23,9 @@ class Note extends FlxSprite
 	public var sustainLength:Float = 0;
 	public var isSustainNote:Bool = false;
 
+	public var sustainParent:Note;
+	public var sustainChildren:Array<Note> = [];
+
 	public var noteScore:Float = 1;
 	public var originalHeightForCalcs:Float = 6;
 
@@ -53,6 +56,16 @@ class Note extends FlxSprite
 		this.strumTime = strumTime;
 
 		this.noteData = noteData;
+
+		if (noteData != -1) {
+			if (isSustainNote && !prevNote.isSustainNote) {
+				sustainParent = prevNote;
+				prevNote.sustainChildren.push(this);
+			} else if (isSustainNote && prevNote.isSustainNote) {
+				sustainParent = prevNote.sustainParent;
+				sustainParent.sustainChildren.push(this);
+			}
+		}
 
 		var daStage:String = PlayState.curStage;
 
@@ -93,18 +106,15 @@ class Note extends FlxSprite
 				animation.addByPrefix('blueScroll', 'blue0');
 				animation.addByPrefix('purpleScroll', 'purple0');
 
-				if (isSustainNote)
-				{
-					animation.addByPrefix('purpleholdend', 'pruple end hold');
-					animation.addByPrefix('greenholdend', 'green hold end');
-					animation.addByPrefix('redholdend', 'red hold end');
-					animation.addByPrefix('blueholdend', 'blue hold end');
-	
-					animation.addByPrefix('purplehold', 'purple hold piece');
-					animation.addByPrefix('greenhold', 'green hold piece');
-					animation.addByPrefix('redhold', 'red hold piece');
-					animation.addByPrefix('bluehold', 'blue hold piece');
-				}
+				animation.addByPrefix('purpleholdend', 'pruple end hold');
+				animation.addByPrefix('greenholdend', 'green hold end');
+				animation.addByPrefix('redholdend', 'red hold end');
+				animation.addByPrefix('blueholdend', 'blue hold end');
+
+				animation.addByPrefix('purplehold', 'purple hold piece');
+				animation.addByPrefix('greenhold', 'green hold piece');
+				animation.addByPrefix('redhold', 'red hold piece');
+				animation.addByPrefix('bluehold', 'blue hold piece');
 
 				setGraphicSize(Std.int(width * 0.7));
 				updateHitbox();

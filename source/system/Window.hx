@@ -16,7 +16,7 @@ package system;
     ')
 #end
 @:dox(hide)
-class Windows
+class Window
 {
 	#if windows
 	@:functionCode('

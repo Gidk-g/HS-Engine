@@ -38,38 +38,22 @@ class FreeplayState extends MusicBeatState
 	override function create()
 	{
 		var initSonglist = CoolUtil.coolTextFile(Paths.txt('freeplaySonglist'));
-		var customSongList:Array<String> = [];
-		var songModListIdk:Array<String> = [];
-
-        #if sys
-		var songListTxt:Array<String> = [];
-		var list:Array<String> = [];
-        for (dir in ModPaths.getModFolders()) {
-			if (sys.FileSystem.exists(Sys.getCwd() + 'mods/' + dir + '/songList.txt'))
-				list = sys.io.File.getContent(Sys.getCwd() + 'mods/' + dir + '/songList.txt').trim().split('\n');
-		    for (i in 0...list.length) 
-			    list[i] = list[i].trim();
-		    songListTxt = list;
-		    for (i in 0...songListTxt.length) {
-			    if (songListTxt.length > 0) {
-			    	customSongList.push(songListTxt[i]);
-				    songModListIdk.push(dir);
-				}
-		    }
-	    }
-		#end
 
 		for (i in 0...initSonglist.length)
 		{
 			var data:Array<String> = initSonglist[i].split(':');
-			songs.push(new SongMetadata(data[0], Std.parseInt(data[2]), data[1], 'fnf'));
+			songs.push(new SongMetadata(data[0], Std.parseInt(data[2]), data[1]));
 		}
 
-        #if sys
-		for (i in 0...customSongList.length)
-		{
-			var bruh:Array<String> = customSongList[i].split(':');
-			songs.push(new SongMetadata(bruh[0], Std.parseInt(bruh[2]), bruh[1], songModListIdk[i]));
+		#if sys
+        for (dir in ModPaths.getModFolders()) {
+			if (sys.FileSystem.exists('mods/' + dir + '/songlist.txt')) {
+				var songList = modTxtFile('mods/' + dir + '/songlist.txt');
+				for (i in 0...songList.length) {
+					var data:Array<String> = songList[i].split(":");
+					songs.push(new SongMetadata(data[0], Std.parseInt(data[2]), data[1]));
+				}
+			}
 		}
 		#end
 
@@ -161,12 +145,12 @@ class FreeplayState extends MusicBeatState
 		super.create();
 	}
 
-	public function addSong(songName:String, weekNum:Int, songCharacter:String, daMod:String)
+	public function addSong(songName:String, weekNum:Int, songCharacter:String)
 	{
-		songs.push(new SongMetadata(songName, weekNum, songCharacter, daMod));
+		songs.push(new SongMetadata(songName, weekNum, songCharacter));
 	}
 
-	public function addWeek(songs:Array<String>, weekNum:Int, ?songCharacters:Array<String>, daMod:String)
+	public function addWeek(songs:Array<String>, weekNum:Int, ?songCharacters:Array<String>)
 	{
 		if (songCharacters == null)
 			songCharacters = ['dad'];
@@ -174,7 +158,7 @@ class FreeplayState extends MusicBeatState
 		var num:Int = 0;
 		for (song in songs)
 		{
-			addSong(song, weekNum, songCharacters[num], daMod);
+			addSong(song, weekNum, songCharacters[num]);
 
 			if (songCharacters.length != 1)
 				num++;
@@ -316,6 +300,17 @@ class FreeplayState extends MusicBeatState
 			}
 		}
 	}
+
+	#if sys
+	function modTxtFile(path:String):Array<String>
+	{
+		var daList:Array<String> = sys.io.File.getContent(path).trim().split('\n');
+		for (i in 0...daList.length) {
+			daList[i] = daList[i].trim();
+		}
+		return daList;
+	}
+	#end
 }
 
 class SongMetadata
@@ -323,13 +318,11 @@ class SongMetadata
 	public var songName:String = "";
 	public var week:Int = 0;
 	public var songCharacter:String = "";
-	public var fromMod:String = "";
 
-	public function new(song:String, week:Int, songCharacter:String, fromMod:String)
+	public function new(song:String, week:Int, songCharacter:String)
 	{
 		this.songName = song;
 		this.week = week;
 		this.songCharacter = songCharacter;
-		this.fromMod = fromMod;
 	}
 }
