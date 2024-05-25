@@ -47,7 +47,7 @@ class WeekEditorState extends MusicBeatState {
 		txtTracklist.x -= FlxG.width * 0.35;
 
         if (FlxG.keys.justPressed.ESCAPE) {
-            FlxG.switchState(new ModState());
+            FlxG.switchState(new states.editors.EditorMenuState());
             FlxG.sound.playMusic(Paths.music('freakyMenu'));
         }
 
