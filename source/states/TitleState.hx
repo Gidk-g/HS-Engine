@@ -45,28 +45,19 @@ class TitleState extends MusicBeatState
 
 	override public function create():Void
 	{
+		Logger.init();
+		Config.load();
+		Highscore.load();
 		PlayerSettings.init();
 
 		curWacky = FlxG.random.getObject(getIntroTextShit());
 
 		super.create();
 
-		FlxG.save.bind('funkin', 'ninjamuffin99');
-
-		Config.load();
-
-		Highscore.load();
-
-		#if FREEPLAY
-		FlxG.switchState(new FreeplayState());
-		#elseif CHARTING
-		FlxG.switchState(new ChartingState());
-		#else
 		new FlxTimer().start(1, function(tmr:FlxTimer)
 		{
 			startIntro();
 		});
-		#end
 
 		#if desktop
 		DiscordClient.initialize();

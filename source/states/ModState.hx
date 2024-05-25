@@ -77,6 +77,8 @@ class ModState extends MusicBeatState {
         } else if (controls.DOWN_P) {
             selectedIndex = Std.int(Math.min(modGroup.members.length - 1, selectedIndex + 1));
             updateSelection();
+        } else if (FlxG.keys.justPressed.SEVEN) {
+            FlxG.switchState(new states.editors.EditorMenuState());
         } else if (controls.BACK) {
             FlxG.switchState(new MainMenuState());
         }

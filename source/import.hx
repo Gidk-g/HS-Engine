@@ -13,9 +13,6 @@ import substates.GameOverSubstate;
 import substates.MusicBeatSubstate;
 import substates.PauseSubState;
 
-// editors
-import states.editors.ChartingState;
-
 // game
 import game.Note;
 import game.Alphabet;
