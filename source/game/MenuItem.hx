@@ -14,7 +14,6 @@ class MenuItem extends FlxSpriteGroup
 	public var targetY:Float = 0;
 	public var week:FlxSprite;
 	public var flashingInt:Int = 0;
-	public var fileMissing:Bool = true;
 
 	public function new(x:Float, y:Float, texture:String)
 	{
@@ -36,13 +35,7 @@ class MenuItem extends FlxSpriteGroup
 			if (sys.FileSystem.exists(Paths.image('storymenu/' + fileName)))
 			{
 				week.loadGraphic(Paths.image('storymenu/' + fileName));
-				fileMissing = false;
 			}
-		}
-
-		if (fileMissing)
-		{
-			// week.visible = false;
 		}
 		#end
 	}

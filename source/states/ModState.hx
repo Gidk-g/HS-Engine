@@ -14,12 +14,13 @@ class ModState extends MusicBeatState {
     private var modGroup:FlxGroup;
     private var modList:FlxText;
     private var selectedIndex:Int;
+    private var editorHint:FlxText;
 
     override function create():Void {
         bg = new FlxBackdrop(Paths.image('menuDesat'));
         bg.color = 0xFFea71fd;
-		bg.velocity.set(-50, 0);
-		bg.y = 0;
+        bg.velocity.set(-50, 0);
+        bg.y = 0;
         add(bg);
 
         overlay = new FlxSprite(0, 0);
@@ -47,6 +48,13 @@ class ModState extends MusicBeatState {
 
         loadMods();
         selectedIndex = 0;
+
+        editorHint = new FlxText(FlxG.width - 320, FlxG.height - 30, 300, "Press 7 to go to the editor menu");
+        editorHint.setFormat("VCR OSD Mono", 16, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+        editorHint.borderSize = 1.0;
+        editorHint.scrollFactor.set();
+        add(editorHint);
+
         super.create();
     }
 
@@ -73,9 +81,11 @@ class ModState extends MusicBeatState {
     private function handleInput():Void {
         if (controls.UP_P) {
             selectedIndex = Std.int(Math.max(0, selectedIndex - 1));
+            FlxG.sound.play(Paths.sound('scrollMenu'));
             updateSelection();
         } else if (controls.DOWN_P) {
             selectedIndex = Std.int(Math.min(modGroup.members.length - 1, selectedIndex + 1));
+            FlxG.sound.play(Paths.sound('scrollMenu'));
             updateSelection();
         } else if (FlxG.keys.justPressed.SEVEN) {
             FlxG.switchState(new states.editors.EditorMenuState());
