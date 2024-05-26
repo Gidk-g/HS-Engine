@@ -7,11 +7,14 @@ import flixel.group.FlxSpriteGroup;
 import flixel.math.FlxMath;
 import flixel.util.FlxColor;
 
+using StringTools;
+
 class MenuItem extends FlxSpriteGroup
 {
 	public var targetY:Float = 0;
 	public var week:FlxSprite;
 	public var flashingInt:Int = 0;
+	public var fileMissing:Bool = true;
 
 	public function new(x:Float, y:Float, texture:String)
 	{
@@ -19,6 +22,29 @@ class MenuItem extends FlxSpriteGroup
 		week = new FlxSprite().loadGraphic(Paths.image('storymenu/' + texture));
 		antialiasing = true;
 		add(week);
+	}
+
+	public function changeGraphic(weekName:String)
+	{
+		#if sys
+		week.visible = true;
+
+		var fileName:String = weekName.trim();
+
+		if (fileName != null && fileName.length > 0)
+		{
+			if (sys.FileSystem.exists(Paths.image('storymenu/' + fileName)))
+			{
+				week.loadGraphic(Paths.image('storymenu/' + fileName));
+				fileMissing = false;
+			}
+		}
+
+		if (fileMissing)
+		{
+			// week.visible = false;
+		}
+		#end
 	}
 
 	private var isFlashing:Bool = false;

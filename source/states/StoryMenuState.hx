@@ -407,7 +407,7 @@ class StoryMenuState extends MusicBeatState
 	}
 
 	public function readWeekFile() {
-		var weeks = Json.parse(Assets.getText(Paths.json('weeks'))).weeks;
+		var weeks = Json.parse(Assets.getText(Paths.json('weeks/weeks'))).weeks;
 		for (i in 0...weeks.length) {
 			addWeek(cast weeks[i]);
 		}
@@ -417,10 +417,7 @@ class StoryMenuState extends MusicBeatState
 			if (sys.FileSystem.isDirectory('mods/$mod/data/weeks') == true) {
 				for (weekJson in sys.FileSystem.readDirectory('mods/$mod/data/weeks/')) {
 					if (weekJson != null && weekJson.contains('.json')) {
-						var customWeeks = Json.parse(sys.io.File.getContent('mods/$mod/data/weeks/' + weekJson)).weeks;
-						for (i in 0...customWeeks.length) {
-							addWeek(cast customWeeks[i]);
-						}
+						addWeek(cast Json.parse(sys.io.File.getContent('mods/$mod/data/weeks/' + weekJson)));
 					}
 				}
 			}

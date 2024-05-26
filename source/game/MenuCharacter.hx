@@ -33,20 +33,16 @@ class MenuCharacter extends FlxSprite
 				visible = false;
 				dontPlayAnim = true;
 			default:
-		        var rawJson = null;
-		        #if sys
-		        var moddyFile:String = ModPaths.data("weeks/characters/" + character);
-		        if(sys.FileSystem.exists(moddyFile)) {
-			        rawJson = sys.io.File.getContent(moddyFile);
-		        }
-		        #end
-		        if(rawJson == null) {
-			        #if sys
-			        rawJson = sys.io.File.getContent(Paths.json("week-characters/" + character));
-			        #else
-			        rawJson = Assets.getText(Paths.json("week-characters/" + character));
-			        #end
-		        }
+				#if sys
+				var path:String = ModPaths.data("weeks/characters/" + character);
+				if (!sys.FileSystem.exists(path))
+					path = Paths.json("weeks/characters/" + character);
+				if (!sys.FileSystem.exists(path))
+					path = Paths.json("weeks/characters/bf");
+				var rawJson:String = sys.io.File.getContent(path);
+				#else
+				var rawJson = Assets.getText(Paths.json("weeks/characters/" + character));
+				#end
 				var charFile:MenuChar = cast Json.parse(rawJson);
 				frames = Paths.getSparrowAtlas('week-characters/' + charFile.spritePath);
 				animation.addByPrefix('idle', charFile.idle, 24);
