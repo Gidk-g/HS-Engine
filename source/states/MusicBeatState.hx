@@ -35,7 +35,7 @@ class MusicBeatState extends FlxUIState
         #if sys
 		if (!curState.endsWith("PlayState")) {
 			if (sys.FileSystem.exists(ModPaths.script('data/states/${CoolUtil.formatClass(this).split('states/')[1]}'))) {
-				scriptState.loadScript('data/states/${CoolUtil.formatClass(this).split('states/')[1]}');
+				scriptState.loadScript(ModPaths.script('data/states/${CoolUtil.formatClass(this).split('states/')[1]}'));
 			}
 			scriptState.interp.scriptObject = this;
 

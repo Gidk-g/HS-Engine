@@ -58,7 +58,7 @@
 	],
 	"antialiasing": true,
 	"cameraOffset": [0, 0],
-	"characterOffset": [0, 0],
+	"characterOffset": [0, 100],
 	"spritePath": "Monster_Assets",
 	"healthIcon": "monster",
     "singDuration": 4,

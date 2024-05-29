@@ -768,37 +768,19 @@ class PlayState extends MusicBeatState
 					camPos.x += 600;
 					tweenCamIn();
 				}
-
-			case "spooky":
-				dad.y += 200;
-			case "monster":
-				dad.y += 100;
-			case 'monster-christmas':
-				dad.y += 130;
 			case 'dad':
 				camPos.x += 400;
 			case 'pico':
 				camPos.x += 600;
-				dad.y += 300;
-			case 'parents-christmas':
-				dad.x -= 500;
 			case 'senpai':
-				dad.x += 150;
-				dad.y += 360;
 				camPos.set(dad.getGraphicMidpoint().x + 300, dad.getGraphicMidpoint().y);
 			case 'senpai-angry':
-				dad.x += 150;
-				dad.y += 360;
 				camPos.set(dad.getGraphicMidpoint().x + 300, dad.getGraphicMidpoint().y);
 			case 'spirit':
-				dad.x -= 150;
-				dad.y += 100;
 				camPos.set(dad.getGraphicMidpoint().x + 300, dad.getGraphicMidpoint().y);
-			case 'tankman':
-				dad.y += 180;
 		}
 
-		boyfriend = new Boyfriend(770, 450, SONG.player1);
+		boyfriend = new Boyfriend(770, 100, SONG.player1);
 		boyfriend.x += boyfriend.characterOffset[0];
 		boyfriend.y += boyfriend.characterOffset[1];
 
@@ -1023,7 +1005,7 @@ class PlayState extends MusicBeatState
 				default:
 					#if sys
 					if (sys.FileSystem.exists(ModPaths.script("data/cutscenes/" + SONG.song.toLowerCase()))) {
-						script.loadScript("data/cutscenes/" + SONG.song.toLowerCase());
+						script.loadScript(ModPaths.script("data/cutscenes/" + SONG.song.toLowerCase()));
 						script.callFunction('startCutscene', []);
 					} else
 					#end
@@ -1050,12 +1032,16 @@ class PlayState extends MusicBeatState
 	#if sys
     function setScriptFunction() {
 		if (sys.FileSystem.exists(ModPaths.script("data/charts/" + SONG.song.toLowerCase() + "/script"))) {
-			script.loadScript("data/charts/" + SONG.song.toLowerCase() + "/script");
+			script.loadScript(ModPaths.script("data/charts/" + SONG.song.toLowerCase() + "/script"));
 		}
 
-		for (file in sys.FileSystem.readDirectory(ModPaths.modFolder("data/scripts/"))) {
-			if (sys.FileSystem.exists(ModPaths.script("data/scripts/" + file))) {
-				script.loadScript("data/scripts/" + file);
+		for (mod in ModPaths.getModFolders()) {
+			if (sys.FileSystem.isDirectory('mods/$mod/data/scripts') == true) {
+				for (file in sys.FileSystem.readDirectory('mods/$mod/data/scripts/')) {
+					if (file != null && file.contains('.hx')) {
+				        script.loadScript('mods/$mod/data/scripts/' + file);
+			        }
+				}
 			}
 		}
 

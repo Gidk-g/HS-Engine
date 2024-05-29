@@ -5,7 +5,7 @@ import flixel.FlxSprite;
 import flixel.group.FlxGroup.FlxTypedGroup;
 
 class EditorMenuState extends MusicBeatState {
-    var options:Array<String> = ['Character Editor', 'Week Editor', 'Chart Editor', 'Exit'];
+    var options:Array<String> = ['Character Editor', 'Stage Editor', 'Week Editor', 'Exit'];
 
     private static var curSelected:Int = 0;
     private var grpOptions:FlxTypedGroup<Alphabet>;
@@ -49,10 +49,10 @@ class EditorMenuState extends MusicBeatState {
         switch(label) {
             case 'Character Editor':
                 FlxG.switchState(new states.editors.character.CharacterEditorState());
+			case 'Stage Editor':
+				FlxG.switchState(new states.editors.stage.StageEditorState());
             case 'Week Editor':
                 FlxG.switchState(new states.editors.week.WeekEditorState());
-            case 'Chart Editor':
-                FlxG.switchState(new states.editors.charting.ChartingEditorState());
             case 'Exit':
                 FlxG.switchState(new ModState());
         }

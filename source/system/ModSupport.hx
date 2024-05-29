@@ -198,7 +198,7 @@ class ModScripts {
     }
 
     public function loadScript(path:String):Void {
-        var scriptContent:String = File.getContent(ModPaths.script(path));
+        var scriptContent:String = File.getContent(path);
         script = parser.parseString(scriptContent);
         interp.execute(script);
     }

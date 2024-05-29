@@ -35,7 +35,7 @@ class MusicBeatSubstate extends FlxSubState
 
         #if sys
 		if (sys.FileSystem.exists(ModPaths.script('data/substates/${CoolUtil.formatClass(this).split('substates/')[1]}'))) {
-			scriptSubstate.loadScript('data/substates/${CoolUtil.formatClass(this).split('substates/')[1]}');
+			scriptSubstate.loadScript(ModPaths.script('data/substates/${CoolUtil.formatClass(this).split('substates/')[1]}'));
 		}
 		scriptSubstate.interp.scriptObject = this;
 

@@ -317,9 +317,6 @@ class WeekEditorState extends MusicBeatState {
         Logger.log("Successfully saved file.");
     }
 
-    /**
-    * Called when the save file dialog is cancelled.
-    */
     function onSaveCancel(_):Void {
         _file.removeEventListener(#if desktop Event.SELECT #else Event.COMPLETE #end, onSaveComplete);
         _file.removeEventListener(Event.CANCEL, onSaveCancel);
@@ -327,9 +324,6 @@ class WeekEditorState extends MusicBeatState {
         _file = null;
     }
 
-    /**
-    * Called if there is an error while saving the gameplay recording.
-    */
     function onSaveError(_):Void {
         _file.removeEventListener(#if desktop Event.SELECT #else Event.COMPLETE #end, onSaveComplete);
         _file.removeEventListener(Event.CANCEL, onSaveCancel);

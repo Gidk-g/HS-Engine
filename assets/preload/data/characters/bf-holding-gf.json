@@ -113,7 +113,7 @@
 	],
 	"antialiasing": true,
 	"cameraOffset": [0, 0],
-	"characterOffset": [0, 0],
+	"characterOffset": [0, 350],
 	"spritePath": "bfAndGF",
 	"healthIcon": "bf",
     "singDuration": 4,

@@ -135,7 +135,7 @@
 	],
     "antialiasing": true,
 	"cameraOffset": [0, 0],
-	"characterOffset": [0, 0],
+	"characterOffset": [0, 180],
 	"spritePath": "tankmanCaptain",
 	"healthIcon": "tankman",
     "singDuration": 4,

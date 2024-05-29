@@ -70,7 +70,7 @@
 	"antialiasing": false,
 	"cameraOffset": [0, 0],
 	"characterOffset": [0, 0],
-	"spritePath": "weeb/gfPixel",
+	"spritePath": "gfPixel",
 	"healthIcon": "gf",
     "singDuration": 4,
 	"flipX": false,

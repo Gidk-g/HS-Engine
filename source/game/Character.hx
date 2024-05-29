@@ -41,11 +41,16 @@ class Character extends FlxSprite
 	{
 		super(x, y);
 
+		#if (haxe >= "4.0.0")
+		animOffsets = new Map();
+		#else
 		animOffsets = new Map<String, Array<Dynamic>>();
+		#end
+
 		curCharacter = character;
 		this.isPlayer = isPlayer;
 
-		loadCharacterJson();
+		loadCharacterJson(curCharacter);
 		recalculateDanceIdle();
 		dance();
 
@@ -80,30 +85,26 @@ class Character extends FlxSprite
 		}
 	}
 
-    public function loadCharacterJson()
+    public function loadCharacterJson(character:String)
 	{
-		var rawJson = null;
-
 		#if sys
-		var moddyFile:String = ModPaths.data("characters/" + curCharacter);
-		if(sys.FileSystem.exists(moddyFile)) {
-			rawJson = sys.io.File.getContent(moddyFile);
-		}
+		var path:String = ModPaths.data("characters/" + character);
+		if (!sys.FileSystem.exists(path))
+			path = Paths.json("characters/" + character);
+		if (!sys.FileSystem.exists(path))
+			path = Paths.json("characters/bf");
+		var rawJson:String = sys.io.File.getContent(path);
+		#else
+		var rawJson = Assets.getText(Paths.json("characters/" + character));
 		#end
-
-		if(rawJson == null) {
-			#if sys
-			rawJson = sys.io.File.getContent(Paths.json("characters/" + curCharacter));
-			#else
-			rawJson = Assets.getText(Paths.json("characters/" + curCharacter));
-			#end
-		}
 
 		var json:CharJson = cast Json.parse(rawJson);
 
-		if (Assets.exists(Paths.file("images/" + json.spritePath + ".txt", TEXT)))
-			frames = Paths.getPackerAtlas(json.spritePath);
-        else
+		if (Assets.exists(Paths.file("images/" + json.spritePath + ".txt", TEXT, "shared")))
+			frames = Paths.getPackerAtlas(json.spritePath, "shared");
+        if (Assets.exists(Paths.file("images/" + json.spritePath + ".xml", TEXT, "shared")))
+			frames = Paths.getSparrowAtlas(json.spritePath, "shared");
+		else
 			frames = Paths.getSparrowAtlas(json.spritePath);
 
 		imageFile = json.spritePath;
@@ -141,45 +142,48 @@ class Character extends FlxSprite
 
 	override function update(elapsed:Float)
 	{
-		if (!curCharacter.startsWith('bf'))
+		if(!debugMode && animation.curAnim != null)
 		{
-			if (animation.curAnim.name.startsWith('sing'))
+			if (!curCharacter.startsWith('bf'))
 			{
-				holdTimer += elapsed;
-			}
-
-			if (holdTimer >= Conductor.stepCrochet * 0.001 * singDuration)
-			{
-				dance();
-				holdTimer = 0;
-			}
-		}
-
-		switch(curCharacter)
-		{
-			case 'pico-speaker':
-				if(animationNotes.length > 0 && Conductor.songPosition > animationNotes[0][0])
+				if (animation.curAnim.name.startsWith('sing'))
 				{
-					var noteData:Int = 1;
-					if(animationNotes[0][1] > 2) noteData = 3;
-
-					noteData += FlxG.random.int(0, 1);
-					playAnim('shoot' + noteData, true);
-					animationNotes.shift();
+					holdTimer += elapsed;
 				}
-				if(animation.curAnim.finished) playAnim(animation.curAnim.name, false, false, animation.curAnim.frames.length - 3);
-		}
+	
+				if (holdTimer >= Conductor.stepCrochet * 0.001 * singDuration)
+				{
+					dance();
+					holdTimer = 0;
+				}
+			}
 
-		switch (curCharacter)
-		{
-			case 'gf':
-				if (animation.curAnim.name == 'hairFall' && animation.curAnim.finished)
-					playAnim('danceRight');
-		}
+			switch(curCharacter)
+			{
+				case 'pico-speaker':
+					if(animationNotes.length > 0 && Conductor.songPosition > animationNotes[0][0])
+					{
+						var noteData:Int = 1;
+						if(animationNotes[0][1] > 2) noteData = 3;
+	
+						noteData += FlxG.random.int(0, 1);
+						playAnim('shoot' + noteData, true);
+						animationNotes.shift();
+					}
+					if(animation.curAnim.finished) playAnim(animation.curAnim.name, false, false, animation.curAnim.frames.length - 3);
+			}
+		
+			switch (curCharacter)
+			{
+				case 'gf':
+					if (animation.curAnim.name == 'hairFall' && animation.curAnim.finished)
+						playAnim('danceRight');
+			}
 
-		if (animation.curAnim.finished && animation.getByName(animation.curAnim.name + '-loop') != null)
-		{
-			playAnim(animation.curAnim.name + '-loop');
+			if (animation.curAnim.finished && animation.getByName(animation.curAnim.name + '-loop') != null)
+			{
+				playAnim(animation.curAnim.name + '-loop');
+			}
 		}
 
 		super.update(elapsed);

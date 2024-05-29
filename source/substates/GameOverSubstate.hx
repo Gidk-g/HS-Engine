@@ -15,11 +15,11 @@ class GameOverSubstate extends MusicBeatSubstate
 
 	var stageSuffix:String = "";
 	var randomGameover:Int = 1;
+	var daBf:String = '';
 
 	public function new(x:Float, y:Float)
 	{
 		var daStage = PlayState.curStage;
-		var daBf:String = '';
 		switch (daStage)
 		{
 			case 'school' | 'schoolEvil':
@@ -36,6 +36,8 @@ class GameOverSubstate extends MusicBeatSubstate
 			case 'stress':
 				daBf = 'bf-holding-gf-dead';
 		}
+
+        PlayState.instance.script.interp.variables.set("daBf", daBf);
 
 		super();
 
