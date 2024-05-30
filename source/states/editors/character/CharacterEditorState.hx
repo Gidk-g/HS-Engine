@@ -109,6 +109,11 @@ class CharacterEditorState extends MusicBeatState {
 		textAnim.cameras = [camHUD];
 		add(textAnim);
 
+		ghostAnim = new FlxSprite();
+		ghostAnim.visible = false;
+		ghostAnim.alpha = 0.5;
+		add(ghostAnim);
+
 		charLayer = new FlxTypedGroup<Character>();
 		add(charLayer);
 
@@ -473,13 +478,6 @@ class CharacterEditorState extends MusicBeatState {
 
 		if (char != null)
 			char.kill();
-
-		if (ghostAnim != null)
-			ghostAnim.kill();
-		ghostAnim = new FlxSprite();
-		ghostAnim.visible = false;
-		ghostAnim.alpha = 0.5;
-		add(ghostAnim);
 
 		isDad = true;
 		if (characterToAdd.startsWith('bf'))
