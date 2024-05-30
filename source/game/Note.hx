@@ -34,11 +34,20 @@ class Note extends FlxSprite
 
 	private var earlyHitMult:Float = 0.5;
 
+	public var noteType(default, set):String = null;
+
 	public static var swagWidth:Float = 160 * 0.7;
 	public static var PURP_NOTE:Int = 0;
 	public static var GREEN_NOTE:Int = 2;
 	public static var BLUE_NOTE:Int = 1;
 	public static var RED_NOTE:Int = 3;
+
+	private function set_noteType(value:String):String {
+		if(noteData > -1 && noteType != value) {
+			noteType = value;
+		}
+		return value;
+	}
 
 	public function new(strumTime:Float, noteData:Int, ?prevNote:Note, ?sustainNote:Bool = false)
 	{

@@ -191,6 +191,8 @@ class PlayState extends MusicBeatState
 
     public var dialogueFile:Array<String> = [];
 
+	private var noteTypeMap:Map<String, Bool> = new Map<String, Bool>();
+
 	#if desktop
 	// Discord RPC variables
 	var storyDifficultyText:String = "";
@@ -875,6 +877,17 @@ class PlayState extends MusicBeatState
 
 		generateSong(SONG.song);
 
+		for (notetype in noteTypeMap.keys()) {
+			#if sys
+			if (sys.FileSystem.exists(ModPaths.script("data/notes/" + notetype))) {
+				script.loadScript(ModPaths.script("data/notes/" + notetype));
+			}
+			#end
+		}
+
+		noteTypeMap.clear();
+		noteTypeMap = null;
+
 		// add(strumLine);
 
 		camFollow = new FlxObject(0, 0, 1, 1);
@@ -1221,7 +1234,7 @@ class PlayState extends MusicBeatState
 		#if sys
 		if(!sys.FileSystem.exists(filepath))
 		#else
-		if(!OpenFlAssets.exists(filepath))
+		if(!Assets.exists(filepath))
 		#end
 		{
 			Logger.log('Warn: Couldnt find video file: ' + name);
@@ -1462,6 +1475,7 @@ class PlayState extends MusicBeatState
 
 				var swagNote:Note = new Note(daStrumTime, daNoteData, oldNote);
 				swagNote.sustainLength = songNotes[2];
+				swagNote.noteType = songNotes[3];
 				swagNote.scrollFactor.set(0, 0);
 
 				var susLength:Float = swagNote.sustainLength;
@@ -1475,6 +1489,7 @@ class PlayState extends MusicBeatState
 
 					var sustainNote:Note = new Note(daStrumTime + (Conductor.stepCrochet * susNote) + Conductor.stepCrochet, daNoteData, oldNote, true);
 					sustainNote.scrollFactor.set();
+					sustainNote.noteType = swagNote.noteType;
 					unspawnNotes.push(sustainNote);
 
 					sustainNote.mustPress = gottaHitNote;
@@ -1498,6 +1513,10 @@ class PlayState extends MusicBeatState
 				else if(Config.middleScroll)
 				{
 					swagNote.x += 310;
+				}
+
+				if(!noteTypeMap.exists(swagNote.noteType)) {
+					noteTypeMap.set(swagNote.noteType, true);
 				}
 			}
 			daBeats += 1;
@@ -1865,10 +1884,10 @@ class PlayState extends MusicBeatState
 
 		if (FlxG.keys.justPressed.SEVEN)
 		{
-			FlxG.switchState(new states.editors.charting.ChartingEditorState());
+			// FlxG.switchState(new states.editors.charting.ChartingEditorState());
 
 			#if desktop
-			DiscordClient.changePresence("Chart Editor", null, null, true);
+			//  DiscordClient.changePresence("Chart Editor", null, null, true);
 			#end
 		}
 

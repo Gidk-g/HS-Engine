@@ -45,6 +45,7 @@ class CharacterEditorState extends MusicBeatState {
 
 	var textAnim:FlxText;
 	var dumbTexts:FlxTypedGroup<FlxText>;
+	var charLayer:FlxTypedGroup<Character>;
 
 	private var camHUD:FlxCamera;
 	private var camGame:FlxCamera;
@@ -107,6 +108,11 @@ class CharacterEditorState extends MusicBeatState {
 		textAnim.scrollFactor.set();
 		textAnim.cameras = [camHUD];
 		add(textAnim);
+
+		charLayer = new FlxTypedGroup<Character>();
+		add(charLayer);
+
+		createCameraPointer();
 
 		loadChar();
 		loadCharDropDown();
@@ -463,6 +469,8 @@ class CharacterEditorState extends MusicBeatState {
 	function loadChar(updateAnimLists:Bool = true) {
 		loadCharJson(characterToAdd);
 
+		charLayer.clear();
+
 		if (char != null)
 			char.kill();
 
@@ -482,8 +490,7 @@ class CharacterEditorState extends MusicBeatState {
 		}
 		char.screenCenter();
 		char.debugMode = true;
-
-		add(char);
+		charLayer.add(char);
 
 		if (updateAnimLists)
 			genBoyOffsets();
@@ -491,7 +498,6 @@ class CharacterEditorState extends MusicBeatState {
 		camFollow.x = char.getMidpoint().x;
 		camFollow.y = char.getMidpoint().y;
 
-		createCameraPointer();
 		updateCharPosition();
 		updateCamPointPos();
 		reloadCharacterOptions();
