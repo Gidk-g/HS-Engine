@@ -710,18 +710,19 @@ class PlayState extends MusicBeatState
 			introSoundsSuffix = '-pixel';
 		}
 
-		switch (curStage)
-		{
-			case 'limo':
-				gfVersion = 'gf-car';
-			case 'mall' | 'mallEvil':
-				gfVersion = 'gf-christmas';
-			case 'school':
-				gfVersion = 'gf-pixel';
-			case 'schoolEvil':
-				gfVersion = 'gf-pixel';
-			case 'tank':
-				gfVersion = 'gf-tankmen';
+		if (SONG.gfVersion == null) {
+			switch (curStage) {
+				case 'limo':
+					gfVersion = 'gf-car';
+				case 'mall' | 'mallEvil':
+					gfVersion = 'gf-christmas';
+				case 'school' | 'schoolEvil':
+					gfVersion = 'gf-pixel';
+				case 'tank':
+					gfVersion = 'gf-tankmen';
+			}
+		} else {
+			gfVersion = SONG.gfVersion;
 		}
 
 		if (SONG.song.toLowerCase() == 'stress')
@@ -1056,6 +1057,10 @@ class PlayState extends MusicBeatState
 			        }
 				}
 			}
+		}
+
+		if (sys.FileSystem.exists(ModPaths.script("data/stages/" + SONG.song))) {
+			script.loadScript(ModPaths.script("data/stages/" + SONG.song));
 		}
 
 		script.interp.variables.set("add", function(value:FlxObject) {
