@@ -43,6 +43,7 @@ import system.Section;
 import system.Song;
 import system.Window;
 import system.CoolUtil;
+import system.Stage;
 
 #if sys
 import system.ModSupport;

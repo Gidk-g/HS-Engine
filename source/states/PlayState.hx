@@ -189,6 +189,8 @@ class PlayState extends MusicBeatState
 	public var script:ModScripts = new ModScripts();
 	#end
 
+	public var foreground:FlxTypedGroup<FlxSprite>;
+
     public var dialogueFile:Array<String> = [];
 
 	private var noteTypeMap:Map<String, Bool> = new Map<String, Bool>();
@@ -231,6 +233,7 @@ class PlayState extends MusicBeatState
 		Conductor.mapBPMChanges(SONG);
 		Conductor.changeBPM(SONG.bpm);
 
+		foreground = new FlxTypedGroup<FlxSprite>();
 		foregroundSprites = new FlxTypedGroup<BGSprite>();
 
 		switch (SONG.song.toLowerCase())
@@ -703,6 +706,13 @@ class PlayState extends MusicBeatState
               }
 
 		#if sys
+		if (sys.FileSystem.exists(ModPaths.data("stages/" + SONG.stage))) {
+			new Stage(sys.io.File.getContent(ModPaths.data("stages/" + SONG.stage)));
+			defaultCamZoom = Stage.stageZoom;
+		}
+		#end
+
+		#if sys
 		setScriptFunction();
 		#end
 
@@ -840,6 +850,17 @@ class PlayState extends MusicBeatState
 		dadGroup = new FlxTypedGroup<Character>();
 		gfGroup = new FlxTypedGroup<Character>();
 
+        #if sys
+		if (sys.FileSystem.exists(ModPaths.data("stages/" + SONG.stage))) {
+			boyfriend.x = Stage.bfPos[0];
+			boyfriend.y = Stage.bfPos[1];
+			gf.x = Stage.gfPos[0];
+			gf.y = Stage.gfPos[1];
+			dad.x = Stage.dadPos[0];
+			dad.y = Stage.dadPos[1];
+		}
+		#end
+
 		add(gfGroup);
 		gfGroup.add(gf);
 
@@ -853,6 +874,7 @@ class PlayState extends MusicBeatState
 		dadGroup.add(dad);
 		boyfriendGroup.add(boyfriend);
 
+		add(foreground);
 		add(foregroundSprites);
 
 		var doof:DialogueBox = new DialogueBox(false, dialogueFile);
@@ -1104,6 +1126,11 @@ class PlayState extends MusicBeatState
 			}
 			return true;
 			#end
+		});
+
+		script.interp.variables.set("getObject", function(object:String) {
+			var object:FlxSprite = Stage.objectMap.get(object);
+			return object;
 		});
 
 		script.interp.variables.set("camFollow", camFollow);
