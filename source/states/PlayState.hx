@@ -709,6 +709,9 @@ class PlayState extends MusicBeatState
 		if (sys.FileSystem.exists(ModPaths.data("stages/" + SONG.stage))) {
 			new Stage(sys.io.File.getContent(ModPaths.data("stages/" + SONG.stage)));
 			defaultCamZoom = Stage.stageZoom;
+			stageBg.alpha = 0;
+			stageFront.alpha = 0;
+			stageCurtains.alpha = 0;
 		}
 		#end
 
@@ -741,6 +744,16 @@ class PlayState extends MusicBeatState
 		gf = new Character(400, 130, gfVersion);
 		gf.scrollFactor.set(0.95, 0.95);
 
+		#if sys
+		if (sys.FileSystem.exists(ModPaths.data("stages/" + SONG.stage))) {
+			gf.x = Stage.gfPos[0];
+			gf.y = Stage.gfPos[1];
+		}
+		#end
+
+		gf.x += gf.characterOffset[0];
+		gf.y += gf.characterOffset[1];
+
 		switch (gfVersion)
 		{
 			case 'pico-speaker':
@@ -766,6 +779,14 @@ class PlayState extends MusicBeatState
 		}
 
 		dad = new Character(100, 100, SONG.player2);
+
+        #if sys
+		if (sys.FileSystem.exists(ModPaths.data("stages/" + SONG.stage))) {
+			dad.x = Stage.dadPos[0];
+			dad.y = Stage.dadPos[1];
+		}
+		#end
+
         dad.x += dad.characterOffset[0];
 		dad.y += dad.characterOffset[1];
 
@@ -794,6 +815,14 @@ class PlayState extends MusicBeatState
 		}
 
 		boyfriend = new Boyfriend(770, 100, SONG.player1);
+
+        #if sys
+		if (sys.FileSystem.exists(ModPaths.data("stages/" + SONG.stage))) {
+			boyfriend.x = Stage.bfPos[0];
+			boyfriend.y = Stage.bfPos[1];
+		}
+		#end
+
 		boyfriend.x += boyfriend.characterOffset[0];
 		boyfriend.y += boyfriend.characterOffset[1];
 
@@ -849,17 +878,6 @@ class PlayState extends MusicBeatState
 		boyfriendGroup = new FlxTypedGroup<Boyfriend>();
 		dadGroup = new FlxTypedGroup<Character>();
 		gfGroup = new FlxTypedGroup<Character>();
-
-        #if sys
-		if (sys.FileSystem.exists(ModPaths.data("stages/" + SONG.stage))) {
-			boyfriend.x = Stage.bfPos[0];
-			boyfriend.y = Stage.bfPos[1];
-			gf.x = Stage.gfPos[0];
-			gf.y = Stage.gfPos[1];
-			dad.x = Stage.dadPos[0];
-			dad.y = Stage.dadPos[1];
-		}
-		#end
 
 		add(gfGroup);
 		gfGroup.add(gf);
@@ -1081,8 +1099,8 @@ class PlayState extends MusicBeatState
 			}
 		}
 
-		if (sys.FileSystem.exists(ModPaths.script("data/stages/" + SONG.song))) {
-			script.loadScript(ModPaths.script("data/stages/" + SONG.song));
+		if (sys.FileSystem.exists(ModPaths.script("data/stages/" + SONG.stage))) {
+			script.loadScript(ModPaths.script("data/stages/" + SONG.stage));
 		}
 
 		script.interp.variables.set("add", function(value:FlxObject) {
