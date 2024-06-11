@@ -156,7 +156,7 @@ class FlxUIDropDownMenu extends FlxUIGroup implements IFlxUIWidget implements IF
 
 	public var callback:String->Void;
 
-	// private var _ui_control_callback:Bool->FlxUIDropDownMenuCustom->Void;
+	// private var _ui_control_callback:Bool->FlxUIDropDownMenu->Void;
 
 	/**
 	 * This creates a new dropdown menu.
@@ -388,7 +388,7 @@ class FlxUIDropDownMenu extends FlxUIGroup implements IFlxUIWidget implements IF
 		return t;
 	}
 
-	/*public function setUIControlCallback(UIControlCallback:Bool->FlxUIDropDownMenuCustom->Void):Void {
+	/*public function setUIControlCallback(UIControlCallback:Bool->FlxUIDropDownMenu->Void):Void {
 		_ui_control_callback = UIControlCallback;
 	}*/
 	public function changeLabelByIndex(i:Int, NewLabel:String):Void
@@ -546,7 +546,7 @@ class FlxUIDropDownMenu extends FlxUIGroup implements IFlxUIWidget implements IF
 	 *
 	 * @param	StringArray		The strings to use as data - used for both label and string ID.
 	 * @param	UseIndexID		Whether to use the integer index of the current string as ID.
-	 * @return	The StrIDLabel array ready to be used in FlxUIDropDownMenuCustom's constructor
+	 * @return	The StrIDLabel array ready to be used in FlxUIDropDownMenu's constructor
 	 */
 	public static function makeStrIdLabelArray(StringArray:Array<String>, UseIndexID:Bool = false):Array<StrNameLabel>
 	{
@@ -565,7 +565,7 @@ class FlxUIDropDownMenu extends FlxUIGroup implements IFlxUIWidget implements IF
 }
 
 /**
- * Header for a FlxUIDropDownMenuCustom
+ * Header for a FlxUIDropDownMenu
  */
 class FlxUIDropDownHeader extends FlxUIGroup
 {
@@ -585,7 +585,7 @@ class FlxUIDropDownHeader extends FlxUIGroup
 	public var button:FlxUISpriteButton;
 
 	/**
-	 * Creates a new dropdown header to be used in a FlxUIDropDownMenuCustom.
+	 * Creates a new dropdown header to be used in a FlxUIDropDownMenu.
 	 *
 	 * @param	Width	Width of the dropdown - only relevant when no back sprite was specified
 	 * @param	Back	Optional sprite to be placed in the background

@@ -41,7 +41,7 @@ class EditorMenuState extends MusicBeatState {
         if (controls.ACCEPT)
             openSelectedOption(options[curSelected]);
         if (controls.BACK)
-            FlxG.switchState(new MainMenuState());
+            FlxG.switchState(new ModState());
         super.update(elapsed);
     }
 

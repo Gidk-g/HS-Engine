@@ -7,7 +7,7 @@ typedef ObjectData = {
     var name:String;
     var position:Array<Float>;
     var image:String;
-    var scrollFactor:Array<Float>;
+    var scrollFactor:Float;
     var antialiasing:Bool;
     var alpha:Float;
     var layer:Int;
@@ -25,8 +25,7 @@ typedef StageJson = {
 class Stage {
     var stageFile:StageJson;
 
-    public static var stageZoom:Float = 1.05;
-
+    public static var stageZoom:Float = 0.9;
     public static var bfPos:Array<Float> = [770, 100];
     public static var gfPos:Array<Float> = [400, 130];
     public static var dadPos:Array<Float> = [100, 100];
@@ -62,7 +61,7 @@ class Stage {
             sprite.scale.set(stageFile.objects[i].scale, stageFile.objects[i].scale);
             sprite.antialiasing = stageFile.objects[i].antialiasing;
             sprite.setPosition(stageFile.objects[i].position[0], stageFile.objects[i].position[1]);
-            sprite.scrollFactor.set(stageFile.objects[i].scrollFactor[0], stageFile.objects[i].scrollFactor[1]);
+            sprite.scrollFactor.set(stageFile.objects[i].scrollFactor, stageFile.objects[i].scrollFactor);
             sprite.alpha = stageFile.objects[i].alpha;
             switch (stageFile.objects[i].layer) {
                 case 0:
