@@ -224,6 +224,9 @@ class StoryMenuState extends MusicBeatState
 		{
 			FlxG.sound.play(Paths.sound('cancelMenu'));
 			movedBack = true;
+			#if sys
+			scriptState.callFunction("goToMenu", []);
+			#end
 			FlxG.switchState(new MainMenuState());
 		}
 
@@ -413,15 +416,20 @@ class StoryMenuState extends MusicBeatState
 		}
 
         #if sys
-		for (mod in ModPaths.getModFolders()) {
-			if (sys.FileSystem.isDirectory('mods/$mod/data/weeks') == true) {
-				for (weekJson in sys.FileSystem.readDirectory('mods/$mod/data/weeks/')) {
-					if (weekJson != null && weekJson.contains('.json')) {
-						addWeek(cast Json.parse(sys.io.File.getContent('mods/$mod/data/weeks/' + weekJson)));
+		for (modFolder in ModPaths.getModFolders()) {
+			if (modFolder.enabled) {
+				var modFolderPath:String = 'mods/' + modFolder.folder + '/data/weeks/';
+				if (sys.FileSystem.isDirectory(modFolderPath)) {
+					for (weekJson in sys.FileSystem.readDirectory(modFolderPath)) {
+						if (weekJson != null && weekJson.endsWith('.json')) {
+							var jsonContent:String = sys.io.File.getContent(modFolderPath + weekJson);
+							var weekData:Dynamic = Json.parse(jsonContent);
+							addWeek(weekData);
+						}
 					}
 				}
 			}
-		}
+		}		
 		#end
 	}
 }

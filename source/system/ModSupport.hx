@@ -34,12 +34,11 @@ import sys.io.File;
 
 using StringTools;
 
-class ModSupport {
-    // lol
-}
+class ModSupport {}
 
 class ModPaths {
     public static var modDirectory:String = "mods/";
+    private static var modInfo:Array<{ folder:String, enabled:Bool }> = [];
 
     inline static public function image(path:String):String {
         return findFileInModFolders("images", path + ".png");
@@ -61,29 +60,94 @@ class ModPaths {
         return findFileInModFolders("", path);
     }
 
-    static private function findFileInModFolders(subfolder:String, path:String):String {
-        var fullPath:String = null;
-        for (modFolder in getModFolders()) {
-            fullPath = haxe.io.Path.join([Sys.getCwd(), modDirectory, modFolder, subfolder, path]);
-            if (FileSystem.exists(fullPath)) {
+	static private function findFileInModFolders(subfolder:String, path:String):String {
+		var fullPath:String = null;
+		for (modFolder in getModFolders()) {
+			if (modFolder.enabled) {
+				var folderPath:String = haxe.io.Path.join([Sys.getCwd(), modDirectory, modFolder.folder, subfolder, path]);
+				if (FileSystem.exists(folderPath)) {
+					fullPath = folderPath;
+					break;
+				}
+			}
+		}
+		return fullPath;
+	}
+
+	static public function getModFolders():Array<{ folder:String, enabled:Bool }> {
+		if (modInfo.length == 0) {
+			var modsFolder:String = modDirectory;
+			if (FileSystem.exists(modsFolder)) {
+				for (folder in FileSystem.readDirectory(modsFolder)) {
+					var folderPath = haxe.io.Path.join([modsFolder, folder]);
+					if (FileSystem.isDirectory(folderPath)) {
+						var exists = false;
+						for (info in modInfo) {
+							if (info.folder == folder) {
+								exists = true;
+								break;
+							}
+						}
+						if (!exists) {
+							modInfo.push({ folder: folder, enabled: true });
+						}
+					}
+				}
+			}
+		}
+		return modInfo;
+	}
+
+    static public function isModEnabled(folder:String):Bool {
+        for (info in modInfo) {
+            if (info.folder == folder) {
+                return info.enabled;
+            }
+        }
+        return false;
+    }
+
+    static public function toggleMod(folder:String, enable:Bool):Void {
+        for (modInfo in modInfo) {
+            if (modInfo.folder == folder) {
+                modInfo.enabled = enable;
                 break;
             }
         }
-        return fullPath;
+        saveModSettings();
     }
 
-    static public function getModFolders():Array<String> {
-        var modFolders:Array<String> = [];
-        var modsFolder:String = modDirectory;
-        if (FileSystem.exists(modsFolder)) {
-            for (folder in FileSystem.readDirectory(modsFolder)) {
-                var folderPath = haxe.io.Path.join([modsFolder, folder]);
-                if (FileSystem.isDirectory(folderPath) && !modFolders.contains(folder)) {
-                    modFolders.push(folder);
+    static public function saveModSettings():Void {
+        var savePath:String = "mod_settings.txt";
+        var file:sys.io.FileOutput = sys.io.File.write(savePath, false);
+
+        for (info in modInfo) {
+            file.writeString(info.folder + ":" + (info.enabled ? "1" : "0") + "\n");
+        }
+
+        file.close();
+    }
+
+    static private function loadModSettings():Void {
+        var savePath:String = "mod_settings.txt";
+
+        if (sys.FileSystem.exists(savePath)) {
+            var fileContent:String = sys.io.File.getContent(savePath);
+            var lines:Array<String> = fileContent.split("\n");
+
+            for (line in lines) {
+                var parts:Array<String> = line.split(":");
+                if (parts.length == 2) {
+                    var folder:String = parts[0].trim();
+                    var enabled:Bool = (parts[1].trim() == "1");
+                    modInfo.push({ folder: folder, enabled: enabled });
                 }
             }
         }
-        return modFolders;
+    }
+
+    static public function init():Void {
+        loadModSettings();
     }
 }
 

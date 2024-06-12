@@ -46,12 +46,15 @@ class FreeplayState extends MusicBeatState
 		}
 
 		#if sys
-        for (dir in ModPaths.getModFolders()) {
-			if (sys.FileSystem.exists('mods/' + dir + '/songlist.txt')) {
-				var songList = modTxtFile('mods/' + dir + '/songlist.txt');
-				for (i in 0...songList.length) {
-					var data:Array<String> = songList[i].split(":");
-					songs.push(new SongMetadata(data[0], Std.parseInt(data[2]), data[1]));
+		for (modFolder in ModPaths.getModFolders()) {
+			if (modFolder.enabled) {
+				var modFolderPath:String = 'mods/' + modFolder.folder;
+				if (sys.FileSystem.exists(modFolderPath + '/songlist.txt')) {
+				    var songList = modTxtFile(modFolderPath + '/songlist.txt');
+					for (i in 0...songList.length) {
+						var data:Array<String> = songList[i].split(":");
+			            songs.push(new SongMetadata(data[0], Std.parseInt(data[2]), data[1]));
+					}
 				}
 			}
 		}
@@ -201,6 +204,9 @@ class FreeplayState extends MusicBeatState
 
 		if (controls.BACK)
 		{
+			#if sys
+			scriptState.callFunction("goToMenu", []);
+			#end
 			FlxG.switchState(new MainMenuState());
 		}
 

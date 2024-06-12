@@ -47,6 +47,8 @@ class MusicBeatState extends FlxUIState
 				remove(value);
 			});
 
+			scriptState.interp.variables.set("controls", controls);
+
 			scriptState.interp.variables.set("curBeat", curBeat);
 			scriptState.interp.variables.set("curStep", curStep);
 

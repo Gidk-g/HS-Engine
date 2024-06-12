@@ -1089,12 +1089,15 @@ class PlayState extends MusicBeatState
 			script.loadScript(ModPaths.script("data/charts/" + SONG.song.toLowerCase() + "/script"));
 		}
 
-		for (mod in ModPaths.getModFolders()) {
-			if (sys.FileSystem.isDirectory('mods/$mod/data/scripts') == true) {
-				for (file in sys.FileSystem.readDirectory('mods/$mod/data/scripts/')) {
-					if (file != null && file.contains('.hx')) {
-				        script.loadScript('mods/$mod/data/scripts/' + file);
-			        }
+		for (modFolder in ModPaths.getModFolders()) {
+			if (modFolder.enabled) {
+				var modScriptFolderPath:String = 'mods/' + modFolder.folder + '/data/scripts/';
+				if (sys.FileSystem.exists(modScriptFolderPath)) {
+					for (file in sys.FileSystem.readDirectory(modScriptFolderPath)) {
+						if (file != null && file.endsWith('.hx')) {
+							script.loadScript(haxe.io.Path.join([modScriptFolderPath, file]));
+						}
+					}
 				}
 			}
 		}
@@ -1937,7 +1940,7 @@ class PlayState extends MusicBeatState
 			// FlxG.switchState(new states.editors.charting.ChartingEditorState());
 
 			#if desktop
-			//  DiscordClient.changePresence("Chart Editor", null, null, true);
+			// DiscordClient.changePresence("Chart Editor", null, null, true);
 			#end
 		}
 

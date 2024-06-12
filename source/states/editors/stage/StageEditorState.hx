@@ -370,60 +370,63 @@ class StageEditorState extends MusicBeatState {
 
 	function loadStageDropDown() {
 		var loadedStages:Map<String, Bool> = new Map();
-
-		#if sys
 		stageList = [];
-		var dirs:Array<String> = [];
 
-		for (mod in ModPaths.getModFolders()) {
-			dirs.push('mods/$mod/data/stages/');
-		}
-
-		for (i in 0...dirs.length) {
-			var dir:String = dirs[i];
-			if (sys.FileSystem.exists(dir)) {
-				for (i in sys.FileSystem.readDirectory(dir)) {
-					var path = haxe.io.Path.join([dir, i]);
-					if (!sys.FileSystem.isDirectory(path) && i.endsWith('.json')) {
-						var checkChar:String = i.substr(0, i.length - 5);
-						if (!loadedStages.exists(checkChar)) {
-							stageList.push(checkChar);
-							loadedStages.set(checkChar, true);
+		for (modFolder in ModPaths.getModFolders()) {
+			if (modFolder.enabled) {
+				var modFolderPath:String = 'mods/' + modFolder.folder + '/data/stages/';
+				if (sys.FileSystem.exists(modFolderPath)) {
+					for (stageJson in sys.FileSystem.readDirectory(modFolderPath)) {
+						var path:String = haxe.io.Path.join([modFolderPath, stageJson]);
+						if (!sys.FileSystem.isDirectory(path) && stageJson.endsWith('.json')) {
+							var checkStage:String = stageJson.substr(0, stageJson.length - 5);
+							if (!loadedStages.exists(checkStage)) {
+								stageList.push(checkStage);
+								loadedStages.set(checkStage, true);
+							}
 						}
 					}
 				}
 			}
 		}
 
-		if (stageList.length == 0)
+		if (stageList.length == 0) {
 			stageList.push('<NO STAGES>');
-		#end
+		}
 	}
 
 	function loadCharDropDown() {
 		var loadedCharacters:Map<String, Bool> = new Map();
+		charList = [];
 
 		#if sys
-		charList = [];
-		var dirs:Array<String> = [];
-
-		for (mod in ModPaths.getModFolders()) {
-			dirs.push('mods/$mod/data/characters/');
+		for (modFolder in ModPaths.getModFolders()) {
+			if (modFolder.enabled) {
+				var modFolderPath:String = 'mods/' + modFolder.folder + '/data/characters/';
+				if (sys.FileSystem.exists(modFolderPath)) {
+					for (charJson in sys.FileSystem.readDirectory(modFolderPath)) {
+						var path:String = haxe.io.Path.join([modFolderPath, charJson]);
+						if (!sys.FileSystem.isDirectory(path) && charJson.endsWith('.json')) {
+							var checkChar:String = charJson.substr(0, charJson.length - 5);
+							if (!loadedCharacters.exists(checkChar)) {
+								charList.push(checkChar);
+								loadedCharacters.set(checkChar, true);
+							}
+						}
+					}
+				}
+			}
 		}
 
-		dirs.push(Paths.getPreloadPath('data/characters/'));
-
-		for (i in 0...dirs.length) {
-			var dir:String = dirs[i];
-			if (sys.FileSystem.exists(dir)) {
-				for (i in sys.FileSystem.readDirectory(dir)) {
-					var path = haxe.io.Path.join([dir, i]);
-					if (!sys.FileSystem.isDirectory(path) && i.endsWith('.json')) {
-						var checkChar:String = i.substr(0, i.length - 5);
-						if (!loadedCharacters.exists(checkChar)) {
-							charList.push(checkChar);
-							loadedCharacters.set(checkChar, true);
-						}
+		var defaultFolderPath:String = Paths.getPreloadPath('data/characters/');
+		if (sys.FileSystem.exists(defaultFolderPath)) {
+			for (charJson in sys.FileSystem.readDirectory(defaultFolderPath)) {
+				var path:String = haxe.io.Path.join([defaultFolderPath, charJson]);
+				if (!sys.FileSystem.isDirectory(path) && charJson.endsWith('.json')) {
+					var checkChar:String = charJson.substr(0, charJson.length - 5);
+					if (!loadedCharacters.exists(checkChar)) {
+						charList.push(checkChar);
+						loadedCharacters.set(checkChar, true);
 					}
 				}
 			}

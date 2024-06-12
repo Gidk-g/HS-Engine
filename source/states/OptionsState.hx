@@ -48,8 +48,12 @@ class OptionsState extends MusicBeatState {
 			changeSelection(1);
 		if (controls.ACCEPT)
 			openSelectedOption(options[curSelected]);
-		if (controls.BACK)
+		if (controls.BACK) {
+			#if sys
+			scriptState.callFunction("goToMenu", []);
+			#end
             FlxG.switchState(new MainMenuState());
+		}
 		super.update(elapsed);
     }
 
@@ -60,6 +64,9 @@ class OptionsState extends MusicBeatState {
 			case 'Controls':
 				openSubState(new substates.KeyBindMenu());
 			case 'Exit':
+				#if sys
+				scriptState.callFunction("goToMenu", []);
+				#end
                 FlxG.switchState(new MainMenuState());
 		}
 	}

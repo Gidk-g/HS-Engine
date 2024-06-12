@@ -59,17 +59,28 @@ class ModState extends MusicBeatState {
     }
 
     private function loadMods():Void {
-        var modFolders:Array<String> = ModPaths.getModFolders();
+        var modFolders:Array<{ folder:String, enabled:Bool }> = ModPaths.getModFolders();
         if (modFolders.length > 0) {
             for (modFolder in modFolders) {
-                var modText:FlxText = new FlxText(50, 100 + 50 * modGroup.members.length, 1180, "- " + modFolder);
+                var modText:FlxText = new FlxText(50, 100 + 50 * modGroup.members.length, 1180, "- " + modFolder.folder);
                 modText.setFormat("VCR OSD Mono", 24, FlxColor.WHITE, LEFT, FlxTextBorderStyle.NONE);
+                modText.alpha = ModPaths.isModEnabled(modFolder.folder) ? 1.0 : 0.5;
                 modText.scrollFactor.set();
                 modGroup.add(modText);
             }
         } else {
             modList.text = "No mods found.";
         }
+    }
+
+    private function toggleMod(folder:String):Void {
+        ModPaths.toggleMod(folder, !ModPaths.isModEnabled(folder));
+        reloadMods();
+    }
+    
+    private function reloadMods():Void {
+        modGroup.clear();
+        loadMods();
     }
 
     override function update(elapsed:Float):Void {
@@ -90,7 +101,13 @@ class ModState extends MusicBeatState {
         } else if (FlxG.keys.justPressed.SEVEN) {
             FlxG.switchState(new states.editors.EditorMenuState());
         } else if (controls.BACK) {
+			scriptState.callFunction("goToMenu", []);
             FlxG.switchState(new MainMenuState());
+        } else if (controls.ACCEPT) {
+            var modFolders:Array<{ folder:String, enabled:Bool }> = ModPaths.getModFolders();
+            if (selectedIndex >= 0 && selectedIndex < modFolders.length) {
+                toggleMod(modFolders[selectedIndex].folder);
+            }
         }
     }
 

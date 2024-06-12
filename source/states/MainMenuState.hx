@@ -20,21 +20,25 @@ using StringTools;
 
 class MainMenuState extends MusicBeatState
 {
-	var curSelected:Int = 0;
-	var menuItems:FlxTypedGroup<FlxSprite>;
+	public var curSelected:Int = 0;
+	public var menuItems:FlxTypedGroup<FlxSprite>;
 	#if sys
-	var optionShit:Array<String> = ['story_mode', 'freeplay', 'mods', 'options'];
+	public var optionShit:Array<String> = ['story_mode', 'freeplay', 'mods', 'options'];
 	#else
-	var optionShit:Array<String> = ['story_mode', 'freeplay', 'options'];
+	public var optionShit:Array<String> = ['story_mode', 'freeplay', 'options'];
 	#end
-	var magenta:FlxSprite;
-	var camFollow:FlxObject;
+	public var magenta:FlxSprite;
+	public var camFollow:FlxObject;
 
 	override function create()
 	{
 		#if desktop
 		// Updating Discord Rich Presence
 		DiscordClient.changePresence("In the Menus", null);
+		#end
+
+        #if sys
+		scriptState.interp.variables.set("menu", this);
 		#end
 
 		transIn = FlxTransitionableState.defaultTransIn;
