@@ -34,6 +34,8 @@ This is the repository of Friday Night Funkin': HS Engine.
 
 ## Build instructions
 
+**Warning: Make sure to use Haxe version 4.2.5 as versions like 4.3.4 will not work properly with this engine.**
+
 First you need to install Haxe and HaxeFlixel.
 1. [Install Haxe 4.2.5](https://haxe.org/download/version/4.2.5/) (Download 4.2.5 instead of 4.1.5, seriously stop using Haxe 4.1.5, it misses a lot of stuffs)
 2. Download [git-scm](https://git-scm.com/downloads). Works for Windows, Mac, and Linux, just select your build.
