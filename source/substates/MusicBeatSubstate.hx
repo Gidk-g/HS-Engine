@@ -34,8 +34,18 @@ class MusicBeatSubstate extends FlxSubState
 		curSubstate = CoolUtil.formatClass(this, false);
 
         #if sys
-		if (sys.FileSystem.exists(ModPaths.script('data/substates/${CoolUtil.formatClass(this).split('substates/')[1]}'))) {
-			scriptSubstate.loadScript(ModPaths.script('data/substates/${CoolUtil.formatClass(this).split('substates/')[1]}'));
+		for (mod in ModPaths.getModFolders()) {
+			if (mod.enabled && sys.FileSystem.isDirectory('mods/' + mod.folder + '/data/substates')) {
+				for (file in sys.FileSystem.readDirectory('mods/' + mod.folder + '/data/substates/')) {
+					if (file != null && file.endsWith('.hx')) {
+						var substateName:String = CoolUtil.formatClass(this).split('substates/')[1];
+						var filePath:String = 'mods/' + mod.folder + '/data/substates/' + file;
+						if (file == substateName + ".hx" && sys.FileSystem.exists(filePath)) {
+							scriptSubstate.loadScript(filePath);
+						}
+					}
+				}
+			}
 		}
 		scriptSubstate.interp.scriptObject = this;
 

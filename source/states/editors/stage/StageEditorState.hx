@@ -372,6 +372,7 @@ class StageEditorState extends MusicBeatState {
 		var loadedStages:Map<String, Bool> = new Map();
 		stageList = [];
 
+		#if sys
 		for (modFolder in ModPaths.getModFolders()) {
 			if (modFolder.enabled) {
 				var modFolderPath:String = 'mods/' + modFolder.folder + '/data/stages/';
@@ -389,6 +390,7 @@ class StageEditorState extends MusicBeatState {
 				}
 			}
 		}
+		#end
 
 		if (stageList.length == 0) {
 			stageList.push('<NO STAGES>');
