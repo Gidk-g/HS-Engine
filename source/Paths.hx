@@ -83,6 +83,28 @@ class Paths
 		return getPath('data/$key.json', TEXT, library);
 	}
 
+	inline static public function fragShader(key:String, ?library:String)
+    {
+		#if sys
+		var file:String = ModPaths.modFolder('data/shaders/$key.frag');
+		if(sys.FileSystem.exists(file)) {
+			return file;
+		}
+		#end
+		return getPath('data/shaders/$key.frag', TEXT, library);
+	}
+
+	inline static public function vertShader(key:String, ?library:String)
+    {
+		#if sys
+		var file:String = ModPaths.modFolder('data/shaders/$key.vert');
+		if(sys.FileSystem.exists(file)) {
+			return file;
+		}
+		#end
+		return getPath('data/shaders/$key.vert', TEXT, library);
+	}
+
 	static public function sound(key:String, ?library:String)
 	{
 		return getPath('sounds/$key.$SOUND_EXT', SOUND, library);

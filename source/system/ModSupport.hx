@@ -1,5 +1,7 @@
 package system;
 
+import haxe.zip.Reader;
+import cpp.vm.Gc;
 #if sys
 import haxe.Json;
 import flixel.FlxG;
@@ -112,10 +114,10 @@ class ModPaths {
         for (modInfo in modInfo) {
             if (modInfo.folder == folder) {
                 modInfo.enabled = enable;
+				saveModSettings();
                 break;
             }
         }
-        saveModSettings();
     }
 
     static public function saveModSettings():Void {
@@ -217,6 +219,9 @@ class ModScripts {
 		#end
 		interp.variables.set('BGSprite', BGSprite);
 		interp.variables.set('Modchart', ModchartAPI);
+		interp.variables.set("FunkinShader", FunkinShader);
+		interp.variables.set("CustomShader", CustomShader);
+        interp.variables.set("window", lime.app.Application.current.window);
         interp.variables.set("FlxColor", system.classes.FlxColorHelper);
         interp.variables.set("FlxKey", system.classes.FlxKeyHelper);
         interp.variables.set("BlendMode", system.classes.BlendModeHelper);
@@ -376,6 +381,9 @@ class ModScriptState extends MusicBeatState {
 		#end
 		interp.variables.set('BGSprite', BGSprite);
 		interp.variables.set('Modchart', ModchartAPI);
+		interp.variables.set("FunkinShader", FunkinShader);
+		interp.variables.set("CustomShader", CustomShader);
+        interp.variables.set("window", lime.app.Application.current.window);
         interp.variables.set("FlxColor", system.classes.FlxColorHelper);
         interp.variables.set("FlxKey", system.classes.FlxKeyHelper);
         interp.variables.set("BlendMode", system.classes.BlendModeHelper);
@@ -549,6 +557,9 @@ class ModScriptSubstate extends MusicBeatSubstate {
 		#end
 		interp.variables.set('BGSprite', BGSprite);
 		interp.variables.set('Modchart', ModchartAPI);
+		interp.variables.set("FunkinShader", FunkinShader);
+		interp.variables.set("CustomShader", CustomShader);
+        interp.variables.set("window", lime.app.Application.current.window);
         interp.variables.set("FlxColor", system.classes.FlxColorHelper);
         interp.variables.set("FlxKey", system.classes.FlxKeyHelper);
         interp.variables.set("BlendMode", system.classes.BlendModeHelper);

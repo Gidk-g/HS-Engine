@@ -28,6 +28,8 @@ import game.MenuCharacter;
 import game.MenuItem;
 
 // shaders
+import shaders.CustomShader;
+import shaders.FunkinShader;
 import shaders.BlendModeEffect;
 import shaders.OverlayShader;
 import shaders.WiggleEffect;
