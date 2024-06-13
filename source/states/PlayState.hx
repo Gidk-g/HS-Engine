@@ -47,10 +47,7 @@ import openfl.filters.ShaderFilter;
 import flash.media.Sound;
 
 #if VIDEOS
-#if (hxCodec >= "3.0.0") import hxcodec.flixel.FlxVideo as VideoHandler;
-#elseif (hxCodec >= "2.6.1") import hxcodec.VideoHandler as VideoHandler;
-#elseif (hxCodec == "2.6.0") import VideoHandler;
-#else import vlc.MP4Handler as VideoHandler; #end
+import hxvlc.flixel.FlxVideo;
 #end
 
 using StringTools;
@@ -1295,23 +1292,16 @@ class PlayState extends MusicBeatState
 			return;
 		}
 
-		var video:VideoHandler = new VideoHandler();
-			#if (hxCodec >= "3.0.0")
-			video.play(filepath);
-			video.onEndReached.add(function()
-			{
-				video.dispose();
-				startAndEnd();
-				return;
-			}, true);
-			#else
-			video.playVideo(filepath);
-			video.finishCallback = function()
-			{
-				startAndEnd();
-				return;
-			}
-			#end
+		var video:FlxVideo = new FlxVideo();
+		// Recent versions
+		video.load(filepath);
+		video.onEndReached.add(function()
+		{
+			video.dispose();
+			startAndEnd();
+			return;
+		}, true);
+		video.play();
 		#else
 		Logger.log('Warn: Platform not supported!');
 		startAndEnd();

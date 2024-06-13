@@ -120,7 +120,7 @@
 	<haxelib name="flixel-ui" />
 	<haxelib name="faxe" if='switch'/>
 	<haxelib name="discord_rpc" if="desktop"/>
-	<haxelib name="hxCodec" if="VIDEOS"/>
+	<haxelib name="hxvlc" if="VIDEOS"/>
 
 	<haxedef name="hscriptPos" />
 	<haxeflag name="-dce" value="no"/>

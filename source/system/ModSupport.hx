@@ -28,10 +28,7 @@ import sys.FileSystem;
 import sys.io.File;
 
 #if VIDEOS
-#if (hxCodec >= "3.0.0") import hxcodec.flixel.FlxVideo as VideoHandler;
-#elseif (hxCodec >= "2.6.1") import hxcodec.VideoHandler as VideoHandler;
-#elseif (hxCodec == "2.6.0") import VideoHandler;
-#else import vlc.MP4Handler as VideoHandler; #end
+import hxvlc.flixel.FlxVideo;
 #end
 
 using StringTools;
@@ -215,7 +212,8 @@ class ModScripts {
         interp.variables.set("MusicBeatState", MusicBeatState);
         interp.variables.set("MusicBeatSubstate", MusicBeatSubstate);
 		#if VIDEOS
-		interp.variables.set('VideoHandler', VideoHandler);
+		interp.variables.set('VideoHandler', FlxVideo);
+		interp.variables.set('FlxVideo', FlxVideo);
 		#end
 		interp.variables.set('BGSprite', BGSprite);
 		interp.variables.set('Modchart', ModchartAPI);
@@ -377,7 +375,8 @@ class ModScriptState extends MusicBeatState {
         interp.variables.set("MusicBeatState", MusicBeatState);
         interp.variables.set("MusicBeatSubstate", MusicBeatSubstate);
 		#if VIDEOS
-		interp.variables.set('VideoHandler', VideoHandler);
+		interp.variables.set('VideoHandler', FlxVideo);
+		interp.variables.set('FlxVideo', FlxVideo);
 		#end
 		interp.variables.set('BGSprite', BGSprite);
 		interp.variables.set('Modchart', ModchartAPI);
@@ -553,7 +552,8 @@ class ModScriptSubstate extends MusicBeatSubstate {
         interp.variables.set("MusicBeatState", MusicBeatState);
         interp.variables.set("MusicBeatSubstate", MusicBeatSubstate);
 		#if VIDEOS
-		interp.variables.set('VideoHandler', VideoHandler);
+		interp.variables.set('VideoHandler', FlxVideo);
+		interp.variables.set('FlxVideo', FlxVideo);
 		#end
 		interp.variables.set('BGSprite', BGSprite);
 		interp.variables.set('Modchart', ModchartAPI);
