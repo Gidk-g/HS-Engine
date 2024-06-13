@@ -26,6 +26,11 @@
 			"version": "2.4.0"
 		},
 		{
+			"name": "hxcpp",
+			"type": "haxelib",
+			"version": "4.3.2"
+		},
+		{
 			"name": "hscript-improved",
 			"type": "git",
 			"dir": null,
