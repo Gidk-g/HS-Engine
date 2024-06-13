@@ -29,6 +29,7 @@ import sys.io.File;
 
 #if VIDEOS
 import hxvlc.flixel.FlxVideo;
+import hxvlc.flixel.FlxVideoSprite;
 #end
 
 using StringTools;
@@ -207,13 +208,13 @@ class ModScripts {
 		interp.variables.set("Conductor", Conductor);
 		interp.variables.set("Note", Note);
 		interp.variables.set("Config", Config);
-		interp.variables.set("Logger", Logger);
         interp.variables.set("ModPaths", ModPaths);
         interp.variables.set("MusicBeatState", MusicBeatState);
         interp.variables.set("MusicBeatSubstate", MusicBeatSubstate);
 		#if VIDEOS
 		interp.variables.set('VideoHandler', FlxVideo);
 		interp.variables.set('FlxVideo', FlxVideo);
+		interp.variables.set('FlxVideoSprite', FlxVideoSprite);
 		#end
 		interp.variables.set('BGSprite', BGSprite);
 		interp.variables.set('Modchart', ModchartAPI);
@@ -370,13 +371,13 @@ class ModScriptState extends MusicBeatState {
         interp.variables.set("controls", controls);
 		interp.variables.set("Note", Note);
 		interp.variables.set("Config", Config);
-		interp.variables.set("Logger", Logger);
         interp.variables.set("ModPaths", ModPaths);
         interp.variables.set("MusicBeatState", MusicBeatState);
         interp.variables.set("MusicBeatSubstate", MusicBeatSubstate);
 		#if VIDEOS
 		interp.variables.set('VideoHandler', FlxVideo);
 		interp.variables.set('FlxVideo', FlxVideo);
+		interp.variables.set('FlxVideoSprite', FlxVideoSprite);
 		#end
 		interp.variables.set('BGSprite', BGSprite);
 		interp.variables.set('Modchart', ModchartAPI);
@@ -391,6 +392,7 @@ class ModScriptState extends MusicBeatState {
         interp.variables.set("FlxTextBorderStyle", system.classes.FlxTextBorderStyleHelper);
         interp.variables.set("StringHelper", system.classes.StringHelper);
 
+	    interp.variables.set("controls", controls);
 	    interp.variables.set("curBeat", curBeat);
 		interp.variables.set("curStep", curStep);
 
@@ -547,13 +549,13 @@ class ModScriptSubstate extends MusicBeatSubstate {
 		interp.variables.set("Conductor", Conductor);
 		interp.variables.set("Note", Note);
 		interp.variables.set("Config", Config);
-		interp.variables.set("Logger", Logger);
         interp.variables.set("ModPaths", ModPaths);
         interp.variables.set("MusicBeatState", MusicBeatState);
         interp.variables.set("MusicBeatSubstate", MusicBeatSubstate);
 		#if VIDEOS
 		interp.variables.set('VideoHandler', FlxVideo);
 		interp.variables.set('FlxVideo', FlxVideo);
+		interp.variables.set('FlxVideoSprite', FlxVideoSprite);
 		#end
 		interp.variables.set('BGSprite', BGSprite);
 		interp.variables.set('Modchart', ModchartAPI);
@@ -568,6 +570,7 @@ class ModScriptSubstate extends MusicBeatSubstate {
         interp.variables.set("FlxTextBorderStyle", system.classes.FlxTextBorderStyleHelper);
         interp.variables.set("StringHelper", system.classes.StringHelper);
 
+	    interp.variables.set("controls", controls);
 	    interp.variables.set("curBeat", curBeat);
 		interp.variables.set("curStep", curStep);
 
