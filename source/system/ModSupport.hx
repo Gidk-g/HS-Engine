@@ -94,6 +94,8 @@ class ModPaths {
                         }
                     }
                 }
+                modInfo = modInfo.filter(info -> FileSystem.exists(haxe.io.Path.join([modsFolder, info.folder])));
+                saveModSettings();
             }
         }
         return modInfo;
