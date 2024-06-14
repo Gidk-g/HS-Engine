@@ -12,9 +12,15 @@ class ModState extends MusicBeatState {
     private var bg:FlxBackdrop;
     private var overlay:FlxSprite;
     private var modGroup:FlxGroup;
+
     private var modList:FlxText;
     private var selectedIndex:Int;
     private var editorHint:FlxText;
+
+    private var scrollOffset:Float = 0;
+    private var targetScrollOffset:Float = 0;
+    private var scrollSpeed:Float = 5;
+    private var maxScrollOffset:Float = 0;
 
     override function create():Void {
         bg = new FlxBackdrop(Paths.image('menuDesat'));
@@ -71,6 +77,7 @@ class ModState extends MusicBeatState {
         } else {
             modList.text = "No mods found.";
         }
+        maxScrollOffset = Math.max(0, (modGroup.members.length * 50) - FlxG.height + 150);
     }
 
     private function toggleMod(folder:String):Void {
@@ -86,6 +93,7 @@ class ModState extends MusicBeatState {
     override function update(elapsed:Float):Void {
         super.update(elapsed);
         updateSelection();
+        updateScroll();
         handleInput();
     }
 
@@ -93,20 +101,42 @@ class ModState extends MusicBeatState {
         if (controls.UP_P) {
             selectedIndex = Std.int(Math.max(0, selectedIndex - 1));
             FlxG.sound.play(Paths.sound('scrollMenu'));
+            if (scrollOffset > 0) {
+                targetScrollOffset = Math.max(0, targetScrollOffset - 50);
+            }
+            updateScroll();
             updateSelection();
         } else if (controls.DOWN_P) {
             selectedIndex = Std.int(Math.min(modGroup.members.length - 1, selectedIndex + 1));
             FlxG.sound.play(Paths.sound('scrollMenu'));
+            if (scrollOffset < maxScrollOffset) {
+                targetScrollOffset = Math.min(maxScrollOffset, targetScrollOffset + 50);
+            }
+            updateScroll();
             updateSelection();
         } else if (FlxG.keys.justPressed.SEVEN) {
             FlxG.switchState(new states.editors.EditorMenuState());
         } else if (controls.BACK) {
-			scriptState.callFunction("goToMenu", []);
+            scriptState.callFunction("goToMenu", []);
             FlxG.switchState(new MainMenuState());
         } else if (controls.ACCEPT) {
             var modFolders:Array<{ folder:String, enabled:Bool }> = ModPaths.getModFolders();
             if (selectedIndex >= 0 && selectedIndex < modFolders.length) {
                 toggleMod(modFolders[selectedIndex].folder);
+            }
+        }
+
+        targetScrollOffset = Math.max(0, Math.min(targetScrollOffset, maxScrollOffset));
+    }
+
+    private function updateScroll():Void {
+        if (scrollOffset != targetScrollOffset) {
+            var delta:Float = (targetScrollOffset - scrollOffset) * 0.1;
+            scrollOffset += delta;
+            modList.y = 50 - scrollOffset;
+            for (i in 0...modGroup.members.length) {
+                var modText:FlxText = cast(modGroup.members[i], FlxText);
+                modText.y = 100 + (50 * i) - scrollOffset;
             }
         }
     }
