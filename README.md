@@ -1,8 +1,6 @@
 # HS Engine
 
-<p style="margin-top: -100px;">
-  <img src="docs/img/hs-engine.png" width="500" height="500">
-</p>
+<img src="docs/img/hs-engine.png">
 
 This is the repository of Friday Night Funkin': HS Engine.
 
