@@ -1,6 +1,6 @@
 # HS Engine
 
-![Logo](docs/img/hs-engine.png)
+<img src="docs/img/hs-engine.png" style="margin-left: -50px;">
 
 This is the repository of Friday Night Funkin': HS Engine.
 
