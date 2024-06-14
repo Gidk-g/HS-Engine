@@ -185,6 +185,7 @@ class ModScripts {
 		interp.variables.set("FlxText", FlxText);
 		interp.variables.set("FlxGraphic", FlxGraphic);
 		interp.variables.set("FlxTween", FlxTween);
+		interp.variables.set("FlxEase", FlxEase);
 		interp.variables.set("FlxCamera", FlxCamera);
 		interp.variables.set("Assets", Assets);
 		interp.variables.set("File", File);
@@ -217,7 +218,6 @@ class ModScripts {
 		interp.variables.set('FlxVideoSprite', FlxVideoSprite);
 		#end
 		interp.variables.set('BGSprite', BGSprite);
-		interp.variables.set('Modchart', ModchartAPI);
 		interp.variables.set("FunkinShader", FunkinShader);
 		interp.variables.set("CustomShader", CustomShader);
         interp.variables.set("window", lime.app.Application.current.window);
@@ -347,6 +347,7 @@ class ModScriptState extends MusicBeatState {
 		interp.variables.set("FlxText", FlxText);
 		interp.variables.set("FlxGraphic", FlxGraphic);
 		interp.variables.set("FlxTween", FlxTween);
+		interp.variables.set("FlxEase", FlxEase);
 		interp.variables.set("FlxCamera", FlxCamera);
 		interp.variables.set("Assets", Assets);
 		interp.variables.set("File", File);
@@ -380,7 +381,6 @@ class ModScriptState extends MusicBeatState {
 		interp.variables.set('FlxVideoSprite', FlxVideoSprite);
 		#end
 		interp.variables.set('BGSprite', BGSprite);
-		interp.variables.set('Modchart', ModchartAPI);
 		interp.variables.set("FunkinShader", FunkinShader);
 		interp.variables.set("CustomShader", CustomShader);
         interp.variables.set("window", lime.app.Application.current.window);
@@ -526,6 +526,7 @@ class ModScriptSubstate extends MusicBeatSubstate {
 		interp.variables.set("FlxText", FlxText);
 		interp.variables.set("FlxGraphic", FlxGraphic);
 		interp.variables.set("FlxTween", FlxTween);
+		interp.variables.set("FlxEase", FlxEase);
 		interp.variables.set("FlxCamera", FlxCamera);
 		interp.variables.set("Assets", Assets);
 		interp.variables.set("File", File);
@@ -558,7 +559,6 @@ class ModScriptSubstate extends MusicBeatSubstate {
 		interp.variables.set('FlxVideoSprite', FlxVideoSprite);
 		#end
 		interp.variables.set('BGSprite', BGSprite);
-		interp.variables.set('Modchart', ModchartAPI);
 		interp.variables.set("FunkinShader", FunkinShader);
 		interp.variables.set("CustomShader", CustomShader);
         interp.variables.set("window", lime.app.Application.current.window);
@@ -642,135 +642,5 @@ class ModScriptSubstate extends MusicBeatSubstate {
 		}
 		return true;
 	}
-}
-
-class ModchartAPI {
-	static public function tweenCameraPos(toX:Int, toY:Int, time:Float, camera:Any) {
-		FlxTween.tween(camera, {x: toX, y: toY}, time, {ease: FlxEase.linear} );
-	}
-
-	static public function tweenCameraAngle(toAngle:Float, time:Float, camera:Any) {
-		FlxTween.tween(camera, {angle:toAngle}, time, {ease: FlxEase.linear});
-	};
-
-	static public function tweenCameraZoom(toZoom:Float, time:Float, camera:Any) {
-		FlxTween.tween(camera, {zoom:toZoom}, time, {ease: FlxEase.linear });
-	};
-
-	static public function tweenHudPos(toX:Int, toY:Int, time:Float) {
-		FlxTween.tween(PlayState.instance.camHUD, {x: toX, y: toY}, time, {ease: FlxEase.linear});
-	};
-
-	static public function tweenHudAngle(toAngle:Float, time:Float) {
-		FlxTween.tween(PlayState.instance.camHUD, {angle:toAngle}, time, {ease: FlxEase.linear });
-	};
-
-	static public function tweenHudZoom(toZoom:Float, time:Float) {
-		FlxTween.tween(PlayState.instance.camHUD, {zoom:toZoom}, time, {ease: FlxEase.linear});
-	};
-
-	static public function tweenPos(id:FlxObject , toX:Int, toY:Int, time:Float) {
-		FlxTween.tween(id, {x: toX, y: toY}, time, {ease: FlxEase.linear});
-	};
-
-	static public function tweenPosXAngle(id:FlxObject, toX:Int, toAngle:Float, time:Float) {
-		FlxTween.tween(id, {x: toX, angle: toAngle}, time, {ease: FlxEase.linear});
-	};
-
-	static public function tweenPosYAngle(id:FlxObject, toY:Int, toAngle:Float, time:Float) {
-		FlxTween.tween(id, {y: toY, angle: toAngle}, time, {ease: FlxEase.linear });
-	};
-
-	static public function tweenAngle(id:FlxObject, toAngle:Int, time:Float) {
-		FlxTween.tween(id, {angle: toAngle}, time, {ease: FlxEase.linear});
-	};
-
-	static public function tweenCameraPosOut(toX:Int, toY:Int, time:Float, camera:Any) {
-		FlxTween.tween(camera, {x: toX, y: toY}, time, {ease: FlxEase.cubeOut});
-	};
-
-	static public function tweenCameraAngleOut(toAngle:Float, time:Float, camera:Any) {
-		FlxTween.tween(camera, {angle:toAngle}, time, {ease: FlxEase.cubeOut});
-	};
-
-	static public function tweenCameraZoomOut(toZoom:Float, time:Float, camera:Any) {
-		FlxTween.tween(camera, {zoom:toZoom}, time, {ease: FlxEase.cubeOut});
-	};
-
-	static public function tweenHudPosOut(toX:Int, toY:Int, time:Float) {
-		FlxTween.tween(PlayState.instance.camHUD, {x: toX, y: toY}, time, {ease: FlxEase.cubeOut });
-	};
-
-	static public function tweenHudAngleOut(toAngle:Float, time:Float) {
-		FlxTween.tween(PlayState.instance.camHUD, {angle:toAngle}, time, {ease: FlxEase.cubeOut });
-	};
-
-	static public function tweenHudZoomOut(toZoom:Float, time:Float) {
-		FlxTween.tween(PlayState.instance.camHUD, {zoom:toZoom}, time, {ease: FlxEase.cubeOut });
-	};
-
-	static public function tweenPosOut(id:FlxObject, toX:Int, toY:Int, time:Float) {
-		FlxTween.tween(id, {x: toX, y: toY}, time, {ease: FlxEase.cubeOut});
-	};
-
-	static public function tweenPosXAngleOut(id:FlxObject, toX:Int, toAngle:Float, time:Float) {
-		FlxTween.tween(id, {x: toX, angle: toAngle}, time, {ease: FlxEase.cubeOut});
-	};
-
-	static public function tweenPosYAngleOut(id:FlxObject, toY:Int, toAngle:Float, time:Float) {
-		FlxTween.tween(id, {y: toY, angle: toAngle}, time, {ease: FlxEase.cubeOut});
-	};
-
-	static public function tweenAngleOut(id:FlxObject, toAngle:Int, time:Float) {
-		FlxTween.tween(id, {angle: toAngle}, time, {ease: FlxEase.cubeOut });
-	};
-
-	static public function tweenCameraPosIn(toX:Int, toY:Int, time:Float, camera:Any) {
-		FlxTween.tween(camera, {x: toX, y: toY}, time, {ease: FlxEase.cubeIn });
-	};
-
-	static public function tweenCameraAngleIn(toAngle:Float, time:Float, camera:Any) {
-		FlxTween.tween(camera, {angle:toAngle}, time, {ease: FlxEase.cubeIn });
-	};
-
-	static public function tweenCameraZoomIn(toZoom:Float, time:Float, camera:Any) {
-		FlxTween.tween(camera, {zoom:toZoom}, time, {ease: FlxEase.cubeIn });
-	};
-
-	static public function tweenHudPosIn(toX:Int, toY:Int, time:Float) {
-		FlxTween.tween(PlayState.instance.camHUD, {x: toX, y: toY}, time, {ease: FlxEase.cubeIn });
-	};
-
-	static public function tweenHudAngleIn(toAngle:Float, time:Float) {
-		FlxTween.tween(PlayState.instance.camHUD, {angle:toAngle}, time, {ease: FlxEase.cubeIn });
-	};
-
-	static public function tweenHudZoomIn(toZoom:Float, time:Float) {
-		FlxTween.tween(PlayState.instance.camHUD, {zoom:toZoom}, time, {ease: FlxEase.cubeIn });
-	};
-
-	static public function tweenPosIn(id:FlxObject, toX:Int, toY:Int, time:Float) {
-		FlxTween.tween(id, {x: toX, y: toY}, time, {ease: FlxEase.cubeIn });
-	};
-
-	static public function tweenPosXAngleIn(id:FlxObject, toX:Int, toAngle:Float, time:Float) {
-		FlxTween.tween(id, {x: toX, angle: toAngle}, time, {ease: FlxEase.cubeIn });
-	};
-
-	static public function tweenPosYAngleIn(id:FlxObject, toY:Int, toAngle:Float, time:Float) {
-		FlxTween.tween(id, {y: toY, angle: toAngle}, time, {ease: FlxEase.cubeIn });
-	};
-
-	static public function tweenAngleIn(id:FlxObject, toAngle:Int, time:Float) {
-		FlxTween.tween(id, {angle: toAngle}, time, {ease: FlxEase.cubeIn });
-	};
-
-	static public function tweenFadeIn(id:FlxObject, toAlpha:Float, time:Float) {
-		FlxTween.tween(id, {alpha: toAlpha}, time, {ease: FlxEase.circIn });
-	};
-
-	static public function tweenFadeOut(id:FlxObject, toAlpha:Float, time:Float) {
-		FlxTween.tween(id, {alpha: toAlpha}, time, {ease: FlxEase.circOut });
-	};
 }
 #end
