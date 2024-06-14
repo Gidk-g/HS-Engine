@@ -99,19 +99,29 @@ class ModState extends MusicBeatState {
 
     private function handleInput():Void {
         if (controls.UP_P) {
-            selectedIndex = Std.int(Math.max(0, selectedIndex - 1));
-            FlxG.sound.play(Paths.sound('scrollMenu'));
-            if (scrollOffset > 0) {
-                targetScrollOffset = Math.max(0, targetScrollOffset - 50);
+            if (selectedIndex == 0) {
+                selectedIndex = modGroup.members.length - 1;
+                targetScrollOffset = maxScrollOffset;
+            } else {
+                selectedIndex--;
+                if (scrollOffset > 0) {
+                    targetScrollOffset = Math.max(0, targetScrollOffset - 50);
+                }
             }
+            FlxG.sound.play(Paths.sound('scrollMenu'));
             updateScroll();
             updateSelection();
         } else if (controls.DOWN_P) {
-            selectedIndex = Std.int(Math.min(modGroup.members.length - 1, selectedIndex + 1));
-            FlxG.sound.play(Paths.sound('scrollMenu'));
-            if (scrollOffset < maxScrollOffset) {
-                targetScrollOffset = Math.min(maxScrollOffset, targetScrollOffset + 50);
+            if (selectedIndex == modGroup.members.length - 1) {
+                selectedIndex = 0;
+                targetScrollOffset = 0;
+            } else {
+                selectedIndex++;
+                if (scrollOffset < maxScrollOffset) {
+                    targetScrollOffset = Math.min(maxScrollOffset, targetScrollOffset + 50);
+                }
             }
+            FlxG.sound.play(Paths.sound('scrollMenu'));
             updateScroll();
             updateSelection();
         } else if (FlxG.keys.justPressed.SEVEN) {
@@ -125,7 +135,6 @@ class ModState extends MusicBeatState {
                 toggleMod(modFolders[selectedIndex].folder);
             }
         }
-
         targetScrollOffset = Math.max(0, Math.min(targetScrollOffset, maxScrollOffset));
     }
 

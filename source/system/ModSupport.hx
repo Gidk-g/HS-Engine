@@ -77,27 +77,38 @@ class ModPaths {
     static public function getModFolders():Array<{ folder:String, enabled:Bool }> {
         if (modInfo.length == 0) {
             loadModSettings();
-            var modsFolder:String = modDirectory;
-            if (FileSystem.exists(modsFolder)) {
-                for (folder in FileSystem.readDirectory(modsFolder)) {
-                    var folderPath = haxe.io.Path.join([modsFolder, folder]);
-                    if (FileSystem.isDirectory(folderPath)) {
-                        var exists = false;
-                        for (info in modInfo) {
-                            if (info.folder == folder) {
-                                exists = true;
-                                break;
-                            }
-                        }
-                        if (!exists) {
-                            modInfo.push({ folder: folder, enabled: true });
+        }
+
+        var modsFolder:String = modDirectory;
+        var currentMods:Array<{ folder:String, enabled:Bool }> = [];
+        var newMods:Array<String> = [];
+
+        if (FileSystem.exists(modsFolder)) {
+            for (folder in FileSystem.readDirectory(modsFolder)) {
+                var folderPath = haxe.io.Path.join([modsFolder, folder]);
+                if (FileSystem.isDirectory(folderPath)) {
+                    var modExists:Bool = false;
+                    for (info in modInfo) {
+                        if (info.folder == folder) {
+                            modExists = true;
+                            break;
                         }
                     }
+                    if (!modExists) {
+                        newMods.push(folder);
+                        modInfo.push({ folder: folder, enabled: true });
+                    }
+                    currentMods.push({ folder: folder, enabled: true });
                 }
+            }
+
+            var removedMods = modInfo.filter(info -> !FileSystem.exists(haxe.io.Path.join([modsFolder, info.folder])));
+            if (removedMods.length > 0 || newMods.length > 0) {
                 modInfo = modInfo.filter(info -> FileSystem.exists(haxe.io.Path.join([modsFolder, info.folder])));
                 saveModSettings();
             }
         }
+
         return modInfo;
     }
 
