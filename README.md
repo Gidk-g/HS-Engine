@@ -1,7 +1,8 @@
 # HS Engine
 
-<img src="docs/img/hs-engine.png" style="margin-left: -50px;">
+<img src="docs/img/hs-engine.png" width="500" height="300" style="margin-left: -50px;">
 
+</br>
 This is the repository of Friday Night Funkin': HS Engine.
 
 ## ModAPI
