@@ -6,12 +6,8 @@ using StringTools;
 
 class CoolUtil
 {
-	public static var difficultyArray:Array<String> = ['EASY', "NORMAL", "HARD"];
-
-	public static function difficultyString():String
-	{
-		return difficultyArray[PlayState.storyDifficulty];
-	}
+	public static var defaultDifficulties:Array<String> = ['easy', 'normal', 'hard'];
+	public static var songDifficulties:Array<String> = [];
 
 	public static function coolTextFile(path:String):Array<String>
 	{

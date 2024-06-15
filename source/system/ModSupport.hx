@@ -139,6 +139,7 @@ class ModPaths {
             file.writeString(info.folder + ":" + (info.enabled ? "1" : "0") + "\n");
         }
 
+        getModFolders();
         file.close();
     }
 

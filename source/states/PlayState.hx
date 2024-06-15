@@ -61,7 +61,6 @@ class PlayState extends MusicBeatState
 	public static var isStoryMode:Bool = false;
 	public static var storyWeek:Int = 0;
 	public static var storyPlaylist:Array<String> = [];
-	public static var storyDifficulty:Int = 1;
 	public static var deathCounter:Int = 0;
 
 	var halloweenLevel:Bool = false;
@@ -192,9 +191,10 @@ class PlayState extends MusicBeatState
 
 	private var noteTypeMap:Map<String, Bool> = new Map<String, Bool>();
 
+	public static var storyDifficultyText:String = "";
+
 	#if desktop
 	// Discord RPC variables
-	var storyDifficultyText:String = "";
 	var iconRPC:String = "";
 	var songLength:Float = 0;
 	var detailsText:String = "";
@@ -245,16 +245,6 @@ class PlayState extends MusicBeatState
 
 		#if desktop
 		// Making difficulty text for Discord Rich Presence.
-		switch (storyDifficulty)
-		{
-			case 0:
-				storyDifficultyText = "Easy";
-			case 1:
-				storyDifficultyText = "Normal";
-			case 2:
-				storyDifficultyText = "Hard";
-		}
-
 		iconRPC = SONG.player2;
 
 		// To avoid having duplicate images in Discord assets
@@ -973,13 +963,14 @@ class PlayState extends MusicBeatState
 
 		scoreTxt = new FlxText(0, healthBarBG.y + 30, FlxG.width, "", 20);
 		scoreTxt.setFormat(Paths.font("vcr.ttf"), 20, FlxColor.WHITE, CENTER, OUTLINE, 0xFF000000);
+		scoreTxt.borderSize = 2;
 		scoreTxt.scrollFactor.set();
 		add(scoreTxt);
 
 		botplayTxt = new FlxText(0, 0, FlxG.width, "> BOTPLAY <", 28);
 		botplayTxt.setFormat(Paths.font("vcr.ttf"), 28, FlxColor.WHITE, CENTER, OUTLINE, 0xFF000000);
 		botplayTxt.scrollFactor.set();
-		botplayTxt.borderSize = 1.25;
+		botplayTxt.borderSize = 2;
 		botplayTxt.y = 90;
 		if (Config.middleScroll)
 			botplayTxt.y = 15;
@@ -2381,7 +2372,7 @@ class PlayState extends MusicBeatState
 		if (SONG.validScore)
 		{
 			#if !switch
-			Highscore.saveScore(SONG.song, songScore, storyDifficulty);
+			Highscore.saveScore(SONG.song, songScore, storyDifficultyText);
 			#end
 		}
 
@@ -2408,7 +2399,7 @@ class PlayState extends MusicBeatState
 
 				if (SONG.validScore)
 				{
-					Highscore.saveWeekScore(storyWeek, campaignScore, storyDifficulty);
+					Highscore.saveWeekScore(storyWeek, campaignScore, storyDifficultyText);
 				}
 
 				FlxG.save.flush();
@@ -2417,11 +2408,8 @@ class PlayState extends MusicBeatState
 			{
 				var difficulty:String = "";
 
-				if (storyDifficulty == 0)
-					difficulty = '-easy';
-
-				if (storyDifficulty == 2)
-					difficulty = '-hard';
+				if (storyDifficultyText.toLowerCase() != "normal")
+					difficulty += '-${storyDifficultyText.toLowerCase()}';
 
 				Logger.log('LOADING NEXT SONG');
 			    Logger.log(PlayState.storyPlaylist[0].toLowerCase() + difficulty);

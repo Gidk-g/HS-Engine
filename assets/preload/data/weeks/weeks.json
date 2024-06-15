@@ -4,49 +4,57 @@
             "name": "",
             "texture": "week0",
             "songs": ["Tutorial"],
-            "characters": ["", "bf", "gf"]
+            "characters": ["", "bf", "gf"],
+            "difficulties": ["easy", "normal", "hard"]
         },
         {
             "name": "Daddy Dearest",
             "texture": "week1",
             "songs": ["Bopeebo", "Fresh", "Dadbattle"],
-            "characters": ["dad", "bf", "gf"]
+            "characters": ["dad", "bf", "gf"],
+            "difficulties": ["easy", "normal", "hard"]
         },
         {
             "name": "Spooky Month",
             "texture": "week2",
             "songs": ["Spookeez", "South", "Monster"],
-            "characters": ["spooky", "bf", "gf"]
+            "characters": ["spooky", "bf", "gf"],
+            "difficulties": ["easy", "normal", "hard"]
         },
         {
             "name": "PICO",
             "texture": "week3",
             "songs": ["Pico", "Philly", "Blammed"],
-            "characters": ["pico", "bf", "gf"]
+            "characters": ["pico", "bf", "gf"],
+            "difficulties": ["easy", "normal", "hard"]
         },
         {
             "name": "MOMMY MUST MURDER",
             "texture": "week4",
             "songs": ["Satin-Panties", "High", "Milf"],
-            "characters": ["mom", "bf", "gf"]
+            "characters": ["mom", "bf", "gf"],
+            "difficulties": ["easy", "normal", "hard"]
         },
         {
             "name": "RED SNOW",
             "texture": "week5",
             "songs": ["Cocoa", "Eggnog", "Winter-Horrorland"],
-            "characters": ["parents-christmas", "bf", "gf"]
+            "characters": ["parents-christmas", "bf", "gf"],
+            "difficulties": ["easy", "normal", "hard"]
         },
         {
             "name": "hating simulator ft. moawling",
             "texture": "week6",
             "songs": ["Senpai", "Roses", "Thorns"],
-            "characters": ["senpai", "bf", "gf"]
+            "characters": ["senpai", "bf", "gf"],
+            "difficulties": ["easy", "normal", "hard"]
         },
         {
             "name": "TANKMAN",
             "texture": "week7",
             "songs": ["Ugh", "Guns", "Stress"],
-            "characters": ["tankman", "bf", "gf"]
+            "characters": ["tankman", "bf", "gf"],
+            "difficulties": ["easy", "normal", "hard"]
         }
     ]
 }

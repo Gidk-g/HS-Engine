@@ -24,6 +24,7 @@ import game.TankmenBG;
 import game.BackgroundDancer;
 import game.BackgroundGirls;
 import game.DialogueBox;
+import game.StoryDiffSprite;
 import game.MenuCharacter;
 import game.MenuItem;
 

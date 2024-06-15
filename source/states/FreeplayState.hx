@@ -30,6 +30,9 @@ class FreeplayState extends MusicBeatState
 	var lerpScore:Int = 0;
 	var intendedScore:Int = 0;
 
+	private var curDiffString:String = "normal";
+	private var curDiffArray:Array<String> = ["easy", "normal", "hard"];
+
 	private var grpSongs:FlxTypedGroup<Alphabet>;
 	private var curPlaying:Bool = false;
 
@@ -42,7 +45,11 @@ class FreeplayState extends MusicBeatState
 		for (i in 0...initSonglist.length)
 		{
 			var data:Array<String> = initSonglist[i].split(':');
-			songs.push(new SongMetadata(data[0], Std.parseInt(data[2]), data[1]));
+			var diffsStr = data[3];
+			var diffs = ["easy", "normal", "hard"];
+			if (diffsStr != null)
+				diffs = diffsStr.split(",");
+			songs.push(new SongMetadata(data[0], Std.parseInt(data[2]), data[1], diffs));
 		}
 
 		#if sys
@@ -53,7 +60,11 @@ class FreeplayState extends MusicBeatState
 				    var songList = modTxtFile(modFolderPath + '/songlist.txt');
 					for (i in 0...songList.length) {
 						var data:Array<String> = songList[i].split(":");
-			            songs.push(new SongMetadata(data[0], Std.parseInt(data[2]), data[1]));
+						var diffsStr = data[3];
+						var diffs = ["easy", "normal", "hard"];
+						if (diffsStr != null)
+							diffs = diffsStr.split(",");
+			            songs.push(new SongMetadata(data[0], Std.parseInt(data[2]), data[1], diffs));
 					}
 				}
 			}
@@ -116,7 +127,6 @@ class FreeplayState extends MusicBeatState
 		add(scoreText);
 
 		changeSelection();
-		changeDiff();
 
 		// FlxG.sound.playMusic(Paths.music('title'), 0);
 		// FlxG.sound.music.fadeIn(2, 0, 0.8);
@@ -148,12 +158,12 @@ class FreeplayState extends MusicBeatState
 		super.create();
 	}
 
-	public function addSong(songName:String, weekNum:Int, songCharacter:String)
+	public function addSong(songName:String, weekNum:Int, songCharacter:String, ?difficulties:Array<String>)
 	{
-		songs.push(new SongMetadata(songName, weekNum, songCharacter));
+		songs.push(new SongMetadata(songName, weekNum, songCharacter, difficulties));
 	}
 
-	public function addWeek(songs:Array<String>, weekNum:Int, ?songCharacters:Array<String>)
+	public function addWeek(songs:Array<String>, weekNum:Int, ?songCharacters:Array<String>, ?difficulties:Array<String>)
 	{
 		if (songCharacters == null)
 			songCharacters = ['dad'];
@@ -161,7 +171,7 @@ class FreeplayState extends MusicBeatState
 		var num:Int = 0;
 		for (song in songs)
 		{
-			addSong(song, weekNum, songCharacters[num]);
+			addSong(song, weekNum, songCharacters[num], difficulties);
 
 			if (songCharacters.length != 1)
 				num++;
@@ -212,7 +222,7 @@ class FreeplayState extends MusicBeatState
 
 		if (accepted)
 		{
-			var poop:String = Highscore.formatSong(songs[curSelected].songName.toLowerCase(), curDifficulty);
+			var poop:String = Highscore.formatSong(songs[curSelected].songName.toLowerCase(), curDiffString);
 
 			#if sys
 			if (!Assets.exists(Paths.json('charts/' + songs[curSelected].songName.toLowerCase() + '/' + poop)) && !sys.FileSystem.exists(ModPaths.data('charts/' + songs[curSelected].songName.toLowerCase() + '/' + poop)))
@@ -228,7 +238,7 @@ class FreeplayState extends MusicBeatState
 
 				PlayState.SONG = Song.loadFromJson(poop, songs[curSelected].songName.toLowerCase());
 				PlayState.isStoryMode = false;
-				PlayState.storyDifficulty = curDifficulty;
+				PlayState.storyDifficultyText = curDiffString.toUpperCase();
 				PlayState.storyWeek = songs[curSelected].week;
 				Logger.log('CUR WEEK' + PlayState.storyWeek);
 				LoadingState.loadAndSwitchState(new PlayState());
@@ -238,49 +248,46 @@ class FreeplayState extends MusicBeatState
 
 	function changeDiff(change:Int = 0)
 	{
-		curDifficulty += change;
-
-		if (curDifficulty < 0)
-			curDifficulty = 2;
-		if (curDifficulty > 2)
-			curDifficulty = 0;
+        curDifficulty = FlxMath.wrap(curDifficulty + change, 0, curDiffArray.length - 1);
+        curDiffString = curDiffArray[curDifficulty].toUpperCase();
 
 		#if !switch
-		intendedScore = Highscore.getScore(songs[curSelected].songName, curDifficulty);
+		intendedScore = Highscore.getScore(songs[curSelected].songName, curDiffString);
 		#end
 
-		switch (curDifficulty)
-		{
-			case 0:
-				diffText.text = "EASY";
-			case 1:
-				diffText.text = 'NORMAL';
-			case 2:
-				diffText.text = "HARD";
-		}
+		diffText.text = '< ' + curDiffString + ' >';
 	}
 
 	function changeSelection(change:Int = 0)
 	{
 		FlxG.sound.play(Paths.sound('scrollMenu'), 0.4);
 
-		curSelected += change;
-
-		if (curSelected < 0)
-			curSelected = songs.length - 1;
-		if (curSelected >= songs.length)
-			curSelected = 0;
+		curSelected = FlxMath.wrap(curSelected + change, 0, grpSongs.length - 1);
 
 		// selector.y = (70 * curSelected) + 30;
 
 		#if !switch
-		intendedScore = Highscore.getScore(songs[curSelected].songName, curDifficulty);
+		intendedScore = Highscore.getScore(songs[curSelected].songName, curDiffString);
 		// lerpScore = 0;
 		#end
 
 		#if PRELOAD_ALL
 		FlxG.sound.playMusic(Paths.inst(songs[curSelected].songName), 0);
 		#end
+
+		curDiffArray = songs[curSelected].difficulties;
+
+        if (curDiffArray.indexOf(curDiffString.toLowerCase()) == -1)
+		{
+			curDiffString = "normal";
+			curDifficulty = curDiffArray.indexOf(curDiffString.toLowerCase());
+		}
+		else
+		{
+			curDifficulty = curDiffArray.indexOf(curDiffString.toLowerCase());
+		}
+
+		changeDiff();
 
 		var bullShit:Int = 0;
 
@@ -324,11 +331,15 @@ class SongMetadata
 	public var songName:String = "";
 	public var week:Int = 0;
 	public var songCharacter:String = "";
+	public var difficulties:Array<String> = ["easy", "normal", "hard"];
 
-	public function new(song:String, week:Int, songCharacter:String)
+	public function new(song:String, week:Int, songCharacter:String, ?difficulties:Array<String> = null)
 	{
 		this.songName = song;
 		this.week = week;
 		this.songCharacter = songCharacter;
+
+		if(difficulties != null)
+			this.difficulties = difficulties;
 	}
 }

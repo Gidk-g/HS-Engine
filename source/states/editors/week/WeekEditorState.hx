@@ -123,7 +123,8 @@ class WeekEditorState extends MusicBeatState {
                 name: "Daddy Dearest",
                 texture: "week1",
                 songs: ["Bopeebo", "Fresh", "Dadbattle"],
-                characters: ["dad", "bf", "gf"]
+                characters: ["dad", "bf", "gf"],
+                difficulties: ["easy", "normal", "hard"]
             }
         } else {
             weekFile = data;
@@ -144,6 +145,7 @@ class WeekEditorState extends MusicBeatState {
     var input_weekName:FlxUIInputText;
     var input_weekSongs:FlxUIInputText;
     var input_weekCharacters:FlxUIInputText;
+	var input_weekDifficulties:FlxUIInputText;
 
     function addWeekUI() {
         var tab_group_week = new FlxUI(null, uiBox);
@@ -173,6 +175,12 @@ class WeekEditorState extends MusicBeatState {
         var opText:FlxText = new FlxText(input_weekCharacters.x, input_weekCharacters.y - 15, FlxG.width, "Week Characters", 8);
         tab_group_week.add(opText);
 
+		input_weekDifficulties = new FlxUIInputText(10, 140, 200, '', 8);
+		tab_group_week.add(input_weekDifficulties);
+
+		var opText:FlxText = new FlxText(input_weekDifficulties.x, input_weekDifficulties.y - 15, FlxG.width, "Week Difficulties", 8);
+		tab_group_week.add(opText);
+
         var button:FlxButton = new FlxButton(275, 20, 'Save Week', function() {
             saveWeek(weekFile);
         });
@@ -194,6 +202,8 @@ class WeekEditorState extends MusicBeatState {
         input_weekSongs.text = str.substr(1, str.length - 2);
         var strr:String = weekFile.characters.toString();
         input_weekCharacters.text = strr.substr(1, strr.length - 2);
+		var strrr:String = weekFile.difficulties.toString();
+		input_weekDifficulties.text = strrr.substr(1, strrr.length - 2);
     }
 
     override function getEvent(id:String, sender:Dynamic, data:Dynamic, ?params:Array<Dynamic>) {
@@ -210,7 +220,9 @@ class WeekEditorState extends MusicBeatState {
                 var sex:Array<String> = input_weekCharacters.text.trim().split(',');
                 weekFile.characters = [sex[0], sex[1], sex[2]];
                 changeCharacters();
-            }
+            } else if (sender == input_weekDifficulties) {
+				weekFile.difficulties = input_weekDifficulties.text.trim().split(',');
+			}
         }
     }
 
@@ -272,7 +284,8 @@ class WeekEditorState extends MusicBeatState {
             name: loadedWeek.name,
             texture: loadedWeek.texture,
             songs: loadedWeek.songs,
-            characters: loadedWeek.characters
+            characters: loadedWeek.characters,
+            difficulties: loadedWeek.difficulties
         }
     }
 

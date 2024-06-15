@@ -23,6 +23,10 @@ class ModState extends MusicBeatState {
     private var maxScrollOffset:Float = 0;
 
     override function create():Void {
+		#if desktop
+		DiscordClient.changePresence("In the Mod Menu", null);
+		#end
+
         bg = new FlxBackdrop(Paths.image('menuDesat'));
         bg.color = 0xFFea71fd;
         bg.velocity.set(-50, 0);
