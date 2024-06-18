@@ -869,8 +869,8 @@ class PlayState extends MusicBeatState
 		}
 
 		gfGroup = new FlxTypedGroup<Character>();
-		dadGroup = new FlxTypedGroup<Character>();
 		boyfriendGroup = new FlxTypedGroup<Boyfriend>();
+		dadGroup = new FlxTypedGroup<Character>();
 
 		add(gfGroup);
 		gfGroup.add(gf);
@@ -879,11 +879,15 @@ class PlayState extends MusicBeatState
 		if (curStage == 'limo')
 			add(limo);
 
-		add(dadGroup);
-		dadGroup.add(dad);
-
 		add(boyfriendGroup);
 		boyfriendGroup.add(boyfriend);
+
+        #if sys
+		script.callFunction("betweenCharacters", []);
+		#end
+
+		add(dadGroup);
+		dadGroup.add(dad);
 
 		add(foreground);
 		add(foregroundSprites);
@@ -1111,6 +1115,10 @@ class PlayState extends MusicBeatState
 			remove(value);
 		});
 
+		script.interp.variables.set("insert", function(position:Int, value:FlxObject) {
+			insert(position, value);
+		});
+
 		script.interp.variables.set("removeStage", function() {
             remove(stageBg);
             remove(stageFront);
@@ -1138,6 +1146,8 @@ class PlayState extends MusicBeatState
 			var object:FlxSprite = Stage.objectMap.get(object);
 			return object;
 		});
+
+		script.interp.variables.set("members", members);
 
 		script.interp.variables.set("camFollow", camFollow);
 		script.interp.variables.set("camFollowPos", camFollowPos);
@@ -2533,7 +2543,6 @@ class PlayState extends MusicBeatState
 	}
 
 	public function addCharacterToList(newCharacter:String, type:Int) {
-
 		var cPosX:Float;
 		var cPosY:Float;
 

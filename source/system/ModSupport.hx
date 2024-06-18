@@ -406,6 +406,7 @@ class ModScriptState extends MusicBeatState {
         interp.variables.set("FlxTextBorderStyle", system.classes.FlxTextBorderStyleHelper);
         interp.variables.set("StringHelper", system.classes.StringHelper);
 
+		interp.variables.set("members", members);
 	    interp.variables.set("controls", controls);
 	    interp.variables.set("curBeat", curBeat);
 		interp.variables.set("curStep", curStep);
@@ -452,6 +453,10 @@ class ModScriptState extends MusicBeatState {
 
 		interp.variables.set("remove", function(value:FlxObject) {
 			remove(value);
+		});
+
+		interp.variables.set("insert", function(position:Int, value:FlxObject) {
+			insert(position, value);
 		});
     }
 
@@ -584,6 +589,7 @@ class ModScriptSubstate extends MusicBeatSubstate {
         interp.variables.set("FlxTextBorderStyle", system.classes.FlxTextBorderStyleHelper);
         interp.variables.set("StringHelper", system.classes.StringHelper);
 
+		interp.variables.set("members", members);
 	    interp.variables.set("controls", controls);
 	    interp.variables.set("curBeat", curBeat);
 		interp.variables.set("curStep", curStep);
@@ -634,6 +640,10 @@ class ModScriptSubstate extends MusicBeatSubstate {
 
 		interp.variables.set("remove", function(value:FlxObject) {
 			remove(value);
+		});
+
+		interp.variables.set("insert", function(position:Int, value:FlxObject) {
+			insert(position, value);
 		});
     }
 
