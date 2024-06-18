@@ -6,8 +6,8 @@ using StringTools;
 
 class CoolUtil
 {
-	public static var defaultDifficulties:Array<String> = ['easy', 'normal', 'hard'];
 	public static var songDifficulties:Array<String> = [];
+	public static var defaultDifficulties:Array<String> = ['easy', 'normal', 'hard'];
 
 	public static function coolTextFile(path:String):Array<String>
 	{

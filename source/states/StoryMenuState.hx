@@ -322,6 +322,9 @@ class StoryMenuState extends MusicBeatState
 			CoolUtil.songDifficulties = CoolUtil.defaultDifficulties;
 		}
 
+		var diff:String = CoolUtil.songDifficulties[curDifficulty].toLowerCase().trim();
+		sprDifficulty.changeDiff(diff);
+
 		updateText();
 	}
 

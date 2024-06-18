@@ -32,10 +32,7 @@ class MenuItem extends FlxSpriteGroup
 
 		if (fileName != null && fileName.length > 0)
 		{
-			if (sys.FileSystem.exists(Paths.image('storymenu/' + fileName)))
-			{
-				week.loadGraphic(Paths.image('storymenu/' + fileName));
-			}
+			week.loadGraphic(Paths.image('storymenu/' + fileName));
 		}
 		#end
 	}

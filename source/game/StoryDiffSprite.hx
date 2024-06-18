@@ -39,11 +39,7 @@ class StoryDiffSprite extends FlxSpriteGroup
 
 		if (fileName != null && fileName.length > 0)
 		{
-			if (#if sys sys.FileSystem.exists(Paths.image('difficulties/' + fileName))
-				|| #end Assets.exists(Paths.image('difficulties/' + fileName), IMAGE))
-			{
-				diff.loadGraphic(Paths.image('difficulties/' + fileName));
-			}
+			diff.loadGraphic(Paths.image('difficulties/' + fileName));
 		}
 
 		curText = fileName;
