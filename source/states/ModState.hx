@@ -22,6 +22,8 @@ class ModState extends MusicBeatState {
     private var scrollSpeed:Float = 5;
     private var maxScrollOffset:Float = 0;
 
+    private var restartNeeded:Bool = ModPaths.checkRestartStatus();
+
     override function create():Void {
 		#if desktop
 		DiscordClient.changePresence("In the Mod Menu", null);
@@ -131,8 +133,16 @@ class ModState extends MusicBeatState {
         } else if (FlxG.keys.justPressed.SEVEN) {
             FlxG.switchState(new states.editors.EditorMenuState());
         } else if (controls.BACK) {
-            scriptState.callFunction("goToMenu", []);
-            FlxG.switchState(new MainMenuState());
+            if (restartNeeded) {
+                TitleState.initialized = false;
+                TitleState.closedState = false;
+
+                FlxG.sound.music.fadeOut(0.3);
+                FlxG.camera.fade(FlxColor.BLACK, 0.5, false, FlxG.resetGame, false);
+            } else {
+                scriptState.callFunction("goToMenu", []);
+                FlxG.switchState(new MainMenuState());
+            }
         } else if (controls.ACCEPT) {
             var modFolders:Array<{ folder:String, enabled:Bool }> = ModPaths.getModFolders();
             if (selectedIndex >= 0 && selectedIndex < modFolders.length) {

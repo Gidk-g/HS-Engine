@@ -1,7 +1,5 @@
 package system;
 
-import haxe.zip.Reader;
-import cpp.vm.Gc;
 #if sys
 import haxe.Json;
 import flixel.FlxG;
@@ -64,7 +62,7 @@ class ModPaths {
 		var fullPath:String = null;
 		for (modFolder in getModFolders()) {
 			if (modFolder.enabled) {
-				var folderPath:String = haxe.io.Path.join([Sys.getCwd(), modDirectory, modFolder.folder, subfolder, path]);
+				var folderPath:String = haxe.io.Path.join([modDirectory, modFolder.folder, subfolder, path]);
 				if (FileSystem.exists(folderPath)) {
 					fullPath = folderPath;
 					break;
@@ -131,6 +129,21 @@ class ModPaths {
         }
     }
 
+    static public function checkRestartStatus():Bool {
+        for (modFolder in getModFolders()) {
+            if (modFolder.enabled) {
+                var filePath:String = haxe.io.Path.join([modDirectory, modFolder.folder, "data", "waitingToRestart.txt"]);
+
+                if (FileSystem.exists(filePath)) {
+                    var fileContent:String = sys.io.File.getContent(filePath).trim().toLowerCase();
+                    return (fileContent == "true");
+                }
+            }
+        }
+
+        return false;
+    }
+
     static public function saveModSettings():Void {
         var savePath:String = "mod_settings.txt";
         var file:sys.io.FileOutput = sys.io.File.write(savePath, false);
@@ -159,10 +172,6 @@ class ModPaths {
                 }
             }
         }
-    }
-
-    static public function init():Void {
-        loadModSettings();
     }
 }
 
