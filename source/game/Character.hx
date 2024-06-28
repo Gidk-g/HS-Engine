@@ -85,8 +85,7 @@ class Character extends FlxSprite
 		}
 	}
 
-    public function loadCharacterJson(character:String)
-	{
+    public function loadCharacterJson(character:String) {
 		#if sys
 		var path:String = ModPaths.data("characters/" + character);
 		if (!sys.FileSystem.exists(path))
