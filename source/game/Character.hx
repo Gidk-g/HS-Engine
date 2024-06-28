@@ -182,21 +182,40 @@ class Character extends FlxSprite
 					json.characterOffset = [Std.parseFloat(offsetParts[0]), Std.parseFloat(offsetParts[1])];
 				case "animation":
 					var animParts = value.split(",");
-					if (animParts.length >= 4) {
+					if (animParts.length >= 5) {
 						var anim:AnimStuff = {
 							anim: animParts[0].trim(),
 							name: animParts[1].trim(),
 							fps: Std.parseInt(animParts[2].trim()),
 							loop: CoolUtil.parseBool(animParts[3].trim()),
-							// kms klbdnlkflnkf
-							indices: [],
-							offsets: animParts[4].trim().split(":").map(Std.parseInt)
+							offsets: animParts[4].trim().split(":").map(Std.parseInt),
+							indices: []
 						};
+
+						if (animParts.length > 5 && animParts[5].trim() != "") {
+							anim.indices = parseIndices(animParts[5].trim());
+						}
+
 						json.animations.push(anim);
 					}
 			}
 		}
 		return json;
+	}
+
+	private function parseIndices(indicesString:String):Array<Int> {
+		var newArray:Array<Int> = [];
+	
+		if (indicesString != "") {
+			var shit = indicesString.split(" ");
+			var indiceShit = shit.join(" ").split("/")[1];
+	
+			for (i in indiceShit.split(" ")) {
+				newArray.push(Std.parseInt(i));
+			}
+		}
+	
+		return newArray;
 	}
 
 	override function update(elapsed:Float)
