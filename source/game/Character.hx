@@ -94,10 +94,17 @@ class Character extends FlxSprite
 		if (!sys.FileSystem.exists(path))
 			path = ModPaths.modFolder("data/characters/" + character + ".txt");
 		if (!sys.FileSystem.exists(path))
+			path = Paths.txt("characters/" + character);
+		if (!sys.FileSystem.exists(path))
 			path = Paths.json("characters/bf");
 		var rawJson:String = sys.io.File.getContent(path);
 		#else
-		var rawJson = Assets.getText(Paths.json("characters/" + character));
+		var path:String = Paths.json("characters/" + character);
+		if (!Assets.exists(path))
+			path = Paths.json("characters/bf");
+		if (!Assets.exists(path))
+			path = Paths.txt("characters/" + character);
+		var rawJson = Assets.getText(path);
 		#end
 
 		var json:CharJson;
@@ -146,7 +153,7 @@ class Character extends FlxSprite
 		}
 	}
 
-	public function parseTxt(rawTxt:String):CharJson {
+	public static function parseTxt(rawTxt:String):CharJson {
 		var lines = rawTxt.split("\n");
 		var json:CharJson = {
 			animations: [],
@@ -203,18 +210,17 @@ class Character extends FlxSprite
 		return json;
 	}
 
-	private function parseIndices(indicesString:String):Array<Int> {
+	public static function parseIndices(indicesString:String):Array<Int> {
 		var newArray:Array<Int> = [];
-	
+
 		if (indicesString != "") {
-			var shit = indicesString.split(" ");
-			var indiceShit = shit.join(" ").split("/")[1];
-	
-			for (i in indiceShit.split(" ")) {
-				newArray.push(Std.parseInt(i));
+			var parts = indicesString.split(" ");
+
+			for (part in parts) {
+				newArray.push(Std.parseInt(part));
 			}
 		}
-	
+
 		return newArray;
 	}
 

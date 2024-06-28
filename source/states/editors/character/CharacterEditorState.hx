@@ -232,8 +232,12 @@ class CharacterEditorState extends MusicBeatState {
 		stepper_scale.value = charFile.scale;
 		stepper_scale.name = "step_charScale";
 
-		var saveCharacterButton:FlxButton = new FlxButton(85, 140, "Save Character", function() {
-			saveCharacter();
+		var saveCharacterJsonButton:FlxButton = new FlxButton(15, 140, "Save as JSONr", function() {
+			saveCharacter("json");
+		});
+
+		var saveCharacterTxtButton:FlxButton = new FlxButton(120, 140, "Save as TXT", function() {
+			saveCharacter("txt");
 		});
 
 		tab_group.add(check_player);
@@ -262,7 +266,8 @@ class CharacterEditorState extends MusicBeatState {
 		tab_group.add(new FlxText(stepper_scale.x - 10, stepper_scale.y - 15, FlxG.width, "Character Scale", 8));
 		tab_group.add(stepper_scale);
 
-		tab_group.add(saveCharacterButton);
+		tab_group.add(saveCharacterJsonButton);
+		tab_group.add(saveCharacterTxtButton);
 
 		tab_group.add(cspText);
 		tab_group.add(characterDropDown);
@@ -504,16 +509,16 @@ class CharacterEditorState extends MusicBeatState {
 	function loadCharDropDown() {
 		var loadedCharacters:Map<String, Bool> = new Map();
 		charList = [];
-
+	
 		#if sys
 		for (modFolder in ModPaths.getModFolders()) {
 			if (modFolder.enabled) {
 				var modFolderPath:String = 'mods/' + modFolder.folder + '/data/characters/';
 				if (sys.FileSystem.exists(modFolderPath)) {
-					for (charJson in sys.FileSystem.readDirectory(modFolderPath)) {
-						var path:String = haxe.io.Path.join([modFolderPath, charJson]);
-						if (!sys.FileSystem.isDirectory(path) && charJson.endsWith('.json')) {
-							var checkChar:String = charJson.substr(0, charJson.length - 5);
+					for (charFile in sys.FileSystem.readDirectory(modFolderPath)) {
+						var path:String = haxe.io.Path.join([modFolderPath, charFile]);
+						if (!sys.FileSystem.isDirectory(path) && (charFile.endsWith('.json') || (charFile.endsWith('.txt') && charFile != 'github-moment.txt'))) {
+							var checkChar:String = charFile.endsWith('.json') ? charFile.substr(0, charFile.length - 5) : charFile.substr(0, charFile.length - 4);
 							if (!loadedCharacters.exists(checkChar)) {
 								charList.push(checkChar);
 								loadedCharacters.set(checkChar, true);
@@ -523,13 +528,13 @@ class CharacterEditorState extends MusicBeatState {
 				}
 			}
 		}
-
+	
 		var defaultFolderPath:String = Paths.getPreloadPath('data/characters/');
 		if (sys.FileSystem.exists(defaultFolderPath)) {
-			for (charJson in sys.FileSystem.readDirectory(defaultFolderPath)) {
-				var path:String = haxe.io.Path.join([defaultFolderPath, charJson]);
-				if (!sys.FileSystem.isDirectory(path) && charJson.endsWith('.json')) {
-					var checkChar:String = charJson.substr(0, charJson.length - 5);
+			for (charFile in sys.FileSystem.readDirectory(defaultFolderPath)) {
+				var path:String = haxe.io.Path.join([defaultFolderPath, charFile]);
+				if (!sys.FileSystem.isDirectory(path) && (charFile.endsWith('.json') || (charFile.endsWith('.txt')))) {
+					var checkChar:String = charFile.endsWith('.json') ? charFile.substr(0, charFile.length - 5) : charFile.substr(0, charFile.length - 4);
 					if (!loadedCharacters.exists(checkChar)) {
 						charList.push(checkChar);
 						loadedCharacters.set(checkChar, true);
@@ -609,12 +614,27 @@ class CharacterEditorState extends MusicBeatState {
 		if (!sys.FileSystem.exists(path))
 			path = Paths.json("characters/" + character);
 		if (!sys.FileSystem.exists(path))
+			path = ModPaths.modFolder("data/characters/" + character + ".txt");
+		if (!sys.FileSystem.exists(path))
+			path = Paths.txt("characters/" + character);
+		if (!sys.FileSystem.exists(path))
 			path = Paths.json("characters/bf");
 		var rawJson:String = sys.io.File.getContent(path);
 		#else
-		var rawJson = Assets.getText(Paths.json("characters/" + character));
+		var path:String = Paths.json("characters/" + character);
+		if (!Assets.exists(path))
+			path = Paths.json("characters/bf");
+		if (!Assets.exists(path))
+			path = Paths.txt("characters/" + character);
+		var rawJson = Assets.getText(path);
 		#end
-		var json:CharJson = cast haxe.Json.parse(rawJson);
+
+		var json:CharJson;
+		if (rawJson.startsWith("{"))
+			json = cast haxe.Json.parse(rawJson);
+		else
+			json = cast Character.parseTxt(rawJson);
+
 		if (rawJson != null)
 			charFile = json;
 	}
@@ -858,7 +878,7 @@ class CharacterEditorState extends MusicBeatState {
 		Logger.log("Error: Problem saving file");
 	}
 
-	function saveCharacter() {
+	function saveCharacter(format:String) {
 		var json = {
 			"animations": char.animationsArray,
 			"spritePath": char.imageFile,
@@ -871,14 +891,46 @@ class CharacterEditorState extends MusicBeatState {
 			"antialiasing": char.antialiasing
 		};
 
-		var data:String = haxe.Json.stringify(json, "\t");
+		var data:String = "";
+
+		if (format == "json") {
+			data = haxe.Json.stringify(json, "\t");
+		} else if (format == "txt") {
+			data = stringifyTxt();
+		}
 
 		if (data.length > 0) {
 			_file = new FileReference();
 			_file.addEventListener(Event.COMPLETE, onSaveComplete);
 			_file.addEventListener(Event.CANCEL, onSaveCancel);
 			_file.addEventListener(IOErrorEvent.IO_ERROR, onSaveError);
-			_file.save(data, characterToAdd + ".json");
+			_file.save(data, characterToAdd + "." + format);
 		}
+	}
+
+	function stringifyTxt():String {
+		var lines:Array<String> = [];
+
+		lines.push("spritePath=" + char.imageFile);
+		lines.push("healthIcon=" + char.healthIcon);
+		lines.push("scale=" + char.jsonScale);
+		lines.push("flipX=" + char.originalFlipX);
+		lines.push("antialiasing=" + char.antialiasing);
+		lines.push("singDuration=" + char.singDuration);
+		lines.push("cameraOffset=" + char.cameraOffset.join(":"));
+		lines.push("characterOffset=" + char.characterOffset.join(":"));
+
+		for (anim in char.animationsArray) {
+		    lines.push("animation=" + [
+				anim.anim,
+				anim.name,
+				Std.string(anim.fps),
+				Std.string(anim.loop),
+				anim.offsets.map(Std.string).join(":"),
+				anim.indices.map(Std.string).join(" ")
+			].join(","));
+		}
+
+		return lines.join("\n");
 	}
 }
