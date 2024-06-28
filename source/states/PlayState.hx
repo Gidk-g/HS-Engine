@@ -879,8 +879,10 @@ class PlayState extends MusicBeatState
 		if (curStage == 'limo')
 			add(limo);
 
-		add(boyfriendGroup);
-		boyfriendGroup.add(boyfriend);
+		if (SONG.song.toLowerCase() != 'tutorial') {
+			add(boyfriendGroup);
+			boyfriendGroup.add(boyfriend);
+		}
 
         #if sys
 		script.callFunction("betweenCharacters", []);
@@ -888,6 +890,11 @@ class PlayState extends MusicBeatState
 
 		add(dadGroup);
 		dadGroup.add(dad);
+
+		if (SONG.song.toLowerCase() == 'tutorial') {
+			add(boyfriendGroup);
+			boyfriendGroup.add(boyfriend);
+		}
 
 		add(foreground);
 		add(foregroundSprites);
