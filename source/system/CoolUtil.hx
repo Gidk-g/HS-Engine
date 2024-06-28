@@ -35,6 +35,13 @@ class CoolUtil
 		return Math.max(min, Math.min(max, value));
 	}
 
+    public static function parseBool(value:String):Bool {
+        return switch(value.toLowerCase()) {
+            case "true": true;
+            default: false;
+        }
+    }
+
 	// thx maru
 	inline public static function formatClass(daClass:Dynamic, formatDir:Bool = true):String {
 		var className = Type.getClassName(Type.getClass(daClass));

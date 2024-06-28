@@ -92,17 +92,23 @@ class Character extends FlxSprite
 		if (!sys.FileSystem.exists(path))
 			path = Paths.json("characters/" + character);
 		if (!sys.FileSystem.exists(path))
+			path = ModPaths.modFolder("data/characters/" + character + ".txt");
+		if (!sys.FileSystem.exists(path))
 			path = Paths.json("characters/bf");
 		var rawJson:String = sys.io.File.getContent(path);
 		#else
 		var rawJson = Assets.getText(Paths.json("characters/" + character));
 		#end
 
-		var json:CharJson = cast Json.parse(rawJson);
+		var json:CharJson;
+		if (rawJson.startsWith("{"))
+			json = cast Json.parse(rawJson);
+		else
+			json = cast parseTxt(rawJson);
 
 		if (Assets.exists(Paths.file("images/" + json.spritePath + ".txt", TEXT, "shared")))
 			frames = Paths.getPackerAtlas(json.spritePath, "shared");
-        if (Assets.exists(Paths.file("images/" + json.spritePath + ".xml", TEXT, "shared")))
+		if (Assets.exists(Paths.file("images/" + json.spritePath + ".xml", TEXT, "shared")))
 			frames = Paths.getSparrowAtlas(json.spritePath, "shared");
 		else
 			frames = Paths.getSparrowAtlas(json.spritePath);
@@ -138,6 +144,59 @@ class Character extends FlxSprite
 			setGraphicSize(Std.int(width * jsonScale));
 			updateHitbox();
 		}
+	}
+
+	public function parseTxt(rawTxt:String):CharJson {
+		var lines = rawTxt.split("\n");
+		var json:CharJson = {
+			animations: [],
+			spritePath: "",
+			healthIcon: "",
+			scale: 1,
+			flipX: false,
+			antialiasing: false,
+			singDuration: 4,
+			cameraOffset: [0,0],
+			characterOffset: [0,0]
+		};
+	
+		for (line in lines) {
+			var parts = line.split("=");
+			if (parts.length < 2) continue;
+
+			var key = parts[0].trim();
+			var value = parts[1].trim();
+
+			switch (key) {
+				case "spritePath": json.spritePath = value;
+				case "healthIcon": json.healthIcon = value;
+				case "scale": json.scale = Std.parseFloat(value);
+				case "flipX": json.flipX = CoolUtil.parseBool(value);
+				case "antialiasing": json.antialiasing = CoolUtil.parseBool(value);
+				case "singDuration": json.singDuration = Std.parseFloat(value);
+				case "cameraOffset":
+					var offsetParts = value.split(":");
+					json.cameraOffset = [Std.parseFloat(offsetParts[0]), Std.parseFloat(offsetParts[1])];
+				case "characterOffset":
+					var offsetParts = value.split(":");
+					json.characterOffset = [Std.parseFloat(offsetParts[0]), Std.parseFloat(offsetParts[1])];
+				case "animation":
+					var animParts = value.split(",");
+					if (animParts.length >= 4) {
+						var anim:AnimStuff = {
+							anim: animParts[0].trim(),
+							name: animParts[1].trim(),
+							fps: Std.parseInt(animParts[2].trim()),
+							loop: CoolUtil.parseBool(animParts[3].trim()),
+							// kms klbdnlkflnkf
+							indices: [],
+							offsets: animParts[4].trim().split(":").map(Std.parseInt)
+						};
+						json.animations.push(anim);
+					}
+			}
+		}
+		return json;
 	}
 
 	override function update(elapsed:Float)
