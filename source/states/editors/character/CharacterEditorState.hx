@@ -232,7 +232,7 @@ class CharacterEditorState extends MusicBeatState {
 		stepper_scale.value = charFile.scale;
 		stepper_scale.name = "step_charScale";
 
-		var saveCharacterJsonButton:FlxButton = new FlxButton(15, 140, "Save as JSONr", function() {
+		var saveCharacterJsonButton:FlxButton = new FlxButton(15, 140, "Save as JSON", function() {
 			saveCharacter("json");
 		});
 
