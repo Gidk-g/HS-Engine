@@ -406,10 +406,10 @@ class StageEditorState extends MusicBeatState {
 			if (modFolder.enabled) {
 				var modFolderPath:String = 'mods/' + modFolder.folder + '/data/characters/';
 				if (sys.FileSystem.exists(modFolderPath)) {
-					for (charJson in sys.FileSystem.readDirectory(modFolderPath)) {
-						var path:String = haxe.io.Path.join([modFolderPath, charJson]);
-						if (!sys.FileSystem.isDirectory(path) && charJson.endsWith('.json')) {
-							var checkChar:String = charJson.substr(0, charJson.length - 5);
+					for (charFile in sys.FileSystem.readDirectory(modFolderPath)) {
+						var path:String = haxe.io.Path.join([modFolderPath, charFile]);
+						if (!sys.FileSystem.isDirectory(path) && (charFile.endsWith('.json') || (charFile.endsWith('.txt') && charFile != 'github-moment.txt'))) {
+							var checkChar:String = charFile.endsWith('.json') ? charFile.substr(0, charFile.length - 5) : charFile.substr(0, charFile.length - 4);
 							if (!loadedCharacters.exists(checkChar)) {
 								charList.push(checkChar);
 								loadedCharacters.set(checkChar, true);
@@ -422,10 +422,10 @@ class StageEditorState extends MusicBeatState {
 
 		var defaultFolderPath:String = Paths.getPreloadPath('data/characters/');
 		if (sys.FileSystem.exists(defaultFolderPath)) {
-			for (charJson in sys.FileSystem.readDirectory(defaultFolderPath)) {
-				var path:String = haxe.io.Path.join([defaultFolderPath, charJson]);
-				if (!sys.FileSystem.isDirectory(path) && charJson.endsWith('.json')) {
-					var checkChar:String = charJson.substr(0, charJson.length - 5);
+			for (charFile in sys.FileSystem.readDirectory(defaultFolderPath)) {
+				var path:String = haxe.io.Path.join([defaultFolderPath, charFile]);
+				if (!sys.FileSystem.isDirectory(path) && (charFile.endsWith('.json') || (charFile.endsWith('.txt')))) {
+					var checkChar:String = charFile.endsWith('.json') ? charFile.substr(0, charFile.length - 5) : charFile.substr(0, charFile.length - 4);
 					if (!loadedCharacters.exists(checkChar)) {
 						charList.push(checkChar);
 						loadedCharacters.set(checkChar, true);
