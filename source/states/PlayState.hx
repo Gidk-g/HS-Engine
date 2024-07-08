@@ -2504,8 +2504,12 @@ class PlayState extends MusicBeatState
 				// transIn = FlxTransitionableState.defaultTransIn;
 				// transOut = FlxTransitionableState.defaultTransOut;
 
-				if (goToStory)
-				    MusicBeatState.switchState(new StoryMenuState());
+				if (goToStory) {
+					camOther.fade(0xff000000, 0.5, false, () -> {
+						MusicBeatState.goofyAhhCam = true;
+						MusicBeatState.switchState(new StoryMenuState());
+					}, false);
+				}
 
 				if (SONG.validScore)
 				{
@@ -2551,7 +2555,10 @@ class PlayState extends MusicBeatState
 		else
 		{
 			Logger.log('WENT BACK TO FREEPLAY??');
-			MusicBeatState.switchState(new FreeplayState());
+			camOther.fade(0xff000000, 0.5, false, () -> {
+				MusicBeatState.goofyAhhCam = true;
+				MusicBeatState.switchState(new FreeplayState());
+			}, false);
 		}
 	}
 
