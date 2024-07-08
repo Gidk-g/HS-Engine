@@ -41,8 +41,8 @@ class MainMenuState extends MusicBeatState
 		scriptState.interp.variables.set("menu", this);
 		#end
 
-		transIn = FlxTransitionableState.defaultTransIn;
-		transOut = FlxTransitionableState.defaultTransOut;
+		// transIn = FlxTransitionableState.defaultTransIn;
+		// transOut = FlxTransitionableState.defaultTransOut;
 
 		if (!FlxG.sound.music.playing)
 		{
@@ -131,7 +131,7 @@ class MainMenuState extends MusicBeatState
 
 			if (controls.BACK)
 			{
-				FlxG.switchState(new TitleState());
+				MusicBeatState.switchState(new TitleState());
 			}
 
 			if (controls.ACCEPT)
@@ -163,15 +163,15 @@ class MainMenuState extends MusicBeatState
 							switch (daChoice)
 							{
 								case 'story_mode':
-									FlxG.switchState(new StoryMenuState());
+									MusicBeatState.switchState(new StoryMenuState());
 								case 'freeplay':
-									FlxG.switchState(new FreeplayState());
+									MusicBeatState.switchState(new FreeplayState());
 								#if sys
 								case 'mods':
-									FlxG.switchState(new states.ModState());
+									MusicBeatState.switchState(new states.ModState());
 								#end
 								case 'options':
-									FlxG.switchState(new OptionsState());
+									MusicBeatState.switchState(new OptionsState());
 							}
 						});
 					}

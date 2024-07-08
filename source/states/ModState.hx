@@ -131,7 +131,7 @@ class ModState extends MusicBeatState {
             updateScroll();
             updateSelection();
         } else if (FlxG.keys.justPressed.SEVEN) {
-            FlxG.switchState(new states.editors.EditorMenuState());
+            MusicBeatState.switchState(new states.editors.EditorMenuState());
         } else if (controls.BACK) {
             if (restartNeeded) {
                 TitleState.initialized = false;
@@ -141,7 +141,7 @@ class ModState extends MusicBeatState {
                 FlxG.camera.fade(FlxColor.BLACK, 0.5, false, FlxG.resetGame, false);
             } else {
                 scriptState.callFunction("goToMenu", []);
-                FlxG.switchState(new MainMenuState());
+                MusicBeatState.switchState(new MainMenuState());
             }
         } else if (controls.ACCEPT) {
             var modFolders:Array<{ folder:String, enabled:Bool }> = ModPaths.getModFolders();

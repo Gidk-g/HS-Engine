@@ -47,8 +47,8 @@ class StoryMenuState extends MusicBeatState
 	{
 		readWeekFile();
 
-		transIn = FlxTransitionableState.defaultTransIn;
-		transOut = FlxTransitionableState.defaultTransOut;
+		// transIn = FlxTransitionableState.defaultTransIn;
+		// transOut = FlxTransitionableState.defaultTransOut;
 
 		if (FlxG.sound.music != null)
 		{
@@ -225,7 +225,7 @@ class StoryMenuState extends MusicBeatState
 			#if sys
 			scriptState.callFunction("goToMenu", []);
 			#end
-			FlxG.switchState(new MainMenuState());
+			MusicBeatState.switchState(new MainMenuState());
 		}
 
 		super.update(elapsed);

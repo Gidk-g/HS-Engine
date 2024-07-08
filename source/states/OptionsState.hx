@@ -52,7 +52,7 @@ class OptionsState extends MusicBeatState {
 			#if sys
 			scriptState.callFunction("goToMenu", []);
 			#end
-            FlxG.switchState(new MainMenuState());
+            MusicBeatState.switchState(new MainMenuState());
 		}
 		super.update(elapsed);
     }
@@ -67,7 +67,7 @@ class OptionsState extends MusicBeatState {
 				#if sys
 				scriptState.callFunction("goToMenu", []);
 				#end
-                FlxG.switchState(new MainMenuState());
+                MusicBeatState.switchState(new MainMenuState());
 		}
 	}
 

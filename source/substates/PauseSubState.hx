@@ -119,13 +119,22 @@ class PauseSubState extends MusicBeatSubstate
 					#end
 					close();
 				case "Restart Song":
-					FlxG.resetState();
+					PlayState.instance.camOther.fade(0xff000000, 0.5, false, () -> {
+						FlxG.resetState();
+					});
 				case "Exit to menu":
 					PlayState.deathCounter = 0;
-					if (PlayState.isStoryMode)
-						FlxG.switchState(new StoryMenuState());
-					else
-						FlxG.switchState(new FreeplayState());
+					if (PlayState.isStoryMode) {
+						PlayState.instance.camOther.fade(0xff000000, 0.5, false, () -> {
+							MusicBeatState.goofyAhhCam = true;
+							MusicBeatState.switchState(new StoryMenuState());
+						}, false);
+					} else {
+						PlayState.instance.camOther.fade(0xff000000, 0.5, false, () -> {
+							MusicBeatState.goofyAhhCam = true;
+							MusicBeatState.switchState(new FreeplayState());
+						}, false);
+					}
 			}
 		}
 

@@ -256,7 +256,7 @@ class ModScripts {
             var modStatePath = ModPaths.script("data/states/" + state);
             if (modStatePath != null) {
                 if (FileSystem.exists(modStatePath)) {
-                    FlxG.switchState(Type.createInstance(ModScriptState, [modStatePath]));
+                    MusicBeatState.switchState(Type.createInstance(ModScriptState, [modStatePath]));
                 }
             }
         });
@@ -424,7 +424,7 @@ class ModScriptState extends MusicBeatState {
             var modStatePath = ModPaths.script("data/states/" + state);
             if (modStatePath != null) {
                 if (FileSystem.exists(modStatePath)) {
-                    FlxG.switchState(Type.createInstance(ModScriptState, [modStatePath]));
+                    MusicBeatState.switchState(Type.createInstance(ModScriptState, [modStatePath]));
                 }
             }
         });
@@ -607,7 +607,7 @@ class ModScriptSubstate extends MusicBeatSubstate {
             var modStatePath = ModPaths.script("data/states/" + state);
             if (modStatePath != null) {
                 if (FileSystem.exists(modStatePath)) {
-                    FlxG.switchState(Type.createInstance(ModScriptState, [modStatePath]));
+                    MusicBeatState.switchState(Type.createInstance(ModScriptState, [modStatePath]));
                 }
             }
         });
