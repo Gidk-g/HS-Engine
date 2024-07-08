@@ -156,6 +156,8 @@ class MusicBeatState extends FlxUIState
 			FlxG.camera.fade(0xff000000, 0.5, false, () -> {
 				FlxG.switchState(state);
 			}, false);
+		} else {
+			FlxG.switchState(state);
 		}
 	}
 }
