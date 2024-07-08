@@ -137,7 +137,6 @@ class PlayState extends MusicBeatState
 	public var noteSplashesPath:String = 'noteSplashes';
 
 	public var accuracy:Float;
-
 	public var botplayTxt:FlxText;
 
 	var stageBg:FlxSprite;
@@ -198,6 +197,8 @@ class PlayState extends MusicBeatState
 	private var noteTypeMap:Map<String, Bool> = new Map<String, Bool>();
 
 	public static var storyDifficultyText:String = "";
+
+    public var isFirstSong:Bool = true;
 
 	#if desktop
 	// Discord RPC variables
@@ -1092,7 +1093,14 @@ class PlayState extends MusicBeatState
 		script.callFunction("createPost", []);
 		#end
 
-		camOther.fade(0xff000000, 0.5, true, null, false);
+        if (isStoryMode) {
+            if (storyPlaylist.length > 0 && isFirstSong) {
+                camOther.fade(0xff000000, 0.5, true, null, false);
+                isFirstSong = false;
+            }
+        } else {
+            camOther.fade(0xff000000, 0.5, true, null, false);
+        }
 	}
 
 	#if sys
@@ -2541,6 +2549,8 @@ class PlayState extends MusicBeatState
 
 				// FlxTransitionableState.skipNextTransIn = true;
 				// FlxTransitionableState.skipNextTransOut = true;
+
+				isFirstSong = false;
 
 				prevCamFollow = camFollow;
 				prevCamFollowPos = camFollowPos;
