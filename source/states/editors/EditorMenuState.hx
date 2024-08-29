@@ -41,20 +41,20 @@ class EditorMenuState extends MusicBeatState {
         if (controls.ACCEPT)
             openSelectedOption(options[curSelected]);
         if (controls.BACK)
-            MusicBeatState.switchState(new ModState());
+            FlxG.switchState(new ModState());
         super.update(elapsed);
     }
 
     function openSelectedOption(label:String) {
         switch(label) {
             case 'Character Editor':
-                MusicBeatState.switchState(new states.editors.character.CharacterEditorState());
+                FlxG.switchState(new states.editors.character.CharacterEditorState());
 			case 'Stage Editor':
-				MusicBeatState.switchState(new states.editors.stage.StageEditorState());
+				FlxG.switchState(new states.editors.stage.StageEditorState());
             case 'Week Editor':
-                MusicBeatState.switchState(new states.editors.week.WeekEditorState());
+                FlxG.switchState(new states.editors.week.WeekEditorState());
             case 'Exit':
-                MusicBeatState.switchState(new ModState());
+                FlxG.switchState(new ModState());
         }
     }
 

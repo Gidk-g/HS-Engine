@@ -20,8 +20,6 @@ class MusicBeatState extends FlxUIState
 	private var curBeat:Int = 0;
 	private var controls(get, never):Controls;
 
-	public static var goofyAhhCam:Bool = true;
-
 	#if sys
 	public var scriptState:ModScripts = new ModScripts();
 	#end
@@ -79,9 +77,6 @@ class MusicBeatState extends FlxUIState
 		    scriptState.callFunction("createPost", [this]);
 	    }
 		#end
-
-		if (goofyAhhCam)
-		    FlxG.camera.fade(0xff000000, 0.5, true, null, false);
 	}
 
 	override function update(elapsed:Float)
@@ -149,15 +144,5 @@ class MusicBeatState extends FlxUIState
 		    scriptState.callFunction("beatHit", [curBeat, this]);
 		}
 		#end
-	}
-
-    public static function switchState(state:flixel.FlxState):Void {
-		if (goofyAhhCam) {
-			FlxG.camera.fade(0xff000000, 0.5, false, () -> {
-				FlxG.switchState(state);
-			}, false);
-		} else {
-			FlxG.switchState(state);
-		}
 	}
 }

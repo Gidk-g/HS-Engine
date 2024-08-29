@@ -217,7 +217,7 @@ class FreeplayState extends MusicBeatState
 			#if sys
 			scriptState.callFunction("goToMenu", []);
 			#end
-			MusicBeatState.switchState(new MainMenuState());
+			FlxG.switchState(new MainMenuState());
 		}
 
 		if (accepted)

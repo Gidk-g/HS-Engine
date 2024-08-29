@@ -137,6 +137,7 @@ class PlayState extends MusicBeatState
 	public var noteSplashesPath:String = 'noteSplashes';
 
 	public var accuracy:Float;
+
 	public var botplayTxt:FlxText;
 
 	var stageBg:FlxSprite;
@@ -198,8 +199,6 @@ class PlayState extends MusicBeatState
 
 	public static var storyDifficultyText:String = "";
 
-    public var isFirstSong:Bool = true;
-
 	#if desktop
 	// Discord RPC variables
 	var iconRPC:String = "";
@@ -227,8 +226,6 @@ class PlayState extends MusicBeatState
 		FlxG.cameras.add(camOther);
 
 		FlxCamera.defaultCameras = [camGame];
-
-		MusicBeatState.goofyAhhCam = false;
 
 		persistentUpdate = true;
 		persistentDraw = true;
@@ -1092,15 +1089,6 @@ class PlayState extends MusicBeatState
 		#if sys
 		script.callFunction("createPost", []);
 		#end
-
-        if (isStoryMode) {
-            if (storyPlaylist.length > 0 && isFirstSong) {
-                camOther.fade(0xff000000, 0.5, true, null, false);
-                isFirstSong = false;
-            }
-        } else {
-            camOther.fade(0xff000000, 0.5, true, null, false);
-        }
 	}
 
 	#if sys
@@ -1912,8 +1900,6 @@ class PlayState extends MusicBeatState
 
 		var rPercent:Float = FlxMath.roundDecimal(ratingPercent * 100, 2);
 
-        accuracy = rPercent;
-
 		if (Math.isNaN(rPercent))
 			return -1;
 		else
@@ -2030,7 +2016,7 @@ class PlayState extends MusicBeatState
 
 		if (FlxG.keys.justPressed.SEVEN)
 		{
-			// MusicBeatState.switchState(new states.editors.charting.ChartingEditorState());
+			// FlxG.switchState(new states.editors.charting.ChartingEditorState());
 
 			#if desktop
 			// DiscordClient.changePresence("Chart Editor", null, null, true);
@@ -2180,7 +2166,7 @@ class PlayState extends MusicBeatState
 					gfSpeed = 1;
 				case 163:
 					// FlxG.sound.music.stop();
-					// MusicBeatState.switchState(new TitleState());
+					// FlxG.switchState(new TitleState());
 			}
 		}
 
@@ -2191,7 +2177,7 @@ class PlayState extends MusicBeatState
 				case 128, 129, 130:
 					vocals.volume = 0;
 					// FlxG.sound.music.stop();
-					// MusicBeatState.switchState(new PlayState());
+					// FlxG.switchState(new PlayState());
 			}
 		}
 		// better streaming of shit
@@ -2216,7 +2202,7 @@ class PlayState extends MusicBeatState
 			if (goToGameOver)
 			    openSubState(new GameOverSubstate(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y));
 
-			// MusicBeatState.switchState(new GameOverState(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y));
+			// FlxG.switchState(new GameOverState(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y));
 			
 			#if desktop
 			// Game Over doesn't get his own variable because it's only used here
@@ -2509,15 +2495,11 @@ class PlayState extends MusicBeatState
 				if (goToStory)
 				    FlxG.sound.playMusic(Paths.music('freakyMenu'));
 
-				// transIn = FlxTransitionableState.defaultTransIn;
-				// transOut = FlxTransitionableState.defaultTransOut;
+				transIn = FlxTransitionableState.defaultTransIn;
+				transOut = FlxTransitionableState.defaultTransOut;
 
-				if (goToStory) {
-					camOther.fade(0xff000000, 0.5, false, () -> {
-						MusicBeatState.goofyAhhCam = true;
-						MusicBeatState.switchState(new StoryMenuState());
-					}, false);
-				}
+				if (goToStory)
+				    FlxG.switchState(new StoryMenuState());
 
 				if (SONG.validScore)
 				{
@@ -2547,10 +2529,8 @@ class PlayState extends MusicBeatState
 					FlxG.sound.play(Paths.sound('Lights_Shut_off'));
 				}
 
-				// FlxTransitionableState.skipNextTransIn = true;
-				// FlxTransitionableState.skipNextTransOut = true;
-
-				isFirstSong = false;
+				FlxTransitionableState.skipNextTransIn = true;
+				FlxTransitionableState.skipNextTransOut = true;
 
 				prevCamFollow = camFollow;
 				prevCamFollowPos = camFollowPos;
@@ -2565,10 +2545,7 @@ class PlayState extends MusicBeatState
 		else
 		{
 			Logger.log('WENT BACK TO FREEPLAY??');
-			camOther.fade(0xff000000, 0.5, false, () -> {
-				MusicBeatState.goofyAhhCam = true;
-				MusicBeatState.switchState(new FreeplayState());
-			}, false);
+			FlxG.switchState(new FreeplayState());
 		}
 	}
 
