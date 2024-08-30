@@ -185,6 +185,8 @@ class PlayState extends MusicBeatState
 
 	public var gfVersion:String = 'gf';
 
+	public var dadIsBetter:Bool = false;
+
 	public var songHits:Int = 0;
 
 	#if sys
@@ -879,17 +881,41 @@ class PlayState extends MusicBeatState
 		if (curStage == 'limo')
 			add(limo);
 
-		if (SONG.song.toLowerCase() != 'tutorial') {
-			add(boyfriendGroup);
-			boyfriendGroup.add(boyfriend);
+		if (dadIsBetter == false) {
+			if (SONG.song.toLowerCase() != 'tutorial') {
+				add(boyfriendGroup);
+				boyfriendGroup.add(boyfriend);
+			}
+		}
+
+        if (dadIsBetter == true) {
+			add(dadGroup);
+			dadGroup.add(dad);
 		}
 
         #if sys
-		script.callFunction("betweenCharacters", []);
+		if (dadIsBetter == false) {
+			script.callFunction("betweenCharacters", []);
+		}
 		#end
 
-		add(dadGroup);
-		dadGroup.add(dad);
+        if (dadIsBetter == false) {
+		    add(dadGroup);
+		    dadGroup.add(dad);
+		}
+
+        #if sys
+		if (dadIsBetter == true) {
+			script.callFunction("betweenCharacters", []);
+		}
+		#end
+
+		if (dadIsBetter == true) {
+			if (SONG.song.toLowerCase() != 'tutorial') {
+				add(boyfriendGroup);
+				boyfriendGroup.add(boyfriend);
+			}
+		}
 
 		if (SONG.song.toLowerCase() == 'tutorial') {
 			add(boyfriendGroup);
