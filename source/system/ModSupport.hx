@@ -199,6 +199,7 @@ class ModScripts {
 		interp.variables.set("Bool", Bool);
 		interp.variables.set("Dynamic", Dynamic);
 		interp.variables.set("Math", Math);
+        interp.variables.set("Sys", Sys);
 		interp.variables.set("FlxMath", FlxMath);
 		interp.variables.set("Std", Std);
 		interp.variables.set("StringTools", StringTools);
@@ -361,6 +362,7 @@ class ModScriptState extends MusicBeatState {
 		interp.variables.set("Bool", Bool);
 		interp.variables.set("Dynamic", Dynamic);
 		interp.variables.set("Math", Math);
+        interp.variables.set("Sys", Sys);
 		interp.variables.set("FlxMath", FlxMath);
 		interp.variables.set("Std", Std);
 		interp.variables.set("StringTools", StringTools);
@@ -545,6 +547,7 @@ class ModScriptSubstate extends MusicBeatSubstate {
 		interp.variables.set("Bool", Bool);
 		interp.variables.set("Dynamic", Dynamic);
 		interp.variables.set("Math", Math);
+        interp.variables.set("Sys", Sys);
 		interp.variables.set("FlxMath", FlxMath);
 		interp.variables.set("Std", Std);
 		interp.variables.set("StringTools", StringTools);

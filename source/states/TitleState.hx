@@ -33,6 +33,8 @@ class TitleState extends MusicBeatState
 {
 	public static var initialized:Bool = false;
 
+    public static var freakyMenu = Paths.music("freakyMenu");
+
 	var blackScreen:FlxSprite;
 	var credGroup:FlxGroup;
 	var credTextShit:Alphabet;
@@ -89,16 +91,7 @@ class TitleState extends MusicBeatState
 			transIn = FlxTransitionableState.defaultTransIn;
 			transOut = FlxTransitionableState.defaultTransOut;
 
-			// HAD TO MODIFY SOME BACKEND SHIT
-			// IF THIS PR IS HERE IF ITS ACCEPTED UR GOOD TO GO
-			// https://github.com/HaxeFlixel/flixel-addons/pull/348
-
-			// var music:FlxSound = new FlxSound();
-			// music.loadStream(Paths.music('freakyMenu'));
-			// FlxG.sound.list.add(music);
-			// music.play();
-			FlxG.sound.playMusic(Paths.music('freakyMenu'), 0);
-
+			FlxG.sound.playMusic(freakyMenu, 0);
 			FlxG.sound.music.fadeIn(4, 0, 0.7);
 		}
 
