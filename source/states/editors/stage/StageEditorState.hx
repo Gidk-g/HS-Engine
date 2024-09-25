@@ -242,6 +242,33 @@ class StageEditorState extends MusicBeatState {
 		});
 		tab_group_sprite.add(createSprButton);
 
+		var removeSprButton:FlxButton = new FlxButton(250, 50, 'Remove Sprite', function() {
+			if (curObject != null) {
+				if (curObject != bf && curObject != gf && curObject != dad) {
+					var idShit:Int = 0;
+					var e:Dynamic = [];
+					for (i in 0...stageObjID.length) {
+						if (stageObjID[i][0] == curObject) {
+							idShit = stageObjID[i][1];
+							e = stageObjID[i];
+						}
+					}
+					stageFile.objects.remove(stageFile.objects[idShit]);
+					if (stageObjects.members[idShit] != null) {
+						stageObjects.members[idShit].kill();
+						stageObjects.remove(stageObjects.members[idShit], true);
+					}
+					if (stageObjectsForeground.members[idShit] != null) {
+						stageObjectsForeground.members[idShit].kill();
+						stageObjectsForeground.remove(stageObjectsForeground.members[idShit], true);
+					}
+					stageObjID.remove(e);
+					curObject = null;
+				}
+			}
+		});
+		tab_group_sprite.add(removeSprButton);
+
 		uiBox.addGroup(tab_group_sprite);
 		uiBox.scrollFactor.set();
 	}
