@@ -20,6 +20,9 @@ import flixel.text.FlxText;
 import flixel.system.FlxSound;
 import flixel.math.FlxMath;
 import lime.utils.Assets;
+import haxe.zip.Reader;
+import haxe.io.Bytes;
+import haxe.io.BytesInput;
 import hscript.Parser;
 import hscript.Interp;
 import sys.FileSystem;
@@ -58,19 +61,19 @@ class ModPaths {
         return findFileInModFolders("", path);
     }
 
-	static private function findFileInModFolders(subfolder:String, path:String):String {
-		var fullPath:String = null;
-		for (modFolder in getModFolders()) {
-			if (modFolder.enabled) {
-				var folderPath:String = haxe.io.Path.join([modDirectory, modFolder.folder, subfolder, path]);
-				if (FileSystem.exists(folderPath)) {
-					fullPath = folderPath;
-					break;
-				}
-			}
-		}
-		return fullPath;
-	}
+    static private function findFileInModFolders(subfolder:String, path:String):String {
+        var fullPath:String = null;
+        for (modFolder in getModFolders()) {
+            if (modFolder.enabled) {
+                var folderPath:String = haxe.io.Path.join([modDirectory, modFolder.folder, subfolder, path]);
+                if (FileSystem.exists(folderPath)) {
+                    fullPath = folderPath;
+                    break;
+                }
+            }
+        }
+        return fullPath;
+    }
 
     static public function getModFolders():Array<{ folder:String, enabled:Bool }> {
         if (modInfo.length == 0) {
@@ -78,25 +81,22 @@ class ModPaths {
         }
 
         var modsFolder:String = modDirectory;
-        var currentMods:Array<{ folder:String, enabled:Bool }> = [];
         var newMods:Array<String> = [];
 
         if (FileSystem.exists(modsFolder)) {
-            for (folder in FileSystem.readDirectory(modsFolder)) {
-                var folderPath = haxe.io.Path.join([modsFolder, folder]);
-                if (FileSystem.isDirectory(folderPath)) {
-                    var modExists:Bool = false;
-                    for (info in modInfo) {
-                        if (info.folder == folder) {
-                            modExists = true;
-                            break;
-                        }
+            for (item in FileSystem.readDirectory(modsFolder)) {
+                var itemPath = haxe.io.Path.join([modsFolder, item]);
+                if (FileSystem.isDirectory(itemPath)) {
+                    processModFolder(item, itemPath, newMods);
+                } else if (haxe.io.Path.extension(item).toLowerCase() == "zip") {
+                    var modName = haxe.io.Path.withoutExtension(item);
+                    var extractedFolder = haxe.io.Path.join([modsFolder, modName]);
+                    if (!FileSystem.exists(extractedFolder)) {
+                        extractZipMod(itemPath, extractedFolder);
                     }
-                    if (!modExists) {
-                        newMods.push(folder);
-                        modInfo.push({ folder: folder, enabled: true });
+                    if (FileSystem.isDirectory(extractedFolder)) {
+                        processModFolder(modName, extractedFolder, newMods);
                     }
-                    currentMods.push({ folder: folder, enabled: true });
                 }
             }
 
@@ -110,6 +110,57 @@ class ModPaths {
         return modInfo;
     }
 
+    static private function processModFolder(folderName:String, folderPath:String, newMods:Array<String>):Void {
+        var modExists:Bool = false;
+        for (info in modInfo) {
+            if (info.folder == folderName) {
+                modExists = true;
+                break;
+            }
+        }
+        if (!modExists) {
+            newMods.push(folderName);
+            modInfo.push({ folder: folderName, enabled: true });
+        }
+    }
+
+    static private function extractZipMod(zipPath:String, outputFolder:String):Void {
+        Logger.log("Extracting mod zip: " + zipPath + " to " + outputFolder);
+        try {
+            var bytes:Bytes = File.getBytes(zipPath);
+            var input:haxe.io.Input = new BytesInput(bytes);
+            var zipReader = new Reader(input);
+            var entries = zipReader.read();
+            if (!sys.FileSystem.exists(outputFolder)) {
+                sys.FileSystem.createDirectory(outputFolder);
+            }
+            for (entry in entries) {
+                var outPath:String = haxe.io.Path.join([outputFolder, entry.fileName]);
+                if (entry.fileName.endsWith("/")) {
+                    if (!sys.FileSystem.exists(outPath)) {
+                        sys.FileSystem.createDirectory(outPath);
+                    }
+                } else {
+                    var dir:String = haxe.io.Path.directory(outPath);
+                    if (!sys.FileSystem.exists(dir)) {
+                        sys.FileSystem.createDirectory(dir);
+                    }
+                    var fileData:Bytes;
+                    if (entry.compressed) {
+                        fileData = Reader.unzip(entry);
+                    } else {
+                        fileData = entry.data;
+                    }
+                    var out:sys.io.FileOutput = File.write(outPath, false);
+                    out.writeBytes(fileData, 0, fileData.length);
+                    out.close();
+                }
+            }
+        } catch (e:Dynamic) {
+            Logger.log("Error: extracting ZIP file: " + e);
+        }
+    }
+
     static public function isModEnabled(folder:String):Bool {
         for (info in modInfo) {
             if (info.folder == folder) {
@@ -120,10 +171,10 @@ class ModPaths {
     }
 
     static public function toggleMod(folder:String, enable:Bool):Void {
-        for (modInfo in modInfo) {
-            if (modInfo.folder == folder) {
-                modInfo.enabled = enable;
-				saveModSettings();
+        for (mod in modInfo) {
+            if (mod.folder == folder) {
+                mod.enabled = enable;
+                saveModSettings();
                 break;
             }
         }
@@ -133,36 +184,30 @@ class ModPaths {
         for (modFolder in getModFolders()) {
             if (modFolder.enabled) {
                 var filePath:String = haxe.io.Path.join([modDirectory, modFolder.folder, "data", "waitingToRestart.txt"]);
-
                 if (FileSystem.exists(filePath)) {
                     var fileContent:String = sys.io.File.getContent(filePath).trim().toLowerCase();
                     return (fileContent == "true");
                 }
             }
         }
-
         return false;
     }
 
     static public function saveModSettings():Void {
         var savePath:String = "mod_settings.txt";
         var file:sys.io.FileOutput = sys.io.File.write(savePath, false);
-
         for (info in modInfo) {
             file.writeString(info.folder + ":" + (info.enabled ? "1" : "0") + "\n");
         }
-
         getModFolders();
         file.close();
     }
 
     static private function loadModSettings():Void {
         var savePath:String = "mod_settings.txt";
-
         if (sys.FileSystem.exists(savePath)) {
             var fileContent:String = sys.io.File.getContent(savePath);
             var lines:Array<String> = fileContent.split("\n");
-
             for (line in lines) {
                 var parts:Array<String> = line.split(":");
                 if (parts.length == 2) {
